@@ -65,6 +65,10 @@ DEFAULT_SETTINGS: dict[str, Any] = {
 
     # How many traders to pull per category per time window (min 100).
     "leaderboard_depth": 100,
+
+    # Hide markets that are basically decided: current price below this
+    # (or above 1 minus this). 0.01 = hide anything under 1 cent / over 99 cents.
+    "decided_price_cutoff": 0.01,
 }
 
 # Hard limits so a slider can never break the collector.
@@ -83,6 +87,7 @@ LIMITS: dict[str, tuple[float, float]] = {
     "possible_match_confidence": (0.1, 0.99),
     "split_flag_ratio": (0.1, 0.5),
     "leaderboard_depth": (100, 500),
+    "decided_price_cutoff": (0.0, 0.2),
 }
 
 

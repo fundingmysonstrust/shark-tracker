@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Shark Tracker</title>
+<style>
+:root{
+  --bg:#f6f7f9; --card:#ffffff; --ink:#15181d; --mute:#5d6673; --line:#e1e4e8; --soft:#f0f2f5;
+  --accent:#1f6feb; --a:#0b7a55; --a-soft:#e3f5ee; --b:#a8461b; --b-soft:#fbece4;
+  --warn:#8a5a00; --warn-soft:#fff4d6; --bad:#b42318; --bad-soft:#fde8e7; --good:#0b7a55;
+}
+@media (prefers-color-scheme: dark){ :root{
+  --bg:#0f1115; --card:#171a20; --ink:#e8eaee; --mute:#9aa3ae; --line:#2a2f37; --soft:#1f232a;
+  --accent:#5b9bff; --a:#4fd1a1; --a-soft:#12372b; --b:#ff9c6e; --b-soft:#3d2216;
+  --warn:#ffcf5c; --warn-soft:#3a2f12; --bad:#ff7b72; --bad-soft:#3d1715; --good:#4fd1a1;
+}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+a{color:var(--accent)}
+.wrap{max-width:1280px;margin:0 auto;padding:16px}
+header{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:baseline;justify-content:space-between}
+h1{margin:0;font-size:22px}
+.updated{color:var(--mute);font-size:14px}
+.note{margin:10px 0;padding:8px 12px;border-radius:10px;background:var(--soft);color:var(--mute);font-size:13px}
+.banner{margin:10px 0;padding:10px 12px;border-radius:10px;font-size:14px}
+.banner.warn{background:var(--warn-soft);color:var(--warn)}
+.banner.bad{background:var(--bad-soft);color:var(--bad)}
+.status{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0}
+.sbox{flex:1 1 260px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:13px}
+.sbox b{font-size:14px}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:1px}
+.dot.ok{background:var(--good)} .dot.bad{background:var(--bad)} .dot.na{background:var(--mute)}
+nav{display:flex;gap:6px;margin:14px 0 10px;flex-wrap:wrap}
+nav button{font:inherit;padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+nav button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.filters{display:flex;flex-wrap:wrap;gap:10px;align-items:end;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.filters label{display:flex;flex-direction:column;font-size:12px;color:var(--mute);gap:3px}
+.filters input,.filters select{font:inherit;font-size:14px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);min-width:0}
+.filters .chk{flex-direction:row;align-items:center;gap:6px;font-size:14px;color:var(--ink)}
+.count{color:var(--mute);font-size:13px;margin:8px 2px}
+table{width:100%;border-collapse:separate;border-spacing:0;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+th,td{padding:9px 10px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);font-size:14px}
+th{font-size:12px;color:var(--mute);font-weight:600;background:var(--soft);white-space:nowrap}
+tr.row{cursor:pointer} tr.row:hover td{background:var(--soft)}
+td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+.mtitle{font-weight:600}
+.sub{color:var(--mute);font-size:12px}
+.side{border-radius:8px;padding:6px 8px;min-width:150px}
+.side.A{background:var(--a-soft)} .side.B{background:var(--b-soft)}
+.side .lab{font-size:12px;font-weight:600}
+.side.A .lab{color:var(--a)} .side.B .lab{color:var(--b)}
+.side .n{font-size:20px;font-weight:700;line-height:1.1}
+.names{font-size:12px;margin-top:2px;word-break:break-word}
+.flag{display:inline-block;font-size:11px;padding:1px 7px;border-radius:999px;margin:2px 4px 0 0;background:var(--warn-soft);color:var(--warn);font-weight:600}
+.cat{display:inline-block;font-size:11px;padding:1px 7px;border-radius:999px;background:var(--soft);color:var(--mute);text-transform:capitalize}
+.detail td{background:var(--bg)}
+.dgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.dgrid h4{margin:0 0 6px}
+.slist{width:100%;border:0;border-radius:0}
+.slist td,.slist th{font-size:13px;padding:6px 8px}
+.btn{font:inherit;font-size:14px;padding:8px 14px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.more{display:block;margin:12px auto}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
+.set{display:grid;grid-template-columns:minmax(0,1fr) 220px 90px;gap:6px 14px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.set:last-child{border-bottom:0}
+.set .exp{color:var(--mute);font-size:13px}
+.set input[type=range]{width:100%}
+.set output{font-variant-numeric:tabular-nums;font-weight:600;text-align:right}
+.bd{width:100%;border:0}
+.bd td,.bd th{font-size:13px;padding:5px 8px}
+.bar{height:8px;background:var(--soft);border-radius:4px;overflow:hidden;min-width:80px}
+.bar i{display:block;height:100%;background:var(--accent)}
+.hidden{display:none!important}
+.runs{font-size:12px;color:var(--mute);margin-top:6px}
+.runs span{display:inline-block;margin-right:10px}
+/* phone layout: table rows become cards */
+@media (max-width: 820px){
+  .wrap{padding:12px}
+  table.main, table.main tbody, table.main tr, table.main td{display:block;width:100%}
+  table.main thead{display:none}
+  table.main{border:0;background:none}
+  table.main tr.row{background:var(--card);border:1px solid var(--line);border-radius:12px;margin-bottom:10px;padding:8px}
+  table.main tr.row td{border:0;padding:4px 4px}
+  table.main td[data-l]::before{content:attr(data-l)": ";color:var(--mute);font-size:12px}
+  table.main td.sides{display:flex;gap:8px}
+  table.main td.sides .side{flex:1;min-width:0}
+  table.main tr.detail{display:block;margin:-6px 0 12px}
+  table.main tr.detail td{border-radius:0 0 12px 12px;border:1px solid var(--line)}
+  .dgrid{grid-template-columns:1fr}
+  .set{grid-template-columns:1fr 70px}
+  .set .exp{grid-column:1 / -1}
+  .set input[type=range]{grid-column:1}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>🦈 Shark Tracker</h1>
+    <div class="updated" id="updated">Loading…</div>
+  </header>
+  <div class="note">Public data only. Not financial advice. Past profit does not predict future results.</div>
+  <div id="banner"></div>
+  <div class="status" id="status"></div>
+
+  <nav>
+    <button data-tab="markets" class="on">Markets</button>
+    <button data-tab="sharks">Sharks</button>
+    <button data-tab="settings">Settings</button>
+    <button data-tab="guide">Guide</button>
+    <a href="/logout" class="btn" style="margin-left:auto;text-decoration:none">Log out</a>
+  </nav>
+
+  <!-- MARKETS -->
+  <section id="tab-markets">
+    <div class="filters">
+      <label>Search<input id="f-q" type="search" placeholder="team, candidate, shark…"></label>
+      <label>Category<select id="f-cat"><option value="">All</option></select></label>
+      <label>Min. sharks<input id="f-min" type="number" min="1" value="2" style="width:80px"></label>
+      <label>From<input id="f-from" type="date"></label>
+      <label>To<input id="f-to" type="date"></label>
+      <label>Sort<select id="f-sort">
+        <option value="max">Most sharks on one side</option>
+        <option value="money">Most shark money</option>
+        <option value="agree">Highest agreement</option>
+        <option value="date">Soonest event</option>
+      </select></label>
+      <label class="chk"><input id="f-split" type="checkbox"> Splits only</label>
+      <label class="chk"><input id="f-nosplit" type="checkbox"> Hide splits</label>
+    </div>
+    <div class="count" id="count"></div>
+    <table class="main">
+      <thead><tr>
+        <th>Market</th><th>Category</th><th>Event date (ET)</th>
+        <th>Polymarket sharks: side A / side B</th>
+        <th>Total</th><th>Agreement</th><th>Shark $ now (A / B)</th>
+        <th>Avg shark entry (A / B)</th><th>Price now</th><th>Kalshi price</th>
+      </tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <button class="btn more hidden" id="more">Show more</button>
+  </section>
+
+  <!-- SHARKS -->
+  <section id="tab-sharks" class="hidden">
+    <div class="filters">
+      <label>Search<input id="s-q" type="search" placeholder="name"></label>
+      <label>Category<select id="s-cat"><option value="overall">Overall</option></select></label>
+    </div>
+    <div class="count" id="s-count"></div>
+    <div id="sharks"></div>
+  </section>
+
+  <!-- SETTINGS -->
+  <section id="tab-settings" class="hidden">
+    <div class="card">
+      <b>How settings work:</b> move a slider, then press <b>Save</b>. Changes apply on the next
+      automatic refresh (usually within 10–15 minutes). You never need to edit a file.
+    </div>
+    <div class="card" id="settings"></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:30px">
+      <button class="btn primary" id="save">Save</button>
+      <button class="btn" id="reset">Reset all to defaults</button>
+      <span id="saved" class="sub" style="align-self:center"></span>
+    </div>
+  </section>
+
+  <!-- GUIDE -->
+  <section id="tab-guide" class="hidden">
+    <div class="card">
+      <h3 style="margin-top:0">What this site shows</h3>
+      <p>It finds consistently profitable traders ("sharks") on Polymarket's public leaderboards,
+      looks at the bets they currently hold, and counts how many sharks hold each side of each open market.
+      It is a report only: it doesn't recommend anything and never places trades.</p>
+      <h3>Columns</h3>
+      <ul>
+        <li><b>Market</b>: the question, in Polymarket's own words. Click any row to see every shark, their bet size, entry price and score.</li>
+        <li><b>Category</b>: sports, politics, economics, finance, crypto, culture, tech, weather, mentions or other.</li>
+        <li><b>Event date</b>: game start time for sports, otherwise the date the market closes. US Eastern time.</li>
+        <li><b>Side A / side B</b>: how many sharks hold each answer (for example "Yes" vs "No", or Team 1 vs Team 2), with their names.</li>
+        <li><b>Total</b>: sharks on side A vs side B. Sharks holding both sides are "hedged" and not counted for either.</li>
+        <li><b>Agreement</b>: share of sharks on the bigger side. 100% = all on one side; 50% = an even split.</li>
+        <li><b>Shark $ now</b>: what the sharks' bets on each side are worth right now.</li>
+        <li><b>Avg shark entry</b>: the average price the sharks paid, in cents (100¢ = $1 if that side wins).</li>
+        <li><b>Price now</b>: today's Polymarket price for side A / side B.</li>
+        <li><b>Kalshi price</b>: same market on Kalshi, when one is found. Kalshi doesn't publish other people's bets, so there are no Kalshi shark counts.</li>
+        <li><b>Flags</b>: "Split" = sharks are divided (e.g. 6 vs 5).</li>
+      </ul>
+      <h3>Who counts as a shark</h3>
+      <p>Each trader gets a 0–100 reliability score per category from: 30-day profit, all-time profit,
+      win rate, number of settled markets, profit ÷ money traded, and being profitable both recently and all-time.
+      60+ = shark (you can change this on Settings). Click a name on the Sharks tab to see the full breakdown.</p>
+      <h3>If the site says the data is stale</h3>
+      <ol>
+        <li>Wait 15 minutes and reload the page. Most problems fix themselves on the next refresh.</li>
+        <li>If it still says stale after an hour, look at the status boxes at the top. They say which source failed.</li>
+        <li>The site always keeps showing the last good data, so nothing is lost.</li>
+        <li>If it's been stale for more than a day, start a chat with Claude and paste the message from the status box.</li>
+      </ol>
+    </div>
+  </section>
+</div>
+
+<script>
+"use strict";
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const ET = "America/New_York";
+const fmtTime = (sec) => sec ? new Date(sec * 1000).toLocaleString("en-US", {timeZone: ET, month: "short", day: "numeric", hour: "numeric", minute: "2-digit"}) + " ET" : "—";
+const fmtDate = (s) => {
+  if (!s) return "—";
+  const hasTime = /T|\s\d\d:/.test(s);
+  const d = new Date(hasTime ? s.replace(" ", "T").replace(/\+00$/, "Z") : s + "T12:00:00Z");
+  if (isNaN(d)) return esc(s);
+  return d.toLocaleString("en-US", hasTime ? {timeZone: ET, weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit"}
+                                            : {timeZone: ET, weekday: "short", month: "short", day: "numeric", year: "numeric"});
+};
+const dateKey = (s) => { if (!s) return ""; const d = new Date(/T|\s\d\d:/.test(s) ? s.replace(" ", "T").replace(/\+00$/, "Z") : s + "T12:00:00Z");
+  return isNaN(d) ? "" : d.toLocaleDateString("en-CA", {timeZone: ET}); };
+const money = (x) => x == null ? "—" : "$" + Math.round(x).toLocaleString("en-US");
+const cents = (x) => x == null ? "—" : (x * 100).toFixed(x < 0.1 || x > 0.9 ? 1 : 0) + "¢";
+const ago = (sec) => { const m = Math.round((Date.now() / 1000 - sec) / 60); return m < 1 ? "just now" : m < 60 ? m + " min ago" : m < 1440 ? Math.round(m / 60) + " h ago" : Math.round(m / 1440) + " days ago"; };
+
+let DATA = null, META = null, SHOWN = 100, OPEN = new Set(), SETTINGS_DONE = false;
+
+async function load() {
+  try {
+    const r = await fetch("/api/data", {cache: "no-store"});
+    if (r.status === 401) { location.reload(); return; }
+    const j = await r.json();
+    DATA = j.data; META = j.meta || {};
+    renderHeader(); fillCats(); renderRows(); renderSharks(); if (!SETTINGS_DONE) { SETTINGS_DONE = true; renderSettings(); }
+  } catch (e) {
+    $("#banner").innerHTML = `<div class="banner bad">Couldn't load data (${esc(e.message)}). Reload the page to try again.</div>`;
+  }
+}
+
+function renderHeader() {
+  if (!DATA) { $("#updated").textContent = "No data yet. The first refresh is still running."; return; }
+  $("#updated").innerHTML = `Last updated: <b>${fmtTime(DATA.generated_at)}</b> (${ago(DATA.generated_at)})`;
+  const ageMin = (Date.now() / 1000 - DATA.generated_at) / 60;
+  let b = "";
+  if (META.last_failure && META.last_failure > (META.last_success || 0))
+    b += `<div class="banner bad">The latest refresh failed at ${fmtTime(META.last_failure)}: “${esc(META.last_error)}”. Showing the last good data from ${fmtTime(DATA.generated_at)}.</div>`;
+  if (ageMin > 45)
+    b += `<div class="banner warn">This data is ${ago(DATA.generated_at).replace(" ago", "")} old (stale). See the Guide tab for what to do.</div>`;
+  $("#banner").innerHTML = b;
+  const st = DATA.status || {}, pm = st.polymarket || {}, k = st.kalshi || {};
+  const runs = (META.runs || []).slice(0, 8).map((r) => `<span>${r.ok ? "✅" : "❌"} ${fmtTime(r.at)}</span>`).join("");
+  $("#status").innerHTML = `
+    <div class="sbox"><span class="dot ${pm.ok ? "ok" : "bad"}"></span><b>Polymarket</b> ${pm.ok ? "working" : "problem"}<br>${esc(pm.message)}
+      <div class="runs">Recent refreshes: ${runs || "none yet"}</div></div>
+    <div class="sbox"><span class="dot ${k.ok === true ? "ok" : k.ok === false ? "bad" : "na"}"></span><b>Kalshi</b> ${k.ok === true ? "prices working" : k.ok === false ? "problem" : "prices only"}<br>${esc(k.message)}</div>`;
+}
+
+function fillCats() {
+  if (!DATA) return;
+  const cats = [...new Set(DATA.rows.map((r) => r.category))].sort();
+  const cur = $("#f-cat").value;
+  $("#f-cat").innerHTML = `<option value="">All</option>` + cats.map((c) => `<option ${c === cur ? "selected" : ""}>${esc(c)}</option>`).join("");
+  const sc = $("#s-cat").value;
+  const scats = ["overall", "sports", "politics", "economics", "finance", "crypto", "culture", "tech", "weather", "mentions"];
+  $("#s-cat").innerHTML = scats.map((c) => `<option value="${c}" ${c === sc ? "selected" : ""}>${c[0].toUpperCase() + c.slice(1)}</option>`).join("");
+}
+
+function filtered() {
+  const q = $("#f-q").value.trim().toLowerCase(), cat = $("#f-cat").value, min = +$("#f-min").value || 0;
+  const from = $("#f-from").value, to = $("#f-to").value, split = $("#f-split").checked, nosplit = $("#f-nosplit").checked;
+  let rows = DATA.rows.filter((r) => {
+    if (cat && r.category !== cat) return false;
+    if (r.total.A + r.total.B < min) return false;
+    if (split && !r.flags.split) return false;
+    if (nosplit && r.flags.split) return false;
+    const dk = dateKey(r.event_date);
+    if (from && dk && dk < from) return false;
+    if (to && dk && dk > to) return false;
+    if (q) {
+      const pmb = r.polymarket;
+      const hay = (r.title + " " + r.event_title + " " + r.side_labels.join(" ") + " " +
+        [...pmb.A.sharks, ...pmb.B.sharks].map((s) => s.name).join(" ")).toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+  const s = $("#f-sort").value;
+  const key = {
+    max: (r) => [r.max_side, Math.max(r.money.A, r.money.B)],
+    money: (r) => [r.money.A + r.money.B, 0],
+    agree: (r) => [r.agreement_pct ?? 0, r.max_side],
+  }[s];
+  if (s === "date") rows.sort((a, b) => (dateKey(a.event_date) || "9999").localeCompare(dateKey(b.event_date) || "9999"));
+  else rows.sort((a, b) => { const x = key(a), y = key(b); return y[0] - x[0] || y[1] - x[1]; });
+  return rows;
+}
+
+function namesList(sharks, n = 6) {
+  const shown = sharks.slice(0, n).map((s) => esc(s.name)).join(", ");
+  return shown + (sharks.length > n ? ` +${sharks.length - n} more` : "");
+}
+
+function sideCell(r, side) {
+  const b = r.polymarket[side];
+  return `<div class="side ${side}"><div class="lab">${esc(r.side_labels[side === "A" ? 0 : 1])}</div>
+    <div class="n">${b.count}</div><div class="names">${b.count ? namesList(b.sharks) : '<span class="sub">none</span>'}</div></div>`;
+}
+
+function detailHTML(r) {
+  const pm = r.polymarket;
+  const list = (side) => {
+    const b = pm[side];
+    if (!b.sharks.length) return `<p class="sub">No sharks on this side.</p>`;
+    return `<table class="slist"><thead><tr><th>Shark</th><th>Holds</th><th>Worth now</th><th>Entry</th><th>Score</th></tr></thead><tbody>` +
+      b.sharks.map((s) => `<tr><td><a href="https://polymarket.com/profile/${esc(s.trader_id)}" target="_blank" rel="noopener">${esc(s.name)}</a></td>
+        <td>${esc(s.outcomes.join(", "))}</td><td class="num">${money(s.cost)}</td><td class="num">${cents(s.avg_price)}</td>
+        <td class="num"><a href="#" data-shark="${esc(s.trader_id)}">${s.score ?? "—"}</a>${s.basis && s.basis !== r.category ? ` <span class="sub">(${esc(s.basis)})</span>` : ""}</td></tr>`).join("") +
+      `</tbody></table>`;
+  };
+  const hedged = pm.hedged.length ? `<p class="sub">Hedged (holds both sides, not counted): ${pm.hedged.map((h) => esc(h.name)).join(", ")}</p>` : "";
+  return `<tr class="detail"><td colspan="10">
+    <div class="sub" style="margin-bottom:8px">${esc(r.event_title)} · <a href="${esc(pm.url)}" target="_blank" rel="noopener">Open on Polymarket</a>${r.tags && r.tags.length ? " · " + esc(r.tags.join(", ")) : ""}</div>
+    <div class="dgrid"><div><h4 style="color:var(--a)">${esc(r.side_labels[0])}: ${pm.A.count} sharks</h4>${list("A")}</div>
+    <div><h4 style="color:var(--b)">${esc(r.side_labels[1])}: ${pm.B.count} sharks</h4>${list("B")}</div></div>${hedged}</td></tr>`;
+}
+
+function renderRows() {
+  if (!DATA) { $("#rows").innerHTML = ""; return; }
+  const rows = filtered();
+  $("#count").textContent = `${rows.length.toLocaleString()} markets match (of ${DATA.rows.length.toLocaleString()} with shark positions). Click a row for details.`;
+  $("#rows").innerHTML = rows.slice(0, SHOWN).map((r) => {
+    const pm = r.polymarket, k = r.kalshi;
+    const flags = (r.flags.split ? `<span class="flag">Split</span>` : "") + (r.flags.platforms_disagree ? `<span class="flag">Platforms disagree</span>` : "") +
+      (r.hedged_count ? `<span class="flag" style="background:var(--soft);color:var(--mute)">${r.hedged_count} hedged</span>` : "");
+    return `<tr class="row" data-id="${esc(r.id)}">
+      <td><div class="mtitle">${esc(r.title)}</div>${flags}</td>
+      <td data-l="Category"><span class="cat">${esc(r.category)}</span></td>
+      <td data-l="Event" class="num">${fmtDate(r.event_date)}</td>
+      <td class="sides">${sideCell(r, "A")}${sideCell(r, "B")}</td>
+      <td data-l="Total" class="num"><b>${r.total.A}</b> vs <b>${r.total.B}</b></td>
+      <td data-l="Agreement" class="num">${r.agreement_pct ?? "—"}%</td>
+      <td data-l="Shark $ now" class="num">${money(r.money.A)} / ${money(r.money.B)}</td>
+      <td data-l="Avg entry" class="num">${cents(pm.A.avg_price)} / ${cents(pm.B.avg_price)}</td>
+      <td data-l="Price now" class="num">${cents(pm.price_a)} / ${cents(pm.price_b)}</td>
+      <td data-l="Kalshi" class="num">${k ? cents(k.price_a) + " / " + cents(k.price_b) : "—"}</td>
+    </tr>` + (OPEN.has(r.id) ? detailHTML(r) : "");
+  }).join("");
+  $("#more").classList.toggle("hidden", rows.length <= SHOWN);
+}
+
+function breakdownHTML(sc) {
+  if (!sc) return "<p class='sub'>No score in this category.</p>";
+  const rows = Object.entries(sc.components).map(([k, c]) => {
+    let v = c.value;
+    if (v == null) v = "missing";
+    else if (k.includes("profit")) v = money(v);
+    else if (k === "win_rate" || k === "roi") v = (v * 100).toFixed(1) + "%";
+    else if (k === "consistency") v = {1: "both", 0.5: "one window", 0.25: "recent only", 0: "neither"}[v] ?? v;
+    return `<tr><td>${esc(c.label)}</td><td class="num">${esc(v)}</td><td><div class="bar"><i style="width:${(c.mark ?? 0) * 100}%"></i></div></td>
+      <td class="num">${c.points == null ? "—" : c.points}</td><td class="num sub">weight ${c.weight}</td></tr>`;
+  }).join("");
+  return `<table class="bd"><thead><tr><th>Signal</th><th>Value</th><th>Mark</th><th>Points</th><th></th></tr></thead><tbody>${rows}</tbody></table>
+    <p class="sub">Total: <b>${sc.score}</b> / 100 → ${sc.is_shark ? "<b>shark</b>" : "not a shark"} (threshold ${DATA.settings.shark_threshold}).
+    ${sc.missing.length ? "Missing: " + esc(sc.missing.join(", ")) + " (score uses the other signals). " : ""}
+    ${sc.notes.map(esc).join(" ")} ${Object.values(sc.sources || {}).map(esc).join(". ")}</p>`;
+}
+
+function renderSharks() {
+  if (!DATA) return;
+  const q = $("#s-q").value.trim().toLowerCase(), cat = $("#s-cat").value;
+  const list = Object.entries(DATA.traders).filter(([w, t]) => t.scores[cat] && (!q || t.name.toLowerCase().includes(q)))
+    .sort((a, b) => b[1].scores[cat].score - a[1].scores[cat].score);
+  $("#s-count").textContent = `${list.length} sharks have a ${cat} record. Click a name for the score breakdown.`;
+  $("#sharks").innerHTML = list.slice(0, 300).map(([w, t]) => {
+    const sc = t.scores[cat];
+    const top = Object.entries(t.scores).filter(([c]) => c !== "overall").sort((a, b) => b[1].score - a[1].score).slice(0, 3)
+      .map(([c, s]) => `${c} ${s.score}`).join(" · ");
+    return `<div class="card" id="sh-${esc(w)}"><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;cursor:pointer" data-toggle="${esc(w)}">
+      <div><b>${esc(t.name)}</b> <a href="${esc(t.profile_url)}" target="_blank" rel="noopener" class="sub">profile ↗</a><div class="sub">${esc(top)}</div></div>
+      <div style="font-size:22px;font-weight:700">${sc.score}${sc.is_shark ? " 🦈" : ""}</div></div>
+      <div class="hidden" data-bd="${esc(w)}">${breakdownHTML(sc)}</div></div>`;
+  }).join("");
+}
+
+/* ---------------- settings ---------------- */
+const SETTINGS_UI = [
+  ["shark_threshold", "Shark score threshold", "A trader counts as a shark when their score (0–100) is at least this.", 0, 100, 1],
+  ["min_settled_markets", "Minimum settled markets", "Traders with fewer finished markets than this can't be sharks, so one lucky bet doesn't count.", 0, 200, 1],
+  ["min_position_usd", "Minimum bet size ($)", "Bets worth less than this right now are ignored.", 0, 5000, 10],
+  ["decided_price_cutoff", "Hide nearly-decided markets (¢)", "Hide markets priced under this many cents (or over 100 minus this). 1 = hide under 1¢ / over 99¢.", 0, 20, 1, 100],
+  ["w:recent_profit", "Weight: 30-day profit", "How much recent profit counts toward the score.", 0, 50, 1],
+  ["w:alltime_profit", "Weight: all-time profit", "How much the long-term track record counts.", 0, 50, 1],
+  ["w:win_rate", "Weight: win rate", "How much the share of winning bets counts.", 0, 50, 1],
+  ["w:sample_size", "Weight: number of markets", "How much a long history (many settled markets) counts.", 0, 50, 1],
+  ["w:roi", "Weight: profit ÷ money traded", "Stops big-volume traders winning on size alone.", 0, 50, 1],
+  ["w:consistency", "Weight: consistency", "Being profitable both in the last 30 days and all-time.", 0, 50, 1],
+  ["recent_profit_full_marks_usd", "30-day profit for full marks ($)", "30-day profit at or above this gets full marks (scaled down for less).", 10000, 1000000, 10000],
+  ["alltime_profit_full_marks_usd", "All-time profit for full marks ($)", "All-time profit at or above this gets full marks.", 100000, 10000000, 50000],
+  ["roi_full_marks", "Profit ÷ traded for full marks (%)", "Return on money traded at or above this gets full marks.", 1, 50, 1, 100],
+  ["win_rate_full", "Win rate for full marks (%)", "Win rate at or above this gets full marks.", 50, 100, 1, 100],
+  ["win_rate_zero", "Win rate for zero marks (%)", "Win rate at or below this gets zero marks.", 0, 70, 1, 100],
+  ["off_category_penalty", "Off-category score (%)", "If a shark has no record in a market's category, their overall score is multiplied by this.", 0, 100, 5, 100],
+  ["split_flag_ratio", "Split flag (%)", "Flag a market as 'split' when the smaller side has at least this share of sharks.", 10, 50, 1, 100],
+  ["leaderboard_depth", "Traders per leaderboard", "How many top traders to pull from each leaderboard (more = slower refresh).", 100, 500, 50],
+];
+let SAVED = {};
+const getS = (s, key) => key.startsWith("w:") ? s.weights[key.slice(2)] : s[key];
+
+async function renderSettings() {
+  if (!DATA) return;
+  try { SAVED = await (await fetch("/api/settings", {cache: "no-store"})).json(); } catch { SAVED = {}; }
+  const cur = JSON.parse(JSON.stringify(DATA.settings));
+  for (const [k, v] of Object.entries(SAVED)) if (k === "weights") Object.assign(cur.weights, v); else cur[k] = v;
+  $("#settings").innerHTML = SETTINGS_UI.map(([key, label, exp, lo, hi, step, mult]) => {
+    const v = (getS(cur, key) ?? 0) * (mult || 1);
+    return `<div class="set"><div><b>${esc(label)}</b><div class="exp">${esc(exp)}</div></div>
+      <input type="range" min="${lo}" max="${hi}" step="${step}" value="${v}" data-key="${key}" data-mult="${mult || 1}">
+      <output>${Math.round(v * 100) / 100}</output></div>`;
+  }).join("");
+}
+document.addEventListener("input", (e) => { if (e.target.matches(".set input")) e.target.nextElementSibling.textContent = e.target.value; });
+$("#save").onclick = async () => {
+  const out = {weights: {}};
+  document.querySelectorAll(".set input").forEach((el) => {
+    const v = +el.value / +el.dataset.mult, k = el.dataset.key;
+    if (k.startsWith("w:")) out.weights[k.slice(2)] = v; else out[k] = v;
+  });
+  const r = await fetch("/api/settings", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(out)});
+  $("#saved").textContent = r.ok ? "Saved. Applies on the next refresh." : "Couldn't save. Try again.";
+};
+$("#reset").onclick = async () => {
+  if (!confirm("Reset every setting to its default?")) return;
+  await fetch("/api/settings", {method: "POST", headers: {"Content-Type": "application/json"}, body: "{}"});
+  $("#saved").textContent = "Reset. Defaults apply on the next refresh.";
+  setTimeout(() => location.reload(), 800);
+};
+
+/* ---------------- events ---------------- */
+document.querySelectorAll("nav button").forEach((b) => b.onclick = () => {
+  document.querySelectorAll("nav button").forEach((x) => x.classList.toggle("on", x === b));
+  ["markets", "sharks", "settings", "guide"].forEach((t) => $("#tab-" + t).classList.toggle("hidden", t !== b.dataset.tab));
+});
+["#f-q", "#f-cat", "#f-min", "#f-from", "#f-to", "#f-sort", "#f-split", "#f-nosplit"].forEach((s) => $(s).addEventListener("input", () => { SHOWN = 100; renderRows(); }));
+["#s-q", "#s-cat"].forEach((s) => $(s).addEventListener("input", renderSharks));
+$("#more").onclick = () => { SHOWN += 100; renderRows(); };
+$("#rows").addEventListener("click", (e) => {
+  const sh = e.target.closest("[data-shark]");
+  if (sh) { e.preventDefault(); openShark(sh.dataset.shark); return; }
+  if (e.target.closest("a")) return;
+  const tr = e.target.closest("tr.row");
+  if (!tr) return;
+  OPEN.has(tr.dataset.id) ? OPEN.delete(tr.dataset.id) : OPEN.add(tr.dataset.id);
+  renderRows();
+});
+$("#sharks").addEventListener("click", (e) => {
+  if (e.target.closest("a")) return;
+  const t = e.target.closest("[data-toggle]");
+  if (t) document.querySelector(`[data-bd="${CSS.escape(t.dataset.toggle)}"]`).classList.toggle("hidden");
+});
+function openShark(w) {
+  document.querySelector('nav button[data-tab="sharks"]').click();
+  $("#s-q").value = ""; renderSharks();
+  const el = document.getElementById("sh-" + w);
+  if (el) { el.querySelector("[data-bd]").classList.remove("hidden"); el.scrollIntoView({behavior: "smooth", block: "center"}); }
+}
+load();
+setInterval(() => { if (!document.hidden) load(); }, 5 * 60 * 1000);
+</script>
+</body>
+</html>

@@ -50,12 +50,18 @@ class Belief:
 
 
 def position_size(p: Position) -> float:
-    """Dollar size used for the minimum-size filter and the money columns."""
+    """
+    Dollar size used for the minimum-size filter and the money columns:
+    what the position is worth right now (money still at stake). Falls back
+    to money paid in when the current value isn't known.
+    """
+    if p.value_usd is not None and p.value_usd > 0:
+        return p.value_usd
     if p.cost_usd is not None and p.cost_usd > 0:
         return p.cost_usd
     if p.avg_price is not None and p.shares:
         return p.shares * p.avg_price
-    return p.value_usd or 0.0
+    return 0.0
 
 
 def to_beliefs(positions: list[Position], markets: dict[str, Market],

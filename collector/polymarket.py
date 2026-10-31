@@ -79,7 +79,7 @@ def fetch_leaderboards(client: PoliteClient, depth: int = 100,
     return traders
 
 
-def fetch_history(client: PoliteClient, wallet: str, sample: int = 200,
+def fetch_history(client: PoliteClient, wallet: str, sample: int = 100,
                   ttl: float = 6 * 3600) -> dict[str, Any]:
     """
     Win rate from the most recent `sample` settled positions, and the total
@@ -97,6 +97,8 @@ def fetch_history(client: PoliteClient, wallet: str, sample: int = 200,
     # Resolved but not yet claimed: still listed under /positions.
     unclaimed = client.get_json(f"{DATA}/positions", {
         "user": wallet, "redeemable": "true", "limit": 500}, ttl=ttl) or []
+    # Only count resolved positions that actually had money in them.
+    unclaimed = [u for u in unclaimed if float(u.get("initialValue") or 0) >= 1]
     oldest = min((c.get("timestamp") or 0 for c in closed), default=0)
     oldest_day = time.strftime("%Y-%m-%d", time.gmtime(oldest)) if oldest else "0000"
     # Only count unclaimed ones from the same time span as the closed sample.
@@ -112,16 +114,18 @@ def fetch_history(client: PoliteClient, wallet: str, sample: int = 200,
 
 
 def fetch_open_positions(client: PoliteClient, wallet: str, min_value: float = 1.0,
-                         max_pages: int = 3, ttl: float = 0) -> list[dict]:
-    """Open (not yet resolved) positions for one wallet."""
+                         max_pages: int = 2, ttl: float = 0) -> list[dict]:
+    """
+    Open (not yet resolved) positions for one wallet, biggest first.
+    Stops paging once positions drop below `min_value` dollars.
+    """
     out: list[dict] = []
     for page in range(max_pages):
         rows = client.get_json(f"{DATA}/positions", {
-            "user": wallet, "redeemable": "false", "sizeThreshold": min_value,
-            "limit": 500, "offset": page * 500}, ttl=ttl) or []
-        # Belt and braces: drop anything already priced at 0 or 1 (decided).
-        out.extend(r for r in rows if 0 < float(r.get("curPrice") or 0) < 1)
-        if len(rows) < 500:
+            "user": wallet, "redeemable": "false", "sortBy": "CURRENT",
+            "sortDirection": "DESC", "limit": 500, "offset": page * 500}, ttl=ttl) or []
+        out.extend(r for r in rows if float(r.get("currentValue") or 0) >= min_value)
+        if len(rows) < 500 or float(rows[-1].get("currentValue") or 0) < min_value:
             break
     return out
 
@@ -156,11 +160,62 @@ def stats_for(t: PMTrader, category: str, open_count: Optional[int] = None) -> O
     return s
 
 
-def fetch_event(client: PoliteClient, slug: str, ttl: float = 1800) -> Optional[dict]:
-    """Gamma event (with its markets and tags) by slug. Cached 30 min."""
-    try:
-        rows = client.get_json(f"{GAMMA}/events", {"slug": slug}, ttl=ttl)
-    except FetchError as e:
-        log.warning("Gamma event %s failed: %s", slug, e)
-        return None
-    return rows[0] if rows else None
+# Gamma tag slugs -> our category names. First match wins.
+TAG_CATEGORY = [
+    ("sports", {"sports", "nfl", "nba", "mlb", "nhl", "soccer", "ncaa", "cfb", "cbb", "tennis",
+                "golf", "ufc", "mma", "boxing", "f1", "esports", "cricket", "games"}),
+    ("economics", {"economy", "economics", "fed", "fed-rates", "inflation", "cpi", "jobs",
+                   "gdp", "recession", "interest-rates", "unemployment", "macro"}),
+    ("finance", {"finance", "stocks", "business", "ipo", "ipos", "commodities", "equities",
+                 "earnings", "companies", "oil"}),
+    ("crypto", {"crypto", "bitcoin", "ethereum", "solana", "crypto-prices"}),
+    ("politics", {"politics", "elections", "us-election", "geopolitics", "world", "trump",
+                  "congress", "senate", "global-elections", "world-elections"}),
+    ("tech", {"tech", "ai", "science", "technology"}),
+    ("weather", {"weather", "climate", "temperature", "hurricanes"}),
+    ("mentions", {"mentions", "mention-markets"}),
+    ("culture", {"culture", "pop-culture", "entertainment", "movies", "music", "celebrities",
+                 "awards", "tv"}),
+]
+
+
+def category_from_tags(tags: list[dict]) -> str:
+    slugs = {(t.get("slug") or "").lower() for t in tags or []}
+    for cat, keys in TAG_CATEGORY:
+        if slugs & keys:
+            return cat
+    return "other"
+
+
+def fetch_events(client: PoliteClient, slugs: list[str], batch: int = 20) -> dict[str, dict]:
+    """
+    Event details for many slugs, 20 per request. Returns slug -> compact
+    record: title, category, start time, tags, and each market's question.
+    """
+    out: dict[str, dict] = {}
+    slugs = sorted(set(s for s in slugs if s))
+    for i in range(0, len(slugs), batch):
+        chunk = slugs[i:i + batch]
+        try:
+            rows = client.get_json(f"{GAMMA}/events", {"slug": chunk})
+        except FetchError as e:
+            log.warning("Gamma batch failed: %s", e)
+            continue
+        for e in rows or []:
+            out[e["slug"]] = {
+                "title": e.get("title"),
+                "category": category_from_tags(e.get("tags")),
+                "tags": [t.get("label") for t in e.get("tags") or []][:8],
+                "start": e.get("startTime") or e.get("eventDate"),
+                "end": e.get("endDate"),
+                "series": e.get("seriesSlug"),
+                "markets": {m.get("conditionId"): {
+                    "question": m.get("question"),
+                    "group_title": m.get("groupItemTitle"),
+                    "sports_type": m.get("sportsMarketType"),
+                    "line": m.get("line"),
+                    "game_start": m.get("gameStartTime"),
+                    "slug": m.get("slug"),
+                } for m in e.get("markets") or []},
+            }
+    return out

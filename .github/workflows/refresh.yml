@@ -1,0 +1,38 @@
+# Refreshes the Shark Tracker data on a schedule.
+# GitHub may start scheduled runs a few minutes late; that's normal.
+name: refresh
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+    inputs:
+      trigger:
+        description: "Who started this run"
+        required: false
+        default: "manual"
+
+# Never run two refreshes at once; a new one waits for the old one.
+concurrency:
+  group: refresh
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install requests==2.32.3
+      - name: Refresh data
+        env:
+          SITE_URL: ${{ vars.SITE_URL }}
+          INGEST_KEY: ${{ secrets.INGEST_KEY }}
+          TRIGGER: ${{ github.event_name == 'schedule' && 'github-schedule' || inputs.trigger || github.event_name }}
+        run: python collector/run_remote.py
