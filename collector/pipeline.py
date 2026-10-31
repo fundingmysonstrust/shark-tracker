@@ -23,6 +23,7 @@ import logging
 import time
 from typing import Any, Optional
 
+from . import kalshi
 from . import polymarket as pm
 from .beliefs import Position, tally, to_beliefs
 from .netclient import FetchError, PoliteClient
@@ -159,6 +160,7 @@ def run(user_settings: Optional[dict], decisions: Optional[dict], state: Optiona
             outcome_side={labels[0]: "A", labels[1]: "B"}, price_a=price_a,
             event_title=ev.get("title") or "", end_date=(p.get("endDate") or "")[:10] or None,
             extra={"event_start": ev.get("start"), "tags": ev.get("tags", []),
+                   "group_title": (mk.get("group_title") or None) if len(ev.get("markets") or {}) > 1 else None,
                    "sports_type": mk.get("sports_type"), "event_slug": p.get("eventSlug")})
 
     # 6. Beliefs -> tallies -> rows.
@@ -182,6 +184,8 @@ def run(user_settings: Optional[dict], decisions: Optional[dict], state: Optiona
         blk = r["polymarket"]
         m = markets[props[blk["prop_id"]].market_ids[0]]
         r["event_title"] = m.event_title
+        r["market_id"] = m.market_id
+        r["group_title"] = m.extra.get("group_title")
         r["event_start"] = m.extra.get("event_start")
         r["end_date"] = m.end_date
         r["tags"] = m.extra.get("tags")
@@ -194,6 +198,22 @@ def run(user_settings: Optional[dict], decisions: Optional[dict], state: Optiona
                 s["fetched_at"] = pos_cache.get(w, {}).get("fetched_at")
         for h in blk["hedged"]:
             h["name"] = names.get(h["trader_id"], h["trader_id"][:10])
+
+    # 7. Kalshi prices for the same markets (never fails the refresh).
+    kstate = state.get("kalshi", {})
+    possible: list[dict] = []
+    try:
+        sweep = kalshi.sweep_catalog(client, kstate)
+        res = kalshi.attach_prices(client, rows, kstate, decisions or {}, S)
+        possible = res["possible"]
+        st = res["stats"]
+        status["kalshi"] = {"ok": True, "message": (
+            f"Prices shown for {st['matched']} matched markets; {st['possible']} possible matches to review. "
+            f"Kalshi doesn't publish other traders' positions, so shark counts are Polymarket only."
+            + ("" if sweep["done"] else f" Still building the list of Kalshi markets ({sweep['events']} so far)."))}
+    except Exception as e:  # noqa: BLE001 - Kalshi problems must not stop the refresh
+        log.warning("Kalshi step failed: %s", e)
+        status["kalshi"] = {"ok": False, "message": f"Kalshi prices unavailable this time ({type(e).__name__})."}
 
     trader_out = {}
     for w in sharks:
@@ -214,7 +234,8 @@ def run(user_settings: Optional[dict], decisions: Optional[dict], state: Optiona
         "requests": client.stats["requests"], "errors": client.stats["errors"],
         "seconds": took}
     data = {"generated_at": int(time.time()), "settings": S, "status": status,
-            "rows": rows, "traders": trader_out, "skipped": skipped}
-    new_state = {"history": hist_cache, "positions": pos_cache, "events": ev_cache}
+            "rows": rows, "traders": trader_out, "skipped": skipped,
+            "possible_matches": possible}
+    new_state = {"history": hist_cache, "positions": pos_cache, "events": ev_cache, "kalshi": kstate}
     log.info("refresh done in %ss: %d rows, %s", took, len(rows), status["polymarket"]["message"])
     return data, new_state

@@ -131,6 +131,11 @@ td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
       <label class="chk"><input id="f-split" type="checkbox"> Splits only</label>
       <label class="chk"><input id="f-nosplit" type="checkbox"> Hide splits</label>
     </div>
+    <details class="card" id="possible-box" style="margin-top:10px">
+      <summary><b>Possible matches with Kalshi</b> <span class="sub" id="possible-count"></span></summary>
+      <p class="sub">These look like the same market on both sites, but the computer isn't sure. Your answer is saved and used from the next refresh on.</p>
+      <div id="possible"></div>
+    </details>
     <div class="count" id="count"></div>
     <table class="main">
       <thead><tr>
@@ -188,6 +193,7 @@ td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
         <li><b>Price now</b>: today's Polymarket price for side A / side B.</li>
         <li><b>Kalshi price</b>: same market on Kalshi, when one is found. Kalshi doesn't publish other people's bets, so there are no Kalshi shark counts.</li>
         <li><b>Flags</b>: "Split" = sharks are divided (e.g. 6 vs 5).</li>
+        <li><b>Possible matches</b>: when a Kalshi market looks like the same question but the computer isn't sure, it's listed above the table. Press "Same market" or "Not the same"; your answer is remembered.</li>
       </ul>
       <h3>Who counts as a shark</h3>
       <p>Each trader gets a 0–100 reliability score per category from: 30-day profit, all-time profit,
@@ -232,7 +238,7 @@ async function load() {
     if (r.status === 401) { location.reload(); return; }
     const j = await r.json();
     DATA = j.data; META = j.meta || {};
-    renderHeader(); fillCats(); renderRows(); renderSharks(); if (!SETTINGS_DONE) { SETTINGS_DONE = true; renderSettings(); }
+    renderHeader(); fillCats(); renderPossible(); renderRows(); renderSharks(); if (!SETTINGS_DONE) { SETTINGS_DONE = true; renderSettings(); }
   } catch (e) {
     $("#banner").innerHTML = `<div class="banner bad">Couldn't load data (${esc(e.message)}). Reload the page to try again.</div>`;
   }
@@ -319,7 +325,9 @@ function detailHTML(r) {
       `</tbody></table>`;
   };
   const hedged = pm.hedged.length ? `<p class="sub">Hedged (holds both sides, not counted): ${pm.hedged.map((h) => esc(h.name)).join(", ")}</p>` : "";
-  return `<tr class="detail"><td colspan="10">
+  const kal = r.kalshi ? `<p class="sub">Kalshi: <a href="${esc(r.kalshi.url)}" target="_blank" rel="noopener">${esc(r.kalshi.title)}</a> · Kalshi price ${cents(r.kalshi.price_a)} / ${cents(r.kalshi.price_b)} · match ${Math.round(r.kalshi.confidence * 100)}% (${esc(r.kalshi.reasons.join(", "))})
+    <button class="btn" data-pair="${esc(r.kalshi.pair)}" data-dec="not_same" style="padding:2px 8px;font-size:12px">Not the same</button></p>` : "";
+  return `<tr class="detail"><td colspan="10">${kal}
     <div class="sub" style="margin-bottom:8px">${esc(r.event_title)} · <a href="${esc(pm.url)}" target="_blank" rel="noopener">Open on Polymarket</a>${r.tags && r.tags.length ? " · " + esc(r.tags.join(", ")) : ""}</div>
     <div class="dgrid"><div><h4 style="color:var(--a)">${esc(r.side_labels[0])}: ${pm.A.count} sharks</h4>${list("A")}</div>
     <div><h4 style="color:var(--b)">${esc(r.side_labels[1])}: ${pm.B.count} sharks</h4>${list("B")}</div></div>${hedged}</td></tr>`;
@@ -348,6 +356,28 @@ function renderRows() {
   }).join("");
   $("#more").classList.toggle("hidden", rows.length <= SHOWN);
 }
+
+function renderPossible() {
+  const list = (DATA && DATA.possible_matches) || [];
+  $("#possible-box").classList.toggle("hidden", !list.length);
+  $("#possible-count").textContent = list.length ? `(${list.length} to review)` : "";
+  $("#possible").innerHTML = list.map((p) => `<div style="border-top:1px solid var(--line);padding:10px 0">
+    <div><span class="cat">Polymarket</span> <a href="${esc(p.pm_url)}" target="_blank" rel="noopener">${esc(p.pm_title)}</a> · ${cents(p.pm_price)}</div>
+    <div><span class="cat">Kalshi</span> <a href="${esc(p.kalshi_url)}" target="_blank" rel="noopener">${esc(p.kalshi_title)}</a> · ${cents(p.kalshi_price)}</div>
+    <div class="sub">Match ${Math.round(p.confidence * 100)}%: ${esc(p.reasons.join(", "))}</div>
+    <div style="margin-top:6px;display:flex;gap:8px;align-items:center"><button class="btn" data-pair="${esc(p.pair)}" data-dec="same">Same market</button>
+    <button class="btn" data-pair="${esc(p.pair)}" data-dec="not_same">Not the same</button><span class="sub"></span></div></div>`).join("");
+}
+document.addEventListener("click", async (e) => {
+  const b = e.target.closest("button[data-pair]");
+  if (!b) return;
+  e.stopPropagation();
+  const r = await fetch("/api/decisions", {method: "POST", headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({pair: b.dataset.pair, decision: b.dataset.dec})});
+  const note = r.ok ? (b.dataset.dec === "same" ? "Saved: same market. Applies next refresh." : "Saved: not the same. Applies next refresh.") : "Couldn't save, try again.";
+  const span = b.parentElement.querySelector("span.sub");
+  if (span) span.textContent = note; else b.replaceWith(Object.assign(document.createElement("span"), {className: "sub", textContent: note}));
+}, true);
 
 function breakdownHTML(sc) {
   if (!sc) return "<p class='sub'>No score in this category.</p>";

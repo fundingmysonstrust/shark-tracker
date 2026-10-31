@@ -172,3 +172,30 @@ def test_non_sharks_not_counted():
     props, m2p = build_props([m])
     beliefs, _ = to_beliefs([Position("polymarket", "dave", "m1", "USC", 1000, 0.5, 500, 600)], {"m1": m}, m2p, S)
     assert tally(beliefs, {(m2p["m1"], "dave"): False}) == {}
+
+
+# ---------------- Kalshi matching rules ----------------
+from collector.kalshi import _named_outcome  # noqa: E402
+
+
+@pytest.mark.parametrize("text,expected", [
+    ("Pete Ricketts", "pete ricketts"), ("Before Dec 31, 2026", None), ("Above 3.2%", None), ("", None)])
+def test_named_outcome(text, expected):
+    assert _named_outcome(text) == expected
+
+
+def test_party_question_never_auto_matches_candidate_market():
+    from collector import kalshi
+    from collector.netclient import PoliteClient
+    row = {"id": "r1", "title": "Will the Republicans win the Nebraska Senate race in 2026?", "category": "politics",
+           "event_title": "Nebraska Senate Election Winner", "end_date": "2026-11-04", "group_title": None,
+           "market_id": "c1", "side_labels": ["Yes", "No"], "polymarket": {"url": "", "price_a": 0.74}}
+    ks = {"catalog": {"SENATENE-26": ["Nebraska Senate winner?", "In 2026", "Elections", "SENATENE"]},
+          "event_cache": {"SENATENE-26": {"_at": 9e18, "title": "Nebraska Senate winner?", "sub_title": "", "series": "SENATENE",
+                          "markets": [{"ticker": "SENATENE-26-R", "title": "Will Pete Ricketts win the Nebraska Senate race in 2026?",
+                                       "yes": "Pete Ricketts", "close": "2026-11-04", "price": 0.76, "status": "active"},
+                                      {"ticker": "SENATENE-26-O", "title": "Will Dan Osborn win the Nebraska Senate race in 2026?",
+                                       "yes": "Dan Osborn", "close": "2026-11-04", "price": 0.26, "status": "active"}]}}}
+    res = kalshi.attach_prices(PoliteClient(), [row], ks, {}, S)
+    assert "kalshi" not in row
+    assert all(p["confidence"] < S["auto_match_confidence"] for p in res["possible"])
