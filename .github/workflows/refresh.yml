@@ -22,19 +22,26 @@ permissions:
 
 jobs:
   refresh:
-    # Skip quietly until the website address has been set up.
-    if: vars.SITE_URL != ''
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      # Skip quietly until the INGEST_KEY secret has been added.
+      - id: check
+        env:
+          KEY: ${{ secrets.INGEST_KEY }}
+        run: echo "ready=$([ -n "$KEY" ] && echo yes || echo no)" >> "$GITHUB_OUTPUT"
+      - if: steps.check.outputs.ready == 'yes'
+        uses: actions/checkout@v4
+      - if: steps.check.outputs.ready == 'yes'
+        uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install requests==2.32.3
+      - if: steps.check.outputs.ready == 'yes'
+        run: pip install requests==2.32.3
       - name: Refresh data
+        if: steps.check.outputs.ready == 'yes'
         env:
-          SITE_URL: ${{ vars.SITE_URL }}
+          SITE_URL: https://shark-tracker.fundingmysonstrust.workers.dev
           INGEST_KEY: ${{ secrets.INGEST_KEY }}
           TRIGGER: ${{ github.event_name == 'schedule' && 'github-schedule' || inputs.trigger || github.event_name }}
         run: python collector/run_remote.py
