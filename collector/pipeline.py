@@ -25,7 +25,7 @@ from typing import Any, Optional
 
 from . import polymarket as pm
 from .beliefs import Position, tally, to_beliefs
-from .http import FetchError, PoliteClient
+from .netclient import FetchError, PoliteClient
 from .matcher import Market, Spec, build_props
 from .rows import build_rows
 from .scoring import score_for_market, score_trader

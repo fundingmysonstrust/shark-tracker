@@ -25,7 +25,7 @@ import time
 from dataclasses import dataclass, field
 from typing import Any, Optional
 
-from .http import FetchError, PoliteClient
+from .netclient import FetchError, PoliteClient
 from .scoring import TraderStats
 
 log = logging.getLogger("shark.polymarket")

@@ -1,7 +1,7 @@
 """Stage a check: real Polymarket data -> scores -> open positions grouped by market."""
 import json, logging, sys, collections
 sys.path.insert(0, "/home/user/shark-tracker")
-from collector.http import PoliteClient
+from collector.netclient import PoliteClient
 from collector import polymarket as pm
 from collector.settings import load_settings
 from collector.scoring import score_trader

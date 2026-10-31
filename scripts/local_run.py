@@ -2,7 +2,7 @@
 import json, logging, sys, os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from collector.pipeline import run
-from collector.http import PoliteClient
+from collector.netclient import PoliteClient
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(levelname)s %(message)s")
 logging.getLogger("shark.http").setLevel(logging.WARNING)
 out = os.path.join(os.path.dirname(__file__), "..", "out")

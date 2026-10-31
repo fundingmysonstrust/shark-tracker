@@ -44,4 +44,4 @@ jobs:
           SITE_URL: https://shark-tracker.fundingmysonstrust.workers.dev
           INGEST_KEY: ${{ secrets.INGEST_KEY }}
           TRIGGER: ${{ github.event_name == 'schedule' && 'github-schedule' || inputs.trigger || github.event_name }}
-        run: python collector/run_remote.py
+        run: python -m collector.run_remote
