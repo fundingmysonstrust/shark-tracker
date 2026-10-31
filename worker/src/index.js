@@ -7,8 +7,10 @@
  *   - Saves Settings and "same market / not the same" decisions in KV.
  *   - Two endpoints for the collector (GitHub Actions), protected by a
  *     separate secret key (INGEST_KEY):
- *       GET  /api/collector/input   -> settings, decisions, saved state
- *       POST /api/collector/output  -> new data + state, or a failure note
+ *       GET  /api/collector/input   -> settings, decisions
+ *       GET/PUT /api/collector/state -> saved state (gzip JSON)
+ *       PUT  /api/collector/data    -> new website data (gzip JSON)
+ *       POST /api/collector/report  -> ok / failure note for the run log
  *   - If a refresh fails, the last good data stays and the failure is noted.
  *
  * Secrets (set with `wrangler secret put`): SITE_PASSWORD, INGEST_KEY.
@@ -93,22 +95,36 @@ async function handleLogin(req, env) {
   });
 }
 
-/** Collector posts results here. Keeps last good data if the run failed. */
-async function handleOutput(req, env) {
+/**
+ * Large blobs (data, state) arrive gzip-compressed from the collector and
+ * are stored and served as-is, never unpacked here: the free plan only
+ * allows a few milliseconds of computing per request.
+ */
+async function putBlob(req, env, key) {
+  const buf = await req.arrayBuffer();
+  if (buf.byteLength < 2) return json({ error: "empty" }, 400);
+  await env.STORE.put(key, buf);
+  return json({ saved: true, bytes: buf.byteLength });
+}
+
+function blobResponse(buf) {
+  if (!buf) return new Response("null", { headers: { "Content-Type": "application/json", "Cache-Control": "no-store" } });
+  return new Response(buf, {
+    encodeBody: "manual",
+    headers: { "Content-Type": "application/json; charset=utf-8", "Content-Encoding": "gzip", "Cache-Control": "no-store" },
+  });
+}
+
+/** Small end-of-run report: ok/failed + message, kept in a run log. */
+async function handleReport(req, env) {
   const body = await req.json();
   const now = Math.floor(Date.now() / 1000);
   const meta = await readJSON(env, "meta", { runs: [] });
   const entry = { at: now, ok: !!body.ok, seconds: body.seconds ?? null,
                   trigger: body.trigger || null, message: String(body.message || "").slice(0, 300) };
   meta.runs = [entry, ...(meta.runs || [])].slice(0, RUN_LOG_MAX);
-  if (body.ok && body.data) {
-    meta.last_success = now;
-    await env.STORE.put("data", JSON.stringify(body.data));
-  } else {
-    meta.last_failure = now;
-    meta.last_error = entry.message;
-  }
-  if (body.state) await env.STORE.put("state", JSON.stringify(body.state));
+  if (body.ok) meta.last_success = now;
+  else { meta.last_failure = now; meta.last_error = entry.message; }
   await env.STORE.put("meta", JSON.stringify(meta));
   return json({ saved: true });
 }
@@ -122,11 +138,14 @@ export default {
     if (p.startsWith("/api/collector/")) {
       if (!isCollector(req, env)) return json({ error: "unauthorized" }, 401);
       if (p === "/api/collector/input" && req.method === "GET") {
-        const [settings, decisions, state] = await Promise.all([
-          readJSON(env, "settings", {}), readJSON(env, "decisions", {}), readJSON(env, "state", {})]);
-        return json({ settings, decisions, state });
+        const [settings, decisions] = await Promise.all([readJSON(env, "settings", {}), readJSON(env, "decisions", {})]);
+        return json({ settings, decisions });
       }
-      if (p === "/api/collector/output" && req.method === "POST") return handleOutput(req, env);
+      if (p === "/api/collector/state" && req.method === "GET")
+        return blobResponse(await env.STORE.get("state_gz", "arrayBuffer"));
+      if (p === "/api/collector/state" && req.method === "PUT") return putBlob(req, env, "state_gz");
+      if (p === "/api/collector/data" && req.method === "PUT") return putBlob(req, env, "data_gz");
+      if (p === "/api/collector/report" && req.method === "POST") return handleReport(req, env);
       return json({ error: "not found" }, 404);
     }
 
@@ -142,13 +161,8 @@ export default {
     }
 
     // --- signed-in user -----------------------------------------------------
-    if (p === "/api/data") {
-      const [data, meta] = await Promise.all([env.STORE.get("data"), readJSON(env, "meta", {})]);
-      // Stitch meta in without re-parsing the (large) data blob.
-      const body = `{"meta":${JSON.stringify(meta)},"data":${data || "null"}}`;
-      return new Response(body, { headers: { "Content-Type": "application/json; charset=utf-8",
-                                             "Cache-Control": "no-store" } });
-    }
+    if (p === "/api/data") return blobResponse(await env.STORE.get("data_gz", "arrayBuffer"));
+    if (p === "/api/meta") return json(await readJSON(env, "meta", {}));
     if (p === "/api/settings") {
       if (req.method === "POST") {
         const s = await req.json();

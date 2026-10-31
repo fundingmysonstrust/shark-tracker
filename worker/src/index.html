@@ -234,10 +234,9 @@ let DATA = null, META = null, SHOWN = 100, OPEN = new Set(), SETTINGS_DONE = fal
 
 async function load() {
   try {
-    const r = await fetch("/api/data", {cache: "no-store"});
-    if (r.status === 401) { location.reload(); return; }
-    const j = await r.json();
-    DATA = j.data; META = j.meta || {};
+    const [r, rm] = await Promise.all([fetch("/api/data", {cache: "no-store"}), fetch("/api/meta", {cache: "no-store"})]);
+    if (r.status === 401 || rm.status === 401) { location.reload(); return; }
+    DATA = await r.json(); META = (await rm.json()) || {};
     renderHeader(); fillCats(); renderPossible(); renderRows(); renderSharks(); if (!SETTINGS_DONE) { SETTINGS_DONE = true; renderSettings(); }
   } catch (e) {
     $("#banner").innerHTML = `<div class="banner bad">Couldn't load data (${esc(e.message)}). Reload the page to try again.</div>`;

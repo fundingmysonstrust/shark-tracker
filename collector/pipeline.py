@@ -47,21 +47,57 @@ def _score_all(t: pm.PMTrader, S: dict, open_count: Optional[int]) -> dict[str, 
     return out
 
 
-def _compact_position(p: dict) -> dict:
-    keys = ("conditionId", "outcome", "outcomeIndex", "oppositeOutcome", "size", "avgPrice",
-            "initialValue", "currentValue", "curPrice", "title", "slug", "eventSlug", "endDate")
-    return {k: p.get(k) for k in keys}
+# Positions are saved between refreshes as short lists (to keep the saved
+# state small); market titles are saved once per market in state["titles"].
+POS_FIELDS = ("conditionId", "outcome", "outcomeIndex", "oppositeOutcome", "size", "avgPrice",
+              "initialValue", "currentValue", "curPrice", "eventSlug", "endDate")
+
+
+def _r(x: Any, nd: int = 2) -> Any:
+    return round(x, nd) if isinstance(x, float) else x
+
+
+def _compact_position(p: dict) -> list:
+    out = [p.get(k) for k in POS_FIELDS]
+    out[4], out[6], out[7] = _r(out[4]), _r(out[6]), _r(out[7])
+    out[5], out[8] = _r(out[5], 4), _r(out[8], 4)
+    out[10] = (out[10] or "")[:10]
+    return out
+
+
+def _expand_position(row: Any) -> dict:
+    if isinstance(row, dict):  # older saved format
+        return row
+    return dict(zip(POS_FIELDS, row))
+
+
+def _slim_rows(rows: list[dict], min_money_single: float = 500, cap: int = 3000) -> list[dict]:
+    """Keep the website download small: drop one-shark rows with little money behind them."""
+    keep = [r for r in rows if r["total"]["A"] + r["total"]["B"] >= 2 or r["hedged_count"]
+            or max(r["money"]["A"], r["money"]["B"]) >= min_money_single]
+    for r in keep:
+        blk = r["polymarket"]
+        for side in ("A", "B"):
+            for sh in blk[side]["sharks"]:
+                sh.pop("shares", None)
+                sh.pop("value", None)
+            blk[side].pop("shares", None)
+        r.pop("kalshi_title", None)
+        r.pop("match", None)
+        r["tags"] = (r.get("tags") or [])[:5]
+    return keep[:cap]
 
 
 def run(user_settings: Optional[dict], decisions: Optional[dict], state: Optional[dict],
         client: Optional[PoliteClient] = None, history_seconds: float = 75,
-        positions_seconds: float = 170) -> tuple[dict, dict]:
+        positions_seconds: float = 240) -> tuple[dict, dict]:
     t_start = time.time()
     S = load_settings(user_settings)
     state = state or {}
     hist_cache: dict = state.get("history", {})
     pos_cache: dict = state.get("positions", {})
     ev_cache: dict = state.get("events", {})
+    titles: dict = state.get("titles", {})
     client = client or PoliteClient()
     status: dict[str, Any] = {"polymarket": {"ok": False, "message": ""},
                               "kalshi": {"ok": None, "message": "Kalshi does not publish other "
@@ -105,13 +141,16 @@ def run(user_settings: Optional[dict], decisions: Optional[dict], state: Optiona
     # 4. Open positions for sharks.
     deadline = time.time() + positions_seconds
     fresh = 0
-    for w in sharks:
+    # Oldest (or never) fetched first, so every shark gets its turn.
+    for w in sorted(sharks, key=lambda w: pos_cache.get(w, {}).get("fetched_at", 0)):
         if time.time() > deadline:
             break
         try:
             rows = pm.fetch_open_positions(client, w, min_value=max(1.0, S["min_position_usd"]))
             pos_cache[w] = {"fetched_at": int(time.time()),
                             "rows": [_compact_position(p) for p in rows]}
+            for p in rows:
+                titles[p["conditionId"]] = p.get("title")
             fresh += 1
         except FetchError as e:
             log.warning("positions %s: %s", w, e)
@@ -124,7 +163,7 @@ def run(user_settings: Optional[dict], decisions: Optional[dict], state: Optiona
     positions: list[Position] = []
     raw_by_market: dict[str, dict] = {}
     for w, entry in pos_cache.items():
-        for p in entry["rows"]:
+        for p in map(_expand_position, entry["rows"]):
             px = float(p.get("curPrice") or 0)
             if px < cut or px > 1 - cut:
                 continue
@@ -135,14 +174,21 @@ def run(user_settings: Optional[dict], decisions: Optional[dict], state: Optiona
                 shares=float(p.get("size") or 0), avg_price=p.get("avgPrice"),
                 cost_usd=p.get("initialValue"), value_usd=p.get("currentValue")))
 
-    need = [p["eventSlug"] for p in raw_by_market.values()
+    # Event details: refetch when unknown, older than a day, or missing this market.
+    need = [p["eventSlug"] for cid, p in raw_by_market.items()
             if p.get("eventSlug") and (p["eventSlug"] not in ev_cache or
-                                       time.time() - ev_cache[p["eventSlug"]].get("_at", 0) > DAY)]
+                                       time.time() - ev_cache[p["eventSlug"]].get("_at", 0) > DAY or
+                                       cid not in ev_cache[p["eventSlug"]].get("markets", {}))]
     for slug, ev in pm.fetch_events(client, need).items():
         ev["_at"] = int(time.time())
+        ev["n_markets"] = len(ev.get("markets") or {})
         ev_cache[slug] = ev
     used_slugs = {p.get("eventSlug") for p in raw_by_market.values()}
     ev_cache = {s: v for s, v in ev_cache.items() if s in used_slugs}
+    # Only keep the markets we actually use, so the saved state stays small.
+    for ev in ev_cache.values():
+        ev["markets"] = {c: m for c, m in (ev.get("markets") or {}).items() if c in raw_by_market}
+    titles = {c: t for c, t in titles.items() if c in raw_by_market}
 
     for cid, p in raw_by_market.items():
         ev = ev_cache.get(p.get("eventSlug")) or {}
@@ -153,14 +199,14 @@ def run(user_settings: Optional[dict], decisions: Optional[dict], state: Optiona
         price_a = px if idx == 0 else round(1 - px, 4)
         mk = (ev.get("markets") or {}).get(cid, {})
         markets[cid] = Market(
-            platform="polymarket", market_id=cid, title=p.get("title") or mk.get("question") or cid,
+            platform="polymarket", market_id=cid, title=titles.get(cid) or p.get("title") or mk.get("question") or cid,
             category=ev.get("category", "other"),
             url=f"https://polymarket.com/event/{p.get('eventSlug') or ''}",
             spec=Spec(kind="event"), side_labels=labels,
             outcome_side={labels[0]: "A", labels[1]: "B"}, price_a=price_a,
             event_title=ev.get("title") or "", end_date=(p.get("endDate") or "")[:10] or None,
             extra={"event_start": ev.get("start"), "tags": ev.get("tags", []),
-                   "group_title": (mk.get("group_title") or None) if len(ev.get("markets") or {}) > 1 else None,
+                   "group_title": (mk.get("group_title") or None) if ev.get("n_markets", len(ev.get("markets") or {})) > 1 else None,
                    "sports_type": mk.get("sports_type"), "event_slug": p.get("eventSlug")})
 
     # 6. Beliefs -> tallies -> rows.
@@ -195,7 +241,6 @@ def run(user_settings: Optional[dict], decisions: Optional[dict], state: Optiona
                 w = s["trader_id"]
                 s["name"] = names.get(w, w[:10])
                 s.update(basis.get((blk["prop_id"], w), {}))
-                s["fetched_at"] = pos_cache.get(w, {}).get("fetched_at")
         for h in blk["hedged"]:
             h["name"] = names.get(h["trader_id"], h["trader_id"][:10])
 
@@ -214,6 +259,9 @@ def run(user_settings: Optional[dict], decisions: Optional[dict], state: Optiona
     except Exception as e:  # noqa: BLE001 - Kalshi problems must not stop the refresh
         log.warning("Kalshi step failed: %s", e)
         status["kalshi"] = {"ok": False, "message": f"Kalshi prices unavailable this time ({type(e).__name__})."}
+
+    all_rows = len(rows)
+    rows = _slim_rows(rows)
 
     trader_out = {}
     for w in sharks:
@@ -234,8 +282,9 @@ def run(user_settings: Optional[dict], decisions: Optional[dict], state: Optiona
         "requests": client.stats["requests"], "errors": client.stats["errors"],
         "seconds": took}
     data = {"generated_at": int(time.time()), "settings": S, "status": status,
-            "rows": rows, "traders": trader_out, "skipped": skipped,
+            "rows": rows, "rows_total": all_rows, "traders": trader_out, "skipped": skipped,
             "possible_matches": possible}
-    new_state = {"history": hist_cache, "positions": pos_cache, "events": ev_cache, "kalshi": kstate}
+    new_state = {"history": hist_cache, "positions": pos_cache, "events": ev_cache, "titles": titles,
+                 "kalshi": kstate}
     log.info("refresh done in %ss: %d rows, %s", took, len(rows), status["polymarket"]["message"])
     return data, new_state
