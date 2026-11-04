@@ -63,8 +63,8 @@ DEFAULT_SETTINGS: dict[str, Any] = {
     # of the sharks (0.4 = e.g. 6 vs 4 or closer).
     "split_flag_ratio": 0.4,
 
-    # How many traders to pull per category per time window (min 100).
-    "leaderboard_depth": 100,
+    # How many traders to pull per category per time window (max 1000).
+    "leaderboard_depth": 1000,
 
     # Hide markets that are basically decided: current price below this
     # (or above 1 minus this). 0.01 = hide anything under 1 cent / over 99 cents.
@@ -86,7 +86,7 @@ LIMITS: dict[str, tuple[float, float]] = {
     "auto_match_confidence": (0.5, 1.0),
     "possible_match_confidence": (0.1, 0.99),
     "split_flag_ratio": (0.1, 0.5),
-    "leaderboard_depth": (100, 500),
+    "leaderboard_depth": (100, 1000),
     "decided_price_cutoff": (0.0, 0.2),
 }
 

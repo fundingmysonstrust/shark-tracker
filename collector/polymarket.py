@@ -1,12 +1,15 @@
 """
 Polymarket data (public, no login, no key).
 
-Endpoints used (checked live 2026-10-31):
-  data-api  /v1/leaderboard   ?category=&timePeriod=&orderBy=PNL&limit<=50&offset=
-  data-api  /positions        ?user=<wallet>&redeemable=false&limit<=500&offset=
-  data-api  /closed-positions ?user=<wallet>&sortBy=TIMESTAMP&sortDirection=DESC&limit<=50&offset=
-  data-api  /traded           ?user=<wallet>   -> number of markets ever traded
-  gamma-api /events           ?slug=<eventSlug> -> titles, tags, teams, start times
+Endpoints used (Data API v2, checked live 2026-11-04; v1 was retired 2026-11-02):
+  /v2/leaderboard  ?category=&time_period=MONTH|ALL&sort_by=PNL&limit<=1000&cursor=
+  /v2/positions    ?user=<wallet>&status=OPEN|CLOSED|REDEEMABLE|REDEEMABLE_LOST
+                   &sort_by=&sort_direction=&limit=&cursor=
+  /v2/user-stats   ?user=<wallet>   -> data.trades = number of markets ever traded
+  gamma-api /events ?slug=<eventSlug> -> titles, tags, teams, start times
+
+v2 rows are converted to the field names the rest of the code uses
+(conditionId, curPrice, ...), see `_v1_shape`.
 
 How stats are built for one trader:
   - 30-day and all-time profit + money traded come straight from the
@@ -30,7 +33,7 @@ from .scoring import TraderStats
 
 log = logging.getLogger("shark.polymarket")
 
-DATA = "https://data-api.polymarket.com"
+DATA = "https://data-api.polymarket.com/v2"
 GAMMA = "https://gamma-api.polymarket.com"
 
 # Polymarket's leaderboard categories (OVERALL = every category together).
@@ -54,27 +57,55 @@ class PMTrader:
         return PROFILE_URL.format(wallet=self.wallet)
 
 
-def fetch_leaderboards(client: PoliteClient, depth: int = 100,
+def _pages(client: PoliteClient, path: str, params: dict, max_rows: int, ttl: float = 0) -> list[dict]:
+    """Follow v2 cursors until `max_rows` rows or the end."""
+    out: list[dict] = []
+    cursor = None
+    while len(out) < max_rows:
+        q = dict(params)
+        if cursor:
+            q["cursor"] = cursor
+        d = client.get_json(f"{DATA}{path}", q, ttl=ttl) or {}
+        rows = d.get("data") or []
+        out.extend(rows)
+        cursor = (d.get("pagination") or {}).get("next_cursor")
+        if not rows or not cursor:
+            break
+    return out[:max_rows]
+
+
+def _v1_shape(r: dict) -> dict:
+    """Map a v2 position row onto the field names used elsewhere."""
+    return {
+        "conditionId": r.get("condition_id"), "outcome": r.get("outcome"),
+        "outcomeIndex": r.get("outcome_index"), "oppositeOutcome": r.get("opposite_outcome"),
+        "size": r.get("current_size"), "avgPrice": r.get("avg_price"),
+        "initialValue": r.get("total_cost_usdc"), "currentValue": r.get("current_value"),
+        "curPrice": r.get("current_price"), "title": r.get("title"),
+        "eventSlug": r.get("event_slug"), "endDate": r.get("end_date"),
+        "redeemable": r.get("redeemable"), "realizedPnl": r.get("realized_pnl"),
+        "timestamp": r.get("last_event_at"),
+    }
+
+
+def fetch_leaderboards(client: PoliteClient, depth: int = 1000,
                        categories: Optional[list[str]] = None) -> dict[str, PMTrader]:
     """Top `depth` traders by profit for every category and both time windows."""
     traders: dict[str, PMTrader] = {}
     cats = ["OVERALL"] + (categories or CATEGORIES)
     for cat in cats:
         for period, window in PERIODS.items():
-            for offset in range(0, depth, 50):
-                rows = client.get_json(f"{DATA}/v1/leaderboard", {
-                    "category": cat, "timePeriod": period, "orderBy": "PNL",
-                    "limit": 50, "offset": offset}, ttl=600)
-                if not rows:
-                    break
-                for r in rows:
-                    w = r["proxyWallet"].lower()
-                    t = traders.setdefault(w, PMTrader(wallet=w, name=r.get("userName") or w[:10]))
-                    t.boards[(cat.lower(), window)] = {
-                        "pnl": float(r.get("pnl") or 0), "vol": float(r.get("vol") or 0),
-                        "rank": int(r.get("rank") or 0)}
-                if len(rows) < 50:
-                    break
+            rows = _pages(client, "/leaderboard", {"category": cat, "time_period": period,
+                                                   "sort_by": "PNL", "limit": min(depth, 1000)},
+                          max_rows=depth, ttl=600)
+            for r in rows:
+                w = (r.get("user_id") or r.get("proxy_wallet") or "").lower()
+                if not w:
+                    continue
+                t = traders.setdefault(w, PMTrader(wallet=w, name=r.get("user_name") or w[:10]))
+                t.boards[(cat.lower(), window)] = {
+                    "pnl": float(r.get("pnl") or 0), "vol": float(r.get("volume") or 0),
+                    "rank": int(r.get("rank") or 0)}
     log.info("Polymarket leaderboards: %d unique traders", len(traders))
     return traders
 
@@ -85,47 +116,49 @@ def fetch_history(client: PoliteClient, wallet: str, sample: int = 100,
     Win rate from the most recent `sample` settled positions, and the total
     number of settled markets. Cached for `ttl` seconds (history changes slowly).
     """
-    closed: list[dict] = []
-    for offset in range(0, sample, 50):
-        page = client.get_json(f"{DATA}/closed-positions", {
-            "user": wallet, "sortBy": "TIMESTAMP", "sortDirection": "DESC",
-            "limit": 50, "offset": offset}, ttl=ttl)
-        closed.extend(page or [])
-        if not page or len(page) < 50:
-            break
-
-    # Resolved but not yet claimed: still listed under /positions.
-    unclaimed = client.get_json(f"{DATA}/positions", {
-        "user": wallet, "redeemable": "true", "limit": 500}, ttl=ttl) or []
-    # Only count resolved positions that actually had money in them.
-    unclaimed = [u for u in unclaimed if float(u.get("initialValue") or 0) >= 1]
+    closed = [_v1_shape(r) for r in _pages(client, "/positions", {
+        "user": wallet, "status": "CLOSED", "sort_by": "TIMESTAMP", "sort_direction": "DESC",
+        "limit": sample}, max_rows=sample, ttl=ttl)]
     oldest = min((c.get("timestamp") or 0 for c in closed), default=0)
-    oldest_day = time.strftime("%Y-%m-%d", time.gmtime(oldest)) if oldest else "0000"
-    # Only count unclaimed ones from the same time span as the closed sample.
-    unclaimed = [u for u in unclaimed if (u.get("endDate") or "9999") >= oldest_day]
+
+    # Resolved but not yet claimed (winners and losers), from the same time span.
+    unclaimed = []
+    for status in ("REDEEMABLE", "REDEEMABLE_LOST"):
+        rows = _pages(client, "/positions", {"user": wallet, "status": status, "sort_by": "TIMESTAMP",
+                                             "sort_direction": "DESC", "limit": 200},
+                      max_rows=200, ttl=ttl)
+        unclaimed += [_v1_shape(r) for r in rows]
+    unclaimed = [u for u in unclaimed if float(u.get("initialValue") or 0) >= 1
+                 and (u.get("timestamp") or 0) >= oldest]
 
     wins = sum(1 for c in closed if (c.get("realizedPnl") or 0) > 0)
     wins += sum(1 for u in unclaimed if (u.get("curPrice") or 0) >= 0.99)
     n = len(closed) + len(unclaimed)
 
-    traded = client.get_json(f"{DATA}/traded", {"user": wallet}, ttl=ttl) or {}
+    st = (client.get_json(f"{DATA}/user-stats", {"user": wallet}, ttl=ttl) or {}).get("data") or {}
     return {"wins_sample": wins, "settled_sample": n,
-            "traded": traded.get("traded"), "fetched_at": int(time.time())}
+            "traded": st.get("trades"), "fetched_at": int(time.time())}
 
 
 def fetch_open_positions(client: PoliteClient, wallet: str, min_value: float = 1.0,
-                         max_pages: int = 2, ttl: float = 0) -> list[dict]:
+                         max_pages: int = 3, ttl: float = 0) -> list[dict]:
     """
     Open (not yet resolved) positions for one wallet, biggest first.
     Stops paging once positions drop below `min_value` dollars.
     """
     out: list[dict] = []
-    for page in range(max_pages):
-        rows = client.get_json(f"{DATA}/positions", {
-            "user": wallet, "redeemable": "false", "sortBy": "CURRENT",
-            "sortDirection": "DESC", "limit": 500, "offset": page * 500}, ttl=ttl) or []
-        out.extend(r for r in rows if float(r.get("currentValue") or 0) >= min_value)
-        if len(rows) < 500 or float(rows[-1].get("currentValue") or 0) < min_value:
+    cursor = None
+    for _ in range(max_pages):
+        q = {"user": wallet, "status": "OPEN", "sort_by": "CURRENT_VALUE",
+             "sort_direction": "DESC", "limit": 500}
+        if cursor:
+            q["cursor"] = cursor
+        d = client.get_json(f"{DATA}/positions", q, ttl=ttl) or {}
+        rows = [_v1_shape(r) for r in d.get("data") or []]
+        # OPEN also includes decided-but-unclaimed winners: skip those.
+        out.extend(r for r in rows if not r["redeemable"] and float(r.get("currentValue") or 0) >= min_value)
+        cursor = (d.get("pagination") or {}).get("next_cursor")
+        if not cursor or not rows or float(rows[-1].get("currentValue") or 0) < min_value:
             break
     return out
 

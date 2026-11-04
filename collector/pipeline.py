@@ -89,7 +89,7 @@ def _slim_rows(rows: list[dict], min_money_single: float = 500, cap: int = 3000)
 
 
 def run(user_settings: Optional[dict], decisions: Optional[dict], state: Optional[dict],
-        client: Optional[PoliteClient] = None, history_seconds: float = 75,
+        client: Optional[PoliteClient] = None, history_seconds: float = 120,
         positions_seconds: float = 240) -> tuple[dict, dict]:
     t_start = time.time()
     S = load_settings(user_settings)
@@ -113,8 +113,9 @@ def run(user_settings: Optional[dict], decisions: Optional[dict], state: Optiona
                      for t in traders.values()), key=lambda x: -x[0])
     cutoff = S["shark_threshold"] - 10
     queue = [t for sc, t in prelim if sc >= cutoff and
-             (not t.history or time.time() - t.history.get("fetched_at", 0) > DAY)]
-    queue.sort(key=lambda t: t.history is not None)  # never-fetched first
+             (not t.history or time.time() - t.history.get("fetched_at", 0) > 3 * DAY)]
+    # Never-checked traders first (best preliminary score first), then the stalest.
+    queue.sort(key=lambda t: (t.history is not None, (t.history or {}).get("fetched_at", 0)))
     deadline = time.time() + history_seconds
     hist_done = 0
     for t in queue:

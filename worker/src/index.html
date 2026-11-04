@@ -431,7 +431,7 @@ const SETTINGS_UI = [
   ["win_rate_zero", "Win rate for zero marks (%)", "Win rate at or below this gets zero marks.", 0, 70, 1, 100],
   ["off_category_penalty", "Off-category score (%)", "If a shark has no record in a market's category, their overall score is multiplied by this.", 0, 100, 5, 100],
   ["split_flag_ratio", "Split flag (%)", "Flag a market as 'split' when the smaller side has at least this share of sharks.", 10, 50, 1, 100],
-  ["leaderboard_depth", "Traders per leaderboard", "How many top traders to pull from each leaderboard (more = slower refresh).", 100, 500, 50],
+  ["leaderboard_depth", "Traders per leaderboard", "How many top traders to pull from each leaderboard. More traders = more sharks, but each shark's bets are re-checked less often.", 100, 1000, 50],
 ];
 let SAVED = {};
 const getS = (s, key) => key.startsWith("w:") ? s.weights[key.slice(2)] : s[key];
