@@ -384,6 +384,59 @@ nav button:active{transform:scale(0.97)}
   .ftable .sub{display:none}
   .bigstats{justify-content:flex-start}
 }
+
+/* ===== dive slide: scroll-driven shark + totals ===== */
+.dive{position:relative;height:340vh;background:#030a13}
+.dive .stage{position:sticky;top:0;height:100svh;overflow:hidden}
+.dive .deep{position:absolute;inset:0;background:
+  radial-gradient(80% 60% at 50% -10%,rgba(56,150,200,.28),transparent 70%),
+  linear-gradient(180deg,#06243a 0%,#041726 40%,#020a12 100%)}
+.dive .godrays{position:absolute;inset:-10% -20% 30% -20%;opacity:.55;
+  background:repeating-linear-gradient(97deg,transparent 0 70px,rgba(140,210,240,.05) 70px 110px,transparent 110px 190px);
+  mask-image:linear-gradient(180deg,#000,transparent);-webkit-mask-image:linear-gradient(180deg,#000,transparent);
+  animation:sway 14s ease-in-out infinite alternate}
+@keyframes sway{from{transform:skewX(-3deg) translateX(-20px)}to{transform:skewX(3deg) translateX(20px)}}
+.snow i{position:absolute;width:calc(3px * var(--z));height:calc(3px * var(--z));border-radius:50%;background:rgba(200,230,245,.5);
+  opacity:calc(.25 + var(--z) * .3);filter:blur(calc((1.2 - var(--z)) * 1.2px));animation:snow var(--t) linear infinite}
+@keyframes snow{from{transform:translate3d(0,-30px,0)}to{transform:translate3d(20px,60px,0)}}
+.gw-wrap{position:absolute;left:50%;top:50%;width:min(1100px,150vw);margin-left:calc(min(1100px,150vw) / -2);margin-top:-210px;
+  will-change:transform,opacity;transform-origin:50% 50%}
+.gw{width:100%;height:auto;display:block;overflow:visible;filter:drop-shadow(0 40px 50px rgba(0,0,0,.55))}
+.gw-tail{transform-origin:166px 158px;animation:tailbeat 1.5s ease-in-out infinite alternate}
+.gw-pec{transform-origin:584px 190px;animation:pec 3s ease-in-out infinite alternate}
+@keyframes tailbeat{from{transform:rotate(-9deg) scaleX(.96)}to{transform:rotate(9deg) scaleX(1.02)}}
+@keyframes pec{from{transform:rotate(-3deg)}to{transform:rotate(4deg)}}
+.dive .fog{position:absolute;inset:0;pointer-events:none;background:radial-gradient(70% 60% at 50% 55%,transparent 30%,rgba(2,9,16,.85) 100%)}
+.panels{position:absolute;inset:0;display:grid;place-items:end start;padding:0 max(24px,6vw) 13vh;pointer-events:none}
+.panel{grid-area:1 / 1;max-width:620px;opacity:0;transform:translateY(24px);filter:blur(4px);
+  transition:opacity 500ms var(--ease-out),transform 500ms var(--ease-out),filter 500ms var(--ease-out)}
+.panel.on{opacity:1;transform:none;filter:blur(0)}
+.panel .pk{margin:0 0 6px;font-size:14px;font-weight:600;color:var(--accent);letter-spacing:.01em}
+.panel .pv{font-size:clamp(52px,10vw,128px);font-weight:800;letter-spacing:-.045em;line-height:.95;
+  background:linear-gradient(180deg,#ffffff 0%,#b9d3e3 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.panel .ps{margin:14px 0 0;font-size:clamp(15px,1.5vw,18px);color:#a9bccc;line-height:1.5;max-width:52ch}
+.panel .ps b{color:#eaf3f9;font-weight:650}
+.dots{position:absolute;right:max(20px,3vw);top:50%;display:grid;gap:10px;transform:translateY(-50%)}
+.dots i{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.22);transition:transform 300ms var(--ease-out),background-color 300ms ease}
+.dots i.on{background:var(--accent);transform:scale(1.5)}
+.scrollhint{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.35);transition:opacity 300ms ease}
+.dive.moved .scrollhint{opacity:0}
+.dive.paused *{animation-play-state:paused!important}
+@media (max-width: 560px){
+  .dive{height:300vh}
+  .gw-wrap{margin-top:-240px}
+  .panels{padding:0 20px calc(14vh + 64px)}
+  .dots{right:12px}
+}
+@media (prefers-reduced-motion: reduce){
+  .dive{height:auto}
+  .dive .stage{position:relative;height:auto;padding:90px 0 60px}
+  .gw-wrap{position:relative;left:auto;top:auto;margin:0 auto;width:min(900px,120vw);transform:none!important;opacity:1!important}
+  .gw-tail,.gw-pec,.godrays,.snow i{animation:none}
+  .panels{position:relative;display:grid;gap:40px;place-items:start;padding:20px 24px 0}
+  .panel{grid-area:auto;opacity:1;transform:none;filter:none}
+  .dots,.scrollhint{display:none}
+}
 .tabbar{display:none}
 @media (max-width: 900px){
   .tabbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:40;justify-content:space-around;
@@ -485,6 +538,94 @@ nav button:active{transform:scale(0.97)}
       </div>
       <div class="fbody" id="fbody"></div>
     </div>
+  </div>
+</section>
+<section class="dive" id="dive" aria-label="Trader totals">
+  <div class="stage">
+    <div class="deep"></div>
+    <div class="godrays"></div>
+    <div class="snow" aria-hidden="true"><i style="left:6%;top:12%;--z:0.6;--t:22s"></i><i style="left:14%;top:64%;--z:1;--t:30s"></i><i style="left:22%;top:30%;--z:0.5;--t:26s"></i><i style="left:31%;top:82%;--z:0.8;--t:34s"></i><i style="left:38%;top:18%;--z:1.2;--t:28s"></i><i style="left:46%;top:52%;--z:0.6;--t:24s"></i><i style="left:55%;top:74%;--z:0.9;--t:32s"></i><i style="left:62%;top:8%;--z:0.7;--t:27s"></i><i style="left:69%;top:40%;--z:1.1;--t:36s"></i><i style="left:77%;top:66%;--z:0.5;--t:23s"></i><i style="left:84%;top:22%;--z:0.9;--t:31s"></i><i style="left:91%;top:58%;--z:0.6;--t:29s"></i><i style="left:10%;top:92%;--z:0.8;--t:25s"></i><i style="left:50%;top:90%;--z:0.5;--t:33s"></i><i style="left:88%;top:86%;--z:1;--t:30s"></i><i style="left:26%;top:46%;--z:0.4;--t:21s"></i></div>
+    <div class="gw-wrap" id="gw"><svg class="gw" viewBox="0 0 820 330" aria-hidden="true">
+  <defs>
+    <linearGradient id="gwSkin" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2a3d50"/><stop offset=".38" stop-color="#4c6276"/><stop offset=".56" stop-color="#7a8d9d"/>
+      <stop offset=".62" stop-color="#cfd9e1"/><stop offset="1" stop-color="#eef3f6"/>
+    </linearGradient>
+    <linearGradient id="gwFin" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2e4256"/><stop offset="1" stop-color="#4a6074"/>
+    </linearGradient>
+    <linearGradient id="gwPec" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3b5064"/><stop offset=".7" stop-color="#53697d"/><stop offset="1" stop-color="#1f2f3e"/>
+    </linearGradient>
+    <radialGradient id="gwSheen" cx=".62" cy=".28" r=".55">
+      <stop offset="0" stop-color="#cfe6f5" stop-opacity=".35"/><stop offset="1" stop-color="#cfe6f5" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="gwShade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset=".55" stop-color="#05121f" stop-opacity="0"/><stop offset="1" stop-color="#05121f" stop-opacity=".35"/>
+    </linearGradient>
+    <clipPath id="gwBodyClip"><path id="gwBodyPath" d="M 786 166 C 774 140, 746 116, 702 102 C 650 86, 586 80, 518 82 C 438 84, 358 98, 290 118 C 238 132, 198 145, 168 155 L 156 160 C 196 175, 252 194, 322 207 C 402 221, 484 225, 564 219 C 634 213, 694 200, 740 187 C 766 180, 781 172, 786 166 Z"/></clipPath>
+  </defs>
+  <!-- far-side pectoral, behind the body -->
+  <path d="M 592 202 C 602 228, 614 250, 630 268 C 612 246, 602 224, 602 204 Z" fill="#1d2d3c" opacity=".7"/>
+  <g class="gw-tail">
+    <path d="M 176 154 C 162 128, 140 92, 112 50 C 106 40, 94 38, 92 50 C 92 96, 104 130, 126 158 C 106 178, 92 206, 86 236 C 84 246, 94 250, 100 242 C 122 214, 148 186, 176 168 Z" fill="url(#gwFin)"/>
+    <path d="M 108 50 C 116 96, 132 128, 160 156" stroke="#5d7488" stroke-width="1.2" fill="none" opacity=".45"/>
+  </g>
+  <!-- second dorsal + anal fin -->
+  <path d="M 258 128 C 262 118, 266 108, 268 100 C 273 110, 280 118, 290 122 Z" fill="url(#gwFin)"/>
+  <path d="M 262 196 C 258 206, 254 214, 250 220 C 260 214, 270 206, 278 200 Z" fill="#8a9cab"/>
+  <!-- body -->
+  <use href="#gwBodyPath" fill="url(#gwSkin)"/>
+  <g clip-path="url(#gwBodyClip)">
+    <!-- jagged counter-shading line -->
+    <path d="M 160 166 C 230 172, 300 174, 360 170 C 400 172, 430 165, 470 169 C 510 162, 540 171, 580 164 C 620 170, 660 161, 700 165 C 730 158, 760 162, 790 159 L 790 240 L 160 240 Z" fill="#e7edf2" opacity=".92"/>
+    <rect x="150" y="76" width="660" height="160" fill="url(#gwSheen)"/>
+    <rect x="150" y="76" width="660" height="160" fill="url(#gwShade)"/>
+    <!-- lateral line -->
+    <path d="M 690 140 C 600 138, 480 140, 360 148 C 300 152, 240 156, 180 158" stroke="#9fb2c2" stroke-width="1" fill="none" opacity=".35"/>
+    <!-- caudal keel -->
+    <path d="M 210 150 C 190 154, 176 156, 166 158" stroke="#26384a" stroke-width="3" fill="none" opacity=".6"/>
+  </g>
+  <!-- gills -->
+  <g stroke="#26384a" stroke-width="1.6" fill="none" opacity=".55" stroke-linecap="round">
+    <path d="M 652 120 C 659 140, 661 162, 654 184"/><path d="M 640 118 C 647 140, 649 162, 642 186"/>
+    <path d="M 628 117 C 635 140, 637 163, 630 188"/><path d="M 616 116 C 623 140, 625 163, 618 189"/>
+    <path d="M 604 116 C 611 140, 613 164, 606 190"/>
+  </g>
+  <!-- first dorsal fin -->
+  <path class="gw-dorsal" d="M 450 90 C 466 64, 484 34, 498 4 C 502 -1, 508 1, 507 8 C 505 42, 515 72, 550 88 Z" fill="url(#gwFin)"/>
+  <path d="M 498 4 C 498 40, 508 70, 538 86" stroke="#5c7387" stroke-width="1.1" fill="none" opacity=".45"/>
+  <!-- near-side pectoral fin -->
+  <path class="gw-pec" d="M 558 198 C 546 228, 526 264, 498 302 C 494 308, 500 312, 507 306 C 546 274, 584 240, 608 206 Z" fill="url(#gwPec)"/>
+  <!-- pelvic fin -->
+  <path d="M 340 208 C 334 220, 326 230, 318 238 C 334 232, 350 222, 362 212 Z" fill="#6f8395"/>
+  <!-- snout, mouth, nostril, eye -->
+  <path d="M 784 166 C 772 170, 758 176, 738 180 C 716 184, 694 184, 676 182" stroke="#2a3a48" stroke-width="1.6" fill="none" opacity=".7" stroke-linecap="round"/>
+  <path d="M 744 180 l 3 4 l 3 -4 l 3 4 l 3 -4 l 3 3" stroke="#f4f7f9" stroke-width="1" fill="none" opacity=".55"/>
+  <path d="M 768 150 C 772 152, 774 154, 774 156" stroke="#1d2a36" stroke-width="1.6" fill="none" opacity=".6" stroke-linecap="round"/>
+  <ellipse cx="736" cy="144" rx="5.2" ry="4.6" fill="#05090d"/>
+  <circle cx="737.6" cy="142.6" r="1.2" fill="#dbe9f3" opacity=".9"/>
+</svg></div>
+    <div class="fog"></div>
+    <div class="panels">
+      <div class="panel" data-step="0">
+        <p class="pk">Money traded</p>
+        <div class="pv" id="dv-vol">—</div>
+        <p class="ps" id="dv-vol-s"></p>
+      </div>
+      <div class="panel" data-step="1">
+        <p class="pk">Profit made</p>
+        <div class="pv" id="dv-pnl">—</div>
+        <p class="ps" id="dv-pnl-s"></p>
+      </div>
+      <div class="panel" data-step="2">
+        <p class="pk">Sharks</p>
+        <div class="pv" id="dv-shk">—</div>
+        <p class="ps" id="dv-shk-s"></p>
+      </div>
+    </div>
+    <div class="dots" aria-hidden="true"><i></i><i></i><i></i></div>
+    <div class="scrollhint" aria-hidden="true">Scroll</div>
   </div>
 </section>
 <div class="wrap">
@@ -659,7 +800,7 @@ async function load() {
     const [r, rm] = await Promise.all([fetch("/api/data", {cache: "no-store"}), fetch("/api/meta", {cache: "no-store"})]);
     if (r.status === 401 || rm.status === 401) { location.reload(); return; }
     DATA = await r.json(); META = (await rm.json()) || {};
-    renderHeader(); fillCats(); renderOverview(); renderPossible(); renderRows(); renderSharks(); if (!SETTINGS_DONE) { SETTINGS_DONE = true; renderSettings(); }
+    renderHeader(); fillCats(); renderOverview(); renderDive(); renderPossible(); renderRows(); renderSharks(); if (!SETTINGS_DONE) { SETTINGS_DONE = true; renderSettings(); }
   } catch (e) {
     $("#banner").innerHTML = `<div class="banner bad">Couldn't load data (${esc(e.message)}). Reload the page to try again.</div>`;
   }
@@ -670,7 +811,7 @@ const avColor = (id) => { let h = 0; for (const c of String(id)) h = (h * 31 + c
 const initials = (n) => { const t = String(n || "?").replace(/^0x/i, "").replace(/[^A-Za-z0-9]/g, " ").trim().split(/\s+/);
   return ((t[0] || "?")[0] + (t[1] ? t[1][0] : (t[0] || "")[1] || "")).toUpperCase(); };
 const shortName = (n) => /^0x[0-9a-f]{20,}/i.test(n) ? n.slice(0, 6) + "…" + n.slice(-4).replace(/-.*/, "") : n;
-const bigMoney = (x) => x >= 1e6 ? "$" + (x / 1e6).toFixed(1) + "M" : x >= 1e3 ? "$" + Math.round(x / 1e3) + "K" : money(x);
+const bigMoney = (x) => x >= 1e9 ? "$" + (x / 1e9).toFixed(x >= 1e10 ? 1 : 2) + "B" : x >= 1e6 ? "$" + (x / 1e6).toFixed(1) + "M" : x >= 1e3 ? "$" + Math.round(x / 1e3) + "K" : money(x);
 
 function renderHeader() {
   if (!DATA) { $("#updated").textContent = "No data yet: the first refresh is still running."; return; }
@@ -993,6 +1134,74 @@ $("#tab-overview").addEventListener("click", (e) => {
   if (o) openMarket(o.dataset.open);
 });
 
+
+/* ---------------- dive slide ---------------- */
+function diveTotals() {
+  const T = DATA.totals;
+  if (T) return {lb: T.leaderboard, sh: T.sharks, nLb: T.leaderboard_traders, nSh: T.sharks_count, exact: true};
+  // older data: add up the sharks' own leaderboard numbers
+  const sum = (win) => Object.values(DATA.traders).reduce((a, t) => {
+    const b = (t.boards || {})["overall|" + win]; if (b) { a.pnl += b.pnl; a.volume += b.vol; a.traders++; } return a; }, {pnl: 0, volume: 0, traders: 0});
+  const pm = (DATA.status || {}).polymarket || {};
+  return {lb: null, sh: {all: sum("all"), "30d": sum("30d")}, nLb: pm.traders, nSh: pm.sharks, exact: false};
+}
+function renderDive() {
+  if (!DATA) return;
+  const d = diveTotals(), lb = d.lb, sh = d.sh;
+  const vol = lb ? lb.all.volume : sh.all.volume, pnl = lb ? lb.all.pnl : sh.all.pnl;
+  const set = (id, v, pre) => { const el = $(id); el.dataset.count = v; el.dataset.pre = pre; if (!el.dataset.done) el.textContent = pre ? bigMoney(0) : "0"; };
+  set("#dv-vol", vol, "$"); set("#dv-pnl", pnl, "$"); set("#dv-shk", d.nSh || 0, "");
+  $("#dv-vol-s").innerHTML = lb
+    ? `traded all-time by Polymarket's <b>top ${lb.all.traders.toLocaleString()} traders</b>. <b>${bigMoney(lb["30d"].volume)}</b> of it in the last 30 days.`
+    : `traded all-time by the <b>${sh.all.traders.toLocaleString()} sharks</b> with an overall record. <b>${bigMoney(sh["30d"].volume)}</b> in the last 30 days.`;
+  $("#dv-pnl-s").innerHTML = lb
+    ? `in profit for those traders. The <b>sharks</b> alone account for <b>${bigMoney(sh.all.pnl)}</b>, on <b>${bigMoney(sh.all.volume)}</b> traded.`
+    : `in profit for the sharks, <b>${bigMoney(sh["30d"].pnl)}</b> of it in the last 30 days.`;
+  $("#dv-shk-s").innerHTML = `of <b>${(d.nLb || 0).toLocaleString()}</b> leaderboard traders pass the shark test: score 60+ and 20+ finished markets. That's <b>${d.nLb ? (100 * d.nSh / d.nLb).toFixed(1) : "—"}%</b>.`;
+  diveFrame();
+}
+let DIVE_STEP = -1, DIVE_RAF = 0;
+function diveFrame() {
+  DIVE_RAF = 0;
+  const sec = $("#dive"); if (!sec || sec.classList.contains("hidden")) return;
+  const r = sec.getBoundingClientRect(), span = sec.offsetHeight - innerHeight;
+  const p = Math.min(1, Math.max(0, -r.top / Math.max(1, span)));
+  sec.classList.toggle("moved", p > 0.02);
+  if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    // the shark glides in from the deep, crosses, and turns slightly toward the viewer
+    const e = (t) => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    const k = e(p);
+    const x = -62 + 112 * k;                 // vw
+    const y = Math.sin(p * Math.PI * 2) * 3;  // vh, gentle rise and fall
+    const sc = 0.42 + 0.78 * k;
+    const rot = -6 + 10 * k;
+    const op = Math.min(1, 0.25 + p * 3);
+    const g = $("#gw");
+    g.style.transform = `translate3d(${x}vw, ${y}vh, 0) scale(${sc}) rotate(${rot}deg)`;
+    g.style.opacity = op;
+  }
+  const step = p < 0.34 ? 0 : p < 0.67 ? 1 : 2;
+  if (step !== DIVE_STEP) {
+    DIVE_STEP = step;
+    sec.querySelectorAll(".panel").forEach((el, i) => el.classList.toggle("on", i === step));
+    sec.querySelectorAll(".dots i").forEach((el, i) => el.classList.toggle("on", i === step));
+    const v = sec.querySelector(`.panel[data-step="${step}"] .pv`);
+    if (v && v.dataset.count && v.dataset.done !== v.dataset.count) countOne(v);
+  }
+}
+function countOne(el) {
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const to = +el.dataset.count, from = +(el.dataset.done || 0), pre = el.dataset.pre, t0 = performance.now(), dur = reduce ? 0 : 1400;
+  el.dataset.done = to;
+  const fmt = (v) => pre ? bigMoney(v) : Math.round(v).toLocaleString();
+  const step = (t) => { const k = dur ? Math.min(1, (t - t0) / dur) : 1, q = 1 - Math.pow(1 - k, 4);
+    el.textContent = fmt(from + (to - from) * q); if (k < 1) requestAnimationFrame(step); };
+  requestAnimationFrame(step);
+}
+addEventListener("scroll", () => { if (!DIVE_RAF) DIVE_RAF = requestAnimationFrame(diveFrame); }, {passive: true});
+addEventListener("resize", () => { if (!DIVE_RAF) DIVE_RAF = requestAnimationFrame(diveFrame); });
+new IntersectionObserver(([e]) => $("#dive").classList.toggle("paused", !e.isIntersecting)).observe($("#dive"));
+
 /* ---------------- settings ---------------- */
 const SETTINGS_UI = [
   ["shark_threshold", "Shark score threshold", "A trader counts as a shark when their score (0–100) is at least this.", 0, 100, 1],
@@ -1051,6 +1260,7 @@ document.querySelectorAll("nav button").forEach((b) => b.onclick = () => {
   document.querySelectorAll("nav button").forEach((x) => x.classList.toggle("on", x.dataset.tab === b.dataset.tab));
   ["overview", "markets", "sharks", "settings", "guide"].forEach((t) => $("#tab-" + t).classList.toggle("hidden", t !== b.dataset.tab));
   $("#hero").classList.toggle("hidden", b.dataset.tab !== "overview");
+  $("#dive").classList.toggle("hidden", b.dataset.tab !== "overview");
   document.querySelector(".wrap").style.paddingTop = b.dataset.tab === "overview" ? "" : "calc(var(--navh) + 8px)";
   window.scrollTo({top: 0});
 });

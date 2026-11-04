@@ -282,7 +282,18 @@ def run(user_settings: Optional[dict], decisions: Optional[dict], state: Optiona
         "history_loaded_this_run": hist_done, "history_pending": pending_history,
         "requests": client.stats["requests"], "errors": client.stats["errors"],
         "seconds": took}
-    data = {"generated_at": int(time.time()), "settings": S, "status": status,
+    # Totals for the overview slide: everyone on the overall leaderboards, and the sharks.
+    def _totals(ws):
+        out = {}
+        for window in ("all", "30d"):
+            rows_ = [traders[w].boards[("overall", window)] for w in ws if ("overall", window) in traders[w].boards]
+            out[window] = {"traders": len(rows_), "pnl": round(sum(r["pnl"] for r in rows_)),
+                           "volume": round(sum(r["vol"] for r in rows_))}
+        return out
+    totals = {"leaderboard": _totals(list(traders)), "sharks": _totals(sharks),
+              "leaderboard_traders": len(traders), "sharks_count": len(sharks)}
+
+    data = {"generated_at": int(time.time()), "settings": S, "status": status, "totals": totals,
             "rows": rows, "rows_total": all_rows, "traders": trader_out, "skipped": skipped,
             "possible_matches": possible}
     new_state = {"history": hist_cache, "positions": pos_cache, "events": ev_cache, "titles": titles,
