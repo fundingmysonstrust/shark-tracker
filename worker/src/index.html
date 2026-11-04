@@ -401,15 +401,15 @@ nav button:active{transform:scale(0.97)}
 .snow i{position:absolute;width:calc(3px * var(--z));height:calc(3px * var(--z));border-radius:50%;background:rgba(200,230,245,.5);
   opacity:calc(.25 + var(--z) * .3);filter:blur(calc((1.2 - var(--z)) * 1.2px));animation:snow var(--t) linear infinite}
 @keyframes snow{from{transform:translate3d(0,-30px,0)}to{transform:translate3d(20px,60px,0)}}
-.gw-wrap{--gw:min(1180px,160vw);position:absolute;left:50%;top:50%;width:var(--gw);margin-left:calc(var(--gw) / -2);margin-top:calc(var(--gw) * -0.17);
+.gw-wrap{--gw:min(1180px,160vw);position:absolute;left:50%;top:50%;width:var(--gw);margin-left:calc(var(--gw) / -2);margin-top:calc(var(--gw) * -0.24);
   will-change:transform,opacity;transform-origin:50% 55%}
 .gw-shake{width:100%}
 .gw{width:100%;height:auto;display:block;overflow:visible;filter:drop-shadow(0 30px 40px rgba(0,0,0,.5))}
-.gw .sh-tail{transform-origin:128px 192px;transform:rotate(var(--tail,0deg))}
-.gw .sh-tail-i{transform-origin:128px 192px;animation:tailidle 1.2s ease-in-out infinite alternate}
-.gw .sh-pec{transform-origin:730px 214px;transform:rotate(var(--pec,0deg))}
-.gw .sh-pec-i{transform-origin:730px 214px;animation:pecidle 3s ease-in-out infinite alternate}
-.gw .sh-dorsal{transform-origin:560px 100px;animation:dorsal 2.6s ease-in-out infinite alternate}
+.gw .sh-tail{transform-origin:208px 258px;transform:rotate(var(--tail,0deg))}
+.gw .sh-tail-i{transform-origin:208px 258px;animation:tailidle 1.2s ease-in-out infinite alternate}
+.gw .sh-pec{transform-origin:590px 308px;transform:rotate(var(--pec,0deg))}
+.gw .sh-pec-i{transform-origin:590px 308px;animation:pecidle 3s ease-in-out infinite alternate}
+.gw .sh-dorsal{transform-origin:520px 180px;animation:dorsal 2.6s ease-in-out infinite alternate}
 @keyframes tailidle{from{transform:rotate(-4deg)}to{transform:rotate(4deg)}}
 @keyframes pecidle{from{transform:rotate(-2deg)}to{transform:rotate(3deg)}}
 @keyframes dorsal{from{transform:rotate(-.8deg)}to{transform:rotate(.8deg)}}
@@ -687,62 +687,57 @@ a.lk{color:var(--accent);text-decoration:none} a.lk:hover{text-decoration:underl
     <div class="deep"></div>
     <div class="godrays"></div>
     <div class="snow" aria-hidden="true"><i style="left:6%;top:12%;--z:0.6;--t:22s"></i><i style="left:14%;top:64%;--z:1;--t:30s"></i><i style="left:22%;top:30%;--z:0.5;--t:26s"></i><i style="left:31%;top:82%;--z:0.8;--t:34s"></i><i style="left:38%;top:18%;--z:1.2;--t:28s"></i><i style="left:46%;top:52%;--z:0.6;--t:24s"></i><i style="left:55%;top:74%;--z:0.9;--t:32s"></i><i style="left:62%;top:8%;--z:0.7;--t:27s"></i><i style="left:69%;top:40%;--z:1.1;--t:36s"></i><i style="left:77%;top:66%;--z:0.5;--t:23s"></i><i style="left:84%;top:22%;--z:0.9;--t:31s"></i><i style="left:91%;top:58%;--z:0.6;--t:29s"></i><i style="left:10%;top:92%;--z:0.8;--t:25s"></i><i style="left:50%;top:90%;--z:0.5;--t:33s"></i><i style="left:88%;top:86%;--z:1;--t:30s"></i><i style="left:26%;top:46%;--z:0.4;--t:21s"></i></div>
-    <div class="gw-wrap" id="gw"><div class="gw-shake"><svg class="gw" viewBox="0 0 1000 340" aria-hidden="true">
+    <div class="gw-wrap" id="gw"><div class="gw-shake"><svg class="gw" viewBox="0 0 918 444" aria-hidden="true">
   <defs>
     <linearGradient id="rkSkin" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#1c2833"/><stop offset=".4" stop-color="#364653"/><stop offset=".7" stop-color="#5f707d"/><stop offset="1" stop-color="#8d9ba5"/>
+      <stop offset="0" stop-color="#26394a"/><stop offset=".45" stop-color="#4b657a"/><stop offset=".8" stop-color="#7d97aa"/><stop offset="1" stop-color="#9fb4c2"/>
     </linearGradient>
-    <linearGradient id="rkBelly" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#dde4e8"/><stop offset="1" stop-color="#f3f5f6"/></linearGradient>
-    <linearGradient id="rkFin" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1b2630"/><stop offset=".7" stop-color="#32414d"/><stop offset="1" stop-color="#4d5d69"/></linearGradient>
-    <linearGradient id="rkFinB" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2a3843"/><stop offset="1" stop-color="#18222b"/></linearGradient>
-    <radialGradient id="rkSheen" cx=".6" cy=".1" r=".6"><stop offset="0" stop-color="#b9cbd8" stop-opacity=".26"/><stop offset="1" stop-color="#b9cbd8" stop-opacity="0"/></radialGradient>
-    <linearGradient id="rkShade" x1="0" y1="0" x2="0" y2="1"><stop offset=".55" stop-color="#05090d" stop-opacity="0"/><stop offset="1" stop-color="#05090d" stop-opacity=".3"/></linearGradient>
-    <clipPath id="rkBodyClip"><path id="rkBodyP" d="M 988 172 C 962 150, 920 128, 860 114 C 790 100, 700 94, 620 94 C 520 94, 420 106, 330 126 C 250 144, 180 166, 128 186 L 124 192 L 128 198 C 182 208, 252 216, 332 226 C 422 236, 522 242, 612 242 C 702 242, 792 234, 852 222 C 912 210, 958 194, 988 172 Z"/></clipPath>
+    <linearGradient id="rkBelly" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e3eaee"/><stop offset="1" stop-color="#f7f9fa"/></linearGradient>
+    <linearGradient id="rkFin" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1e2d3a"/><stop offset=".7" stop-color="#3a5064"/><stop offset="1" stop-color="#586f81"/></linearGradient>
+    <linearGradient id="rkFinB" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4a6074"/><stop offset="1" stop-color="#1d2b37"/></linearGradient>
+    <radialGradient id="rkSheen" cx=".6" cy=".1" r=".6"><stop offset="0" stop-color="#c4d6e4" stop-opacity=".3"/><stop offset="1" stop-color="#c4d6e4" stop-opacity="0"/></radialGradient>
+    <linearGradient id="rkShade" x1="0" y1="0" x2="0" y2="1"><stop offset=".6" stop-color="#05090d" stop-opacity="0"/><stop offset="1" stop-color="#05090d" stop-opacity=".22"/></linearGradient>
+    <clipPath id="rkBodyClip"><path id="rkBodyP" d="M 877 258 C 850 225, 790 195, 700 180 C 640 170, 590 164, 540 166 C 460 180, 340 205, 250 235 C 225 243, 210 248, 200 252 L 204 268 C 260 290, 340 312, 420 328 C 500 340, 560 346, 620 346 C 700 342, 760 326, 800 305 C 830 292, 860 278, 877 258 Z"/></clipPath>
   </defs>
   <!-- far-side pectoral -->
-  <path d="M 716 226 C 684 262, 646 296, 610 318 C 650 302, 684 280, 728 238 Z" fill="#141d25"/>
-  <!-- crescent tail with strong keel -->
+  <path d="M 590 340 C 622 352, 656 380, 664 420 C 640 408, 606 386, 580 358 Z" fill="#162330"/>
+  <!-- tail -->
   <g class="sh-tail"><g class="sh-tail-i">
-    <path d="M 132 188 C 114 150, 86 96, 36 20 C 34 16, 28 20, 30 26 C 50 94, 78 150, 104 192 C 90 230, 78 262, 62 302 C 98 264, 118 234, 134 200 Z" fill="url(#rkFin)"/>
-    <path d="M 40 30 C 62 90, 88 144, 118 188" stroke="#7d8e9a" stroke-width="2" fill="none" opacity=".32" stroke-linecap="round"/>
+    <path d="M 208 252 C 160 210, 90 145, 38 92 C 44 120, 60 150, 80 175 C 110 205, 145 235, 168 262 C 150 295, 128 335, 108 375 C 150 345, 190 305, 208 275 Z" fill="url(#rkFin)"/>
+    <path d="M 50 104 C 90 160, 140 215, 190 258" stroke="#8fa6b6" stroke-width="2" fill="none" opacity=".3" stroke-linecap="round"/>
   </g></g>
-  <!-- anal, pelvic, second dorsal -->
-  <path d="M 262 216 C 252 238, 236 254, 214 262 C 242 258, 270 246, 286 222 Z" fill="url(#rkFinB)"/>
-  <path d="M 396 236 C 384 264, 364 284, 338 294 C 376 288, 408 268, 426 240 Z" fill="url(#rkFinB)"/>
-  <path d="M 272 140 C 280 126, 286 116, 288 106 C 294 118, 304 130, 318 136 Z" fill="url(#rkFin)"/>
-  <!-- first dorsal fin: tall, with a concave trailing edge -->
+  <!-- small fins -->
+  <path d="M 246 298 C 252 312, 264 320, 282 322 L 290 304 Z" fill="url(#rkFinB)"/>
+  <path d="M 343 318 C 348 334, 360 346, 374 348 L 388 326 Z" fill="url(#rkFinB)"/>
+  <path d="M 276 236 C 284 224, 292 218, 298 217 C 303 226, 310 232, 322 238 Z" fill="url(#rkFin)"/>
+  <!-- first dorsal -->
   <g class="sh-dorsal">
-    <path d="M 462 106 C 504 82, 544 48, 566 8 C 572 50, 596 86, 644 104 C 588 102, 520 102, 462 106 Z" fill="url(#rkFin)"/>
-    <path d="M 566 14 C 570 54, 592 86, 634 102" stroke="#8da0ad" stroke-width="2" fill="none" opacity=".35" stroke-linecap="round"/>
+    <path d="M 462 186 C 488 146, 500 104, 497 66 C 518 96, 546 130, 570 172 C 530 176, 494 182, 462 186 Z" fill="url(#rkFin)"/>
+    <path d="M 497 76 C 500 112, 520 146, 552 172" stroke="#9fb4c2" stroke-width="2" fill="none" opacity=".3" stroke-linecap="round"/>
   </g>
   <!-- body -->
   <use href="#rkBodyP" fill="url(#rkSkin)"/>
   <g clip-path="url(#rkBodyClip)">
-    <path d="M 100 196 C 200 192, 300 188, 380 184 C 420 188, 450 182, 490 186 C 540 180, 580 188, 630 182 C 680 188, 720 180, 770 182 C 820 176, 870 180, 930 174 C 960 172, 980 172, 996 168 L 996 300 L 100 300 Z" fill="url(#rkBelly)"/>
-    <rect x="100" y="80" width="900" height="180" fill="url(#rkSheen)"/>
-    <rect x="100" y="80" width="900" height="180" fill="url(#rkShade)"/>
-    <path d="M 860 130 C 760 118, 600 118, 440 134 C 340 146, 230 164, 140 186" stroke="#8a9ba8" stroke-width="1.2" fill="none" opacity=".26"/>
-    <g stroke="#0f1820" stroke-width="1.4" fill="none" opacity=".15" stroke-linecap="round">
-      <path d="M 420 118 q 14 4 30 0"/><path d="M 480 110 q 14 4 30 0"/><path d="M 560 104 q 16 4 34 0"/><path d="M 360 134 q 14 4 28 0"/><path d="M 640 100 q 16 4 34 0"/><path d="M 520 124 q 14 4 30 0"/>
-    </g>
+    <path d="M 900 272 C 850 268, 810 266, 770 264 C 730 262, 690 270, 650 282 C 620 292, 580 296, 530 290 C 480 286, 420 290, 370 292 C 330 290, 290 276, 250 262 C 230 254, 215 246, 196 240 L 196 400 L 900 400 Z" fill="url(#rkBelly)"/>
+    <rect x="190" y="60" width="720" height="300" fill="url(#rkSheen)"/>
+    <rect x="190" y="60" width="720" height="300" fill="url(#rkShade)"/>
+    <path d="M 780 215 C 700 192, 600 180, 500 190 C 420 202, 330 222, 240 250" stroke="#9fb4c2" stroke-width="1.4" fill="none" opacity=".25"/>
   </g>
   <!-- gill slits -->
-  <g stroke="#0b1218" stroke-width="2.2" fill="none" stroke-linecap="round" opacity=".7">
-    <path d="M 716 116 C 724 136, 726 158, 718 178"/><path d="M 732 114 C 740 134, 742 156, 734 176"/><path d="M 748 113 C 756 133, 758 154, 750 174"/>
-    <path d="M 764 113 C 772 132, 774 152, 766 171"/><path d="M 780 113 C 788 131, 790 150, 782 168"/>
+  <g stroke="#0b1218" stroke-width="2.4" fill="none" stroke-linecap="round" opacity=".6">
+    <path d="M 640 214 C 650 232, 652 254, 644 274"/><path d="M 656 213 C 666 231, 668 252, 660 272"/><path d="M 672 212 C 682 230, 684 250, 676 270"/><path d="M 688 212 C 698 229, 699 248, 692 266"/>
   </g>
-  <!-- long sickle pectoral fin -->
+  <!-- pectoral fin -->
   <g class="sh-pec"><g class="sh-pec-i">
-    <path d="M 730 214 C 700 256, 656 296, 592 330 C 644 308, 676 290, 700 262 C 716 252, 724 236, 730 214 Z" fill="url(#rkFinB)"/>
-    <path d="M 724 222 C 690 262, 646 298, 600 324" stroke="#8da0ad" stroke-width="2" fill="none" opacity=".35" stroke-linecap="round"/>
+    <path d="M 520 300 C 570 292, 608 298, 614 312 C 560 336, 450 372, 365 384 C 430 356, 490 326, 520 300 Z" fill="url(#rkFinB)"/>
+    <path d="M 590 308 C 520 336, 450 366, 385 380" stroke="#a9bccb" stroke-width="2" fill="none" opacity=".3" stroke-linecap="round"/>
   </g></g>
-  <!-- closed mouth, underslung jaw line, nostril, eye -->
-  <path d="M 986 174 C 946 194, 902 208, 856 216" stroke="#0a1015" stroke-width="2.2" fill="none" stroke-linecap="round" opacity=".8"/>
-  <path d="M 986 176 C 948 198, 906 212, 862 220" stroke="#e8edf0" stroke-width="1.6" fill="none" stroke-linecap="round" opacity=".55"/>
-  <path d="M 856 216 q -7 -2 -11 5" stroke="#0a1015" stroke-width="2" fill="none" stroke-linecap="round" opacity=".6"/>
-  <path d="M 962 146 q 8 3 10 12" stroke="#0a1118" stroke-width="2" fill="none" stroke-linecap="round" opacity=".6"/>
-  <circle cx="902" cy="148" r="5.6" fill="#05080b"/>
-  <circle cx="904" cy="146" r="1.4" fill="#dfe9f0" opacity=".85"/>
+  <!-- mouth, nostril, eye -->
+  <path d="M 874 266 C 852 282, 826 291, 796 287" stroke="#0a1015" stroke-width="2.4" fill="none" stroke-linecap="round" opacity=".85"/>
+  <path d="M 796 287 q -6 -2 -9 5" stroke="#0a1015" stroke-width="2" fill="none" stroke-linecap="round" opacity=".6"/>
+  <path d="M 846 236 q 8 2 10 10" stroke="#0a1118" stroke-width="2" fill="none" stroke-linecap="round" opacity=".6"/>
+  <circle cx="789" cy="247" r="5.6" fill="#05080b"/>
+  <circle cx="791" cy="245" r="1.4" fill="#dfe9f0" opacity=".85"/>
 </svg></div></div>
     <div class="fog"></div>
     <div class="panels">
