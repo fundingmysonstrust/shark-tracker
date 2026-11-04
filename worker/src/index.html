@@ -910,10 +910,10 @@ a.lk{color:var(--accent);text-decoration:none} a.lk:hover{text-decoration:underl
           <div class="stepper"><button id="pb-minus" aria-label="Fewer legs">&minus;</button><input id="pb-n" type="number" min="2" step="1" inputmode="numeric" value="3" aria-label="Number of legs"><button id="pb-plus" aria-label="More legs">+</button></div></div>
         <div class="ctl"><span class="cl">Settles by</span>
           <div style="display:flex;gap:8px;align-items:center"><select id="pb-by">
-            <option value="1">Today</option><option value="3">3 days</option><option value="7">1 week</option><option value="14">2 weeks</option>
+            <option value="0">End of today</option><option value="1">End of tomorrow</option><option value="3">3 days</option><option value="7">1 week</option><option value="14">2 weeks</option>
             <option value="30">1 month</option><option value="90">3 months</option><option value="180">6 months</option><option value="365">1 year</option>
             <option value="any">No limit</option><option value="custom">Pick a date…</option></select>
-            <input id="pb-date" type="date" class="hidden"></div></div>
+            <input id="pb-date" type="date" aria-label="Settle by date"></div></div>
         <div class="ctl"><span class="cl">Style</span>
           <span class="seg" id="pb-style"><button data-s="consensus" class="on">Highest agreement</button><button data-s="payout">Bigger payout</button></span></div>
         <div class="ctl"><span class="cl">Topic</span><select id="pb-cat"><option value="">All topics</option></select></div>
@@ -1760,14 +1760,19 @@ const ptok = (t) => new Set(String(t || "").toLowerCase().replace(/[^a-z0-9\s]/g
 const pRelated = (a, b) => a.event === b.event || [...a.tok].some((w) => b.tok.has(w));
 const PB = {n: 3, style: "consensus", cat: "", by: "30", date: ""};
 try { const sv = JSON.parse(localStorage.getItem("st-pb") || "{}"); if (sv.n >= 2) PB.n = sv.n; if (sv.style) PB.style = sv.style; if (sv.by) PB.by = sv.by; if (sv.date) PB.date = sv.date; } catch {}
+/* Calendar dates in US Eastern time, so "today" ends at midnight Eastern, not 24 hours from now. */
+const etToday = () => new Date().toLocaleDateString("en-CA", {timeZone: ET});
+const addDaysStr = (str, n) => { const d = new Date(str + "T12:00:00Z"); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
+if (PB.by === "1" && !localStorage.getItem("st-pb-v2")) PB.by = "0";   // old "Today" meant +24h
+try { localStorage.setItem("st-pb-v2", "1"); } catch {}
 function pbHorizon() {
   if (PB.by === "any") return "9999-12-31";
-  if (PB.by === "custom") return PB.date || new Date(Date.now() + 30 * 864e5).toISOString().slice(0, 10);
-  return new Date(Date.now() + (+PB.by) * 864e5).toISOString().slice(0, 10);
+  if (PB.by === "custom") return PB.date || addDaysStr(etToday(), 30);
+  return addDaysStr(etToday(), +PB.by || 0);
 }
 const PBANDS = {consensus: [0.50, 0.93], payout: [0.25, 0.65]};
 function parlayPool() {
-  const today = new Date().toISOString().slice(0, 10), horizon = pbHorizon();
+  const today = etToday(), horizon = pbHorizon();
   const out = [];
   DATA.rows.forEach((r) => {
     const a = r.total.A, b = r.total.B, n = a + b;
@@ -1792,8 +1797,11 @@ function renderParlays() {
   const pool = parlayPool(), n = PB.n;
   if (document.activeElement !== $("#pb-n")) $("#pb-n").value = n;
   $("#pb-minus").disabled = n <= 2;
-  $("#pb-by").value = PB.by; $("#pb-date").classList.toggle("hidden", PB.by !== "custom"); if (PB.by === "custom") $("#pb-date").value = PB.date;
-  $("#pb-date").min = new Date().toISOString().slice(0, 10);
+  $("#pb-by").value = PB.by;
+  $("#pb-date").min = etToday();
+  $("#pb-date").disabled = PB.by === "any";
+  if (PB.by !== "any" && document.activeElement !== $("#pb-date")) $("#pb-date").value = pbHorizon();
+  if (PB.by === "any") $("#pb-date").value = "";
   $("#pb-style").querySelectorAll("button").forEach((b) => b.classList.toggle("on", b.dataset.s === PB.style));
   const cats = [...new Set(pool.map((l) => l.category))].sort(), sel = $("#pb-cat");
   sel.innerHTML = `<option value="">All topics</option>` + cats.map((c) => `<option ${c === PB.cat ? "selected" : ""}>${esc(c)}</option>`).join("");
@@ -1805,7 +1813,7 @@ function renderParlays() {
     const price = pick.reduce((x, l) => x * l.price, 1), avg = Math.round(pick.reduce((x, l) => x + l.agree, 0) / pick.length);
     const short = pick.length < n;
     return `<div class="pt"><div class="top"><div><h3>${esc(name.charAt(0).toUpperCase() + name.slice(1))} · ${pick.length} leg${pick.length === 1 ? "" : "s"}</h3>
-      <div class="sub2">All legs settle by ${fmtDate(pick.reduce((m, l) => l.end > m ? l.end : m, ""))} · average shark agreement ${avg}% · combined price ${cents(price)} · market-implied chance ${(price * 100).toFixed(price < 0.1 ? 1 : 0)}%</div></div>
+      <div class="sub2">Latest leg settles ${fmtDate(pick.reduce((m, l) => l.end > m ? l.end : m, ""))} · average shark agreement ${avg}% · combined price ${cents(price)} · market-implied chance ${(price * 100).toFixed(price < 0.1 ? 1 : 0)}%</div></div>
       <div class="pay"><b>${(1 / price).toFixed(price < 0.1 ? 1 : 2)}x</b><span>payout if every leg hits</span></div></div>
       ${short ? `<p class="warn">You asked for ${n} legs; only ${pick.length} unrelated picks qualify in this topic.</p>` : ""}
       ${pick.map((l, i) => `<div class="lg" data-open="${esc(l.id)}"><span class="n">${i + 1}</span>
@@ -1819,7 +1827,7 @@ $("#pb-plus").addEventListener("click", () => { PB.n++; renderParlays(); });
 $("#pb-n").addEventListener("input", (e) => { const v = Math.floor(+e.target.value); if (v >= 2) { PB.n = v; renderParlays(); } });
 $("#pb-n").addEventListener("blur", (e) => { e.target.value = PB.n; });
 $("#pb-by").addEventListener("input", (e) => { PB.by = e.target.value; renderParlays(); });
-$("#pb-date").addEventListener("input", (e) => { PB.date = e.target.value; renderParlays(); });
+$("#pb-date").addEventListener("input", (e) => { if (!e.target.value) return; PB.date = e.target.value; PB.by = "custom"; renderParlays(); });
 $("#pb-style").addEventListener("click", (e) => { const b = e.target.closest("button"); if (b) { PB.style = b.dataset.s; renderParlays(); } });
 $("#pb-cat").addEventListener("input", (e) => { PB.cat = e.target.value; renderParlays(); });
 $("#pb-list").addEventListener("click", (e) => { const o = e.target.closest("[data-open]"); if (o) openMarket(o.dataset.open); });
