@@ -27,11 +27,19 @@ button,a,.mk .hd,.sh,summary{touch-action:manipulation}
 button,nav,.iconbtn,.btn,summary{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
 a{color:var(--accent);text-decoration:none}
 .wrap{max-width:1180px;margin:0 auto;padding:0 24px 48px}
-.top{border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top,0px);background:var(--bg)}
-.top .in{max-width:1180px;margin:0 auto;padding:14px max(24px,env(safe-area-inset-right,0px)) 14px max(24px,env(safe-area-inset-left,0px));display:flex;align-items:baseline;gap:16px}
-.brand{font-weight:650;font-size:15px;letter-spacing:-.01em}
-.brand small{font-weight:400;color:var(--dim);margin-left:8px;font-size:13px}
-.live{margin-left:auto;font-size:12.5px;color:var(--mute);white-space:nowrap}
+html{scroll-padding-top:110px}
+body{--navh:calc(48px + env(safe-area-inset-top,0px))}
+.navbar{position:fixed;top:0;left:0;right:0;z-index:30;padding-top:env(safe-area-inset-top,0px);
+  background:color-mix(in srgb,var(--bg) 72%,transparent);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);
+  box-shadow:0 1px 0 transparent;transition:box-shadow 200ms ease}
+.navbar .in{max-width:1180px;margin:0 auto;height:48px;padding:0 max(24px,env(safe-area-inset-right,0px)) 0 max(24px,env(safe-area-inset-left,0px));display:flex;align-items:center;gap:18px}
+.nb-title{font-weight:650;font-size:15px;letter-spacing:-.01em;opacity:0;transform:translateY(4px);transition:opacity 200ms var(--ease-out),transform 200ms var(--ease-out)}
+.nb-live{margin-left:auto;line-height:0}
+.navbar.scrolled{box-shadow:0 1px 0 var(--line)}
+.navbar.scrolled .nb-title{opacity:1;transform:none}
+.hero{padding:calc(var(--navh) + 18px) 0 4px}
+.large{margin:0;font-size:clamp(30px,5vw,40px);line-height:1.08;font-weight:700;letter-spacing:-.025em}
+.lede{margin:6px 0 0;color:var(--mute);font-size:14px}
 .pulse{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--good);margin-right:7px;vertical-align:2px}
 .pulse.stale{background:var(--warn)} .pulse.bad{background:var(--bad)}
 .iconbtn{font:inherit;font-size:12.5px;color:var(--mute);background:none;border:0;padding:0;cursor:pointer}
@@ -51,7 +59,9 @@ a{color:var(--accent);text-decoration:none}
 .dot.ok{background:var(--good)} .dot.bad{background:var(--bad)} .dot.na{background:var(--dim)}
 .runs{margin-top:4px;color:var(--dim);font-size:12px}
 .runs span{margin-right:10px;white-space:nowrap} .runs span.f{color:var(--bad)}
-nav{display:flex;gap:22px;border-bottom:1px solid var(--line);margin:8px 0 16px}
+nav{display:flex;gap:22px;margin:8px -24px 16px;padding:0 24px;position:sticky;top:var(--navh);z-index:20;
+  background:color-mix(in srgb,var(--bg) 72%,transparent);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);
+  box-shadow:0 1px 0 var(--line)}
 nav button{font:inherit;font-size:14px;font-weight:500;padding:10px 0;margin-bottom:-1px;border:0;border-bottom:2px solid transparent;background:none;color:var(--mute);cursor:pointer}
 nav button.on{color:var(--ink);border-bottom-color:var(--ink)}
 .filters{display:flex;flex-wrap:wrap;gap:12px;align-items:end;margin-bottom:12px}
@@ -122,6 +132,15 @@ details.card summary{cursor:pointer}
 }
 @media (pointer: coarse){.filters input,.filters select{font-size:16px}}
 @media (prefers-reduced-motion: reduce){.btn:active{transform:none} @starting-style{.detail{transform:none}}}
+@media (prefers-reduced-motion: no-preference){
+  @supports (animation-timeline: view()){
+    .mk,.sh{animation:reveal linear both;animation-timeline:view();animation-range:entry 0% entry 35%}
+    @keyframes reveal{from{opacity:.35;transform:translateY(14px)}to{opacity:1;transform:none}}
+  }
+}
+@media (prefers-reduced-transparency: reduce){
+  .navbar,nav{background:var(--bg);backdrop-filter:none;-webkit-backdrop-filter:none}
+}
 .hidden{display:none!important}
 @media (max-width: 900px){
   .mk .hd{grid-template-columns:1fr;gap:10px}
@@ -130,10 +149,13 @@ details.card summary{cursor:pointer}
   .dgrid{grid-template-columns:1fr;gap:16px}
 }
 @media (max-width: 560px){
-  .wrap{padding:0 16px 36px} .top .in{padding:12px 16px}
-  .brand small,.live .txt{display:none}
-  .kpis{gap:0 16px}
-  .kpi{flex:1 1 40%;padding:10px 0} .kpi + .kpi{border-left:0}
+  .wrap{padding:0 16px 36px}
+  .navbar .in{padding:0 16px} nav{margin:8px -16px 16px;padding:0 16px}
+  .kpis{flex-wrap:nowrap;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;
+        margin:18px -16px 16px;padding:0 16px;gap:10px;border:0;overscroll-behavior-x:contain}
+  .kpis::-webkit-scrollbar{display:none}
+  .kpi{flex:0 0 72%;scroll-snap-align:start;scroll-margin-left:16px;padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+  .kpi:first-child{padding-left:14px} .kpi + .kpi{border-left:1px solid var(--line)}
   .stats{grid-template-columns:auto 1fr}
   .sh{grid-template-columns:28px minmax(0,1fr) 44px} .sh .mw{display:none}
   .set{grid-template-columns:1fr 60px} .set .exp{grid-column:1 / -1} .set input[type=range]{grid-column:1}
@@ -142,13 +164,17 @@ details.card summary{cursor:pointer}
 </style>
 </head>
 <body>
-<div class="top"><div class="in">
-  <div class="brand">Shark Tracker<small>Positions of proven Polymarket traders</small></div>
-  <div class="live"><span class="pulse" id="pulse"></span><span class="txt" id="updated">Loading…</span></div>
+<header class="navbar" id="navbar"><div class="in">
+  <span class="nb-title">Shark Tracker</span>
+  <span class="nb-live"><span class="pulse" id="pulse"></span></span>
   <button class="iconbtn" id="theme" title="Switch light / dark">Light</button>
   <a href="/logout" class="iconbtn">Log out</a>
-</div></div>
+</div></header>
 <div class="wrap">
+  <div class="hero" id="hero">
+    <h1 class="large">Shark Tracker</h1>
+    <p class="lede">Positions of proven Polymarket traders · <span id="updated">Loading…</span></p>
+  </div>
   <div class="kpis" id="kpis"></div>
   <div id="banner"></div>
   <div class="status" id="status"></div>
@@ -294,7 +320,7 @@ function renderHeader() {
   const ageMin = (Date.now() / 1000 - DATA.generated_at) / 60;
   const failing = META.last_failure && META.last_failure > (META.last_success || 0);
   $("#pulse").className = "pulse" + (failing ? " bad" : ageMin > 45 ? " stale" : "");
-  $("#updated").innerHTML = `Updated ${fmtTime(DATA.generated_at)}, ${ago(DATA.generated_at)}`;
+  $("#updated").innerHTML = `updated ${fmtTime(DATA.generated_at)} (${ago(DATA.generated_at)})`;
   let b = "";
   if (failing)
     b += `<div class="banner bad">The latest refresh failed at ${fmtTime(META.last_failure)}: “${esc(String(META.last_error || "").slice(0, 160))}${String(META.last_error || "").length > 160 ? "…" : ""}”. Showing the last good data from ${fmtTime(DATA.generated_at)}.</div>`;
@@ -533,6 +559,8 @@ $("#reset").onclick = async () => {
 document.querySelectorAll("nav button").forEach((b) => b.onclick = () => {
   document.querySelectorAll("nav button").forEach((x) => x.classList.toggle("on", x === b));
   ["markets", "sharks", "settings", "guide"].forEach((t) => $("#tab-" + t).classList.toggle("hidden", t !== b.dataset.tab));
+  const navTop = document.querySelector("#tab-markets").parentElement.querySelector("nav").offsetTop - $("#navbar").offsetHeight;
+  if (window.scrollY > navTop) window.scrollTo({top: navTop});
 });
 ["#f-q", "#f-cat", "#f-min", "#f-from", "#f-to", "#f-sort", "#f-split", "#f-nosplit"].forEach((s) => $(s).addEventListener("input", () => { SHOWN = 100; renderRows(); }));
 ["#s-q", "#s-cat"].forEach((s) => $(s).addEventListener("input", renderSharks));
@@ -558,6 +586,11 @@ function openShark(w) {
   if (el) { el.querySelector("[data-bd]").classList.remove("hidden"); el.scrollIntoView({behavior: "smooth", block: "center"}); }
   else alert("That trader isn't in the current shark list.");
 }
+(function largeTitle() {
+  const nav = $("#navbar"), title = document.querySelector(".large");
+  new IntersectionObserver(([e]) => nav.classList.toggle("scrolled", !e.isIntersecting),
+    {rootMargin: "-48px 0px 0px 0px", threshold: 0}).observe(title);
+})();
 (function theme() {
   const apply = (t) => {
     if (t) document.documentElement.dataset.theme = t; else delete document.documentElement.dataset.theme;
