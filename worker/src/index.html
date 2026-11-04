@@ -34,7 +34,9 @@ body{--navh:calc(48px + env(safe-area-inset-top,0px))}
   box-shadow:0 1px 0 transparent;transition:box-shadow 200ms ease}
 .navbar .in{max-width:1180px;margin:0 auto;height:48px;padding:0 max(24px,env(safe-area-inset-right,0px)) 0 max(24px,env(safe-area-inset-left,0px));display:flex;align-items:center;gap:18px}
 .nb-title{font-weight:650;font-size:15px;letter-spacing:-.01em;opacity:0;transform:translateY(4px);transition:opacity 200ms var(--ease-out),transform 200ms var(--ease-out)}
-.nb-live{margin-left:auto;line-height:0}
+.nb-live{margin-left:auto;display:flex;align-items:center;gap:8px;line-height:1}
+.pxage{font-size:12px;color:var(--mute);white-space:nowrap}
+@media (max-width:560px){.pxage{display:none}}
 .navbar.scrolled{box-shadow:0 1px 0 var(--line)}
 .navbar.scrolled .nb-title{opacity:1;transform:none}
 
@@ -622,7 +624,7 @@ a.lk{color:var(--accent);text-decoration:none} a.lk:hover{text-decoration:underl
     <button data-tab="settings">Settings</button>
     <button data-tab="guide">Guide</button>
   </nav>
-  <span class="nb-live"><span class="pulse" id="pulse"></span></span>
+  <span class="nb-live"><span class="pxage" id="pxage"></span><span class="pulse" id="pulse"></span></span>
   <button class="pillbtn" data-go="markets">Open tracker</button>
   <a href="/logout" class="iconbtn">Log out</a>
 </div></header>
@@ -1021,7 +1023,7 @@ async function load() {
     const [r, rm] = await Promise.all([fetch("/api/data", {cache: "no-store"}), fetch("/api/meta", {cache: "no-store"})]);
     if (r.status === 401 || rm.status === 401) { location.reload(); return; }
     DATA = await r.json(); META = (await rm.json()) || {};
-    renderHeader(); fillCats(); renderOverview(); renderDive(); renderParlays(); renderCombos(); renderLive(); renderPossible(); renderRows(); renderSharks(); if (!SETTINGS_DONE) { SETTINGS_DONE = true; renderSettings(); }
+    renderHeader(); fillCats(); renderOverview(); renderDive(); renderParlays(); renderCombos(); renderLive(); if (!PXL.at && !PXL.busy) setTimeout(refreshPrices, 1500); renderPossible(); renderRows(); renderSharks(); if (!SETTINGS_DONE) { SETTINGS_DONE = true; renderSettings(); }
   } catch (e) {
     $("#banner").innerHTML = `<div class="banner bad">Couldn't load data (${esc(e.message)}). Reload the page to try again.</div>`;
   }
@@ -1551,6 +1553,52 @@ addEventListener("scroll", () => { if (!DIVE_RAF) DIVE_RAF = requestAnimationFra
 addEventListener("resize", () => { if (!DIVE_RAF) DIVE_RAF = requestAnimationFrame(diveFrame); });
 new IntersectionObserver(([e]) => $("#dive").classList.toggle("paused", !e.isIntersecting)).observe($("#dive"));
 
+
+/* ---------------- live prices, refreshed in the browser every minute ---------------- */
+const PXL = {at: 0, ok: null, busy: false, n: 0};
+async function refreshPrices() {
+  if (PXL.busy || !DATA) return; PXL.busy = true;
+  try {
+    const ids = new Set();
+    DATA.rows.slice(0, 600).forEach((r) => r.market_id && ids.add(r.market_id));
+    ((DATA.combos || {}).combos || []).filter((c) => c.status === "open").forEach((c) => c.legs.forEach((l) => ids.add(l.market_id)));
+    const list = [...ids], prices = {};
+    const chunks = []; for (let i = 0; i < list.length; i += 20) chunks.push(list.slice(i, i + 20));
+    let next = 0;
+    const worker = async () => {
+      while (next < chunks.length) {
+        const ch = chunks[next++], u = new URL("https://gamma-api.polymarket.com/markets");
+        ch.forEach((c) => u.searchParams.append("condition_ids", c)); u.searchParams.set("limit", "20"); u.searchParams.set("_t", Date.now());
+        const ctl = new AbortController(), to = setTimeout(() => ctl.abort(), 12000);
+        try { const r = await fetch(u, {cache: "no-store", signal: ctl.signal}); if (!r.ok) continue;
+          (await r.json()).forEach((m) => { try { prices[m.conditionId] = {p: JSON.parse(m.outcomePrices || "[]").map(Number), closed: !!m.closed}; } catch {} });
+        } catch {} finally { clearTimeout(to); }
+      }
+    };
+    await Promise.all([worker(), worker(), worker(), worker()]);
+    let changed = 0;
+    DATA.rows.forEach((r) => { const q = prices[r.market_id]; if (!q || q.closed || q.p.length < 2 || q.p.some((x) => !isFinite(x))) return;
+      if (r.polymarket.price_a !== q.p[0]) changed++;
+      r.polymarket.price_a = q.p[0]; r.polymarket.price_b = q.p[1]; });
+    ((DATA.combos || {}).combos || []).filter((c) => c.status === "open").forEach((c) => {
+      let cur = 1;
+      c.legs.forEach((l) => { const q = prices[l.market_id]; if (q && !q.closed && q.p.length > l.outcome_index) l.now = Math.round(q.p[l.outcome_index] * 1e4) / 1e4;
+        cur *= l.result === "won" ? 1 : l.result === "lost" ? 0 : l.now; });
+      c.now_price = cur; c.return_pct = c.entry_price ? Math.round(1000 * (cur / c.entry_price - 1)) / 10 : null; });
+    PXL.ok = Object.keys(prices).length > 0; PXL.at = Date.now(); PXL.n = Object.keys(prices).length;
+    if (PXL.ok) { renderRows(); renderOverview(); renderParlays(); renderCombos(); }
+  } catch (e) { PXL.ok = false; } finally { PXL.busy = false; renderPxAge(); }
+}
+function renderPxAge() {
+  const el = $("#pxage"); if (!el) return;
+  if (!PXL.at) { el.textContent = PXL.ok === false ? "Prices: offline" : ""; return; }
+  const sec = Math.round((Date.now() - PXL.at) / 1000);
+  el.textContent = `Prices ${sec < 5 ? "live" : sec + "s ago"}`;
+  el.title = `Market prices are fetched from Polymarket in your browser every minute (${PXL.n} markets).`;
+}
+setInterval(() => { if (!document.hidden) refreshPrices(); }, 60000);
+setInterval(renderPxAge, 5000);
+document.addEventListener("visibilitychange", () => { if (!document.hidden && Date.now() - PXL.at > 45000) refreshPrices(); });
 
 /* ---------------- follow list ---------------- */
 let WL = new Set();
