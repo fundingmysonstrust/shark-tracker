@@ -285,6 +285,118 @@ nav button:active{transform:scale(0.97)}
   .catrow{grid-template-columns:84px minmax(0,1fr) 70px;gap:10px;font-size:13px}
   .sec{padding:44px 0 4px}
 }
+
+/* ===== product layout ===== */
+.navbar .in{gap:14px}
+.brandlink{display:flex;align-items:center;gap:9px;color:var(--ink);font-weight:650;font-size:15px;letter-spacing:-.01em;text-decoration:none!important}
+.logo{width:26px;height:26px;flex:none}
+.nb-title{opacity:1!important;transform:none!important}
+.navbar nav{position:static;display:flex;gap:4px;margin:0 0 0 18px;padding:0;background:none;backdrop-filter:none;-webkit-backdrop-filter:none;box-shadow:none;border:0}
+.navbar nav button{padding:6px 10px;border:0;border-radius:8px;margin:0;font-size:13.5px}
+.navbar nav button.on{background:var(--raise);color:var(--ink)}
+.pillbtn{font:inherit;font-size:13px;font-weight:600;color:var(--bg);background:var(--accent);border:0;border-radius:999px;padding:7px 14px;cursor:pointer;transition:transform 160ms var(--ease-out)}
+.pillbtn:active{transform:scale(0.97)}
+.ocean{align-items:flex-start;min-height:0}
+.ocean .inner{display:block;text-align:center;padding:calc(var(--navh) + 56px) 24px 150px}
+.ocean h1.large{max-width:16ch;margin:18px auto 0;font-size:clamp(38px,6.4vw,76px)}
+.ocean .lede{margin:16px auto 0;text-align:center}
+.freepill{display:inline-block;font-size:12.5px;font-weight:600;color:var(--accent);border:1px solid color-mix(in srgb,var(--accent) 40%,transparent);background:color-mix(in srgb,var(--accent) 10%,transparent);border-radius:999px;padding:5px 12px}
+.ctas{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:26px}
+.ctas .cta{margin:0}
+.cta.ghost{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 1px var(--line2)}
+.livepill{justify-content:center;width:100%}
+.feed{margin:34px auto 0;max-width:1000px;text-align:left;background:color-mix(in srgb,var(--panel) 82%,transparent);backdrop-filter:blur(18px) saturate(160%);-webkit-backdrop-filter:blur(18px) saturate(160%);
+  border:1px solid rgba(255,255,255,.07);border-radius:20px;box-shadow:0 40px 80px rgba(0,0,0,.45);overflow:hidden;position:relative;z-index:4}
+.feedtop{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--line)}
+.ftabs,.fcats{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+.ftabs::-webkit-scrollbar,.fcats::-webkit-scrollbar{display:none}
+.ftabs button,.fcats button{font:inherit;font-size:13px;font-weight:500;white-space:nowrap;color:var(--mute);background:none;border:0;border-radius:8px;padding:6px 10px;cursor:pointer;transition:transform 160ms var(--ease-out)}
+.ftabs button:active,.fcats button:active{transform:scale(0.97)}
+.ftabs button.on{background:var(--raise);color:var(--ink)}
+.fcats button{font-size:12px;text-transform:capitalize;border:1px solid var(--line);border-radius:999px;padding:4px 10px}
+.fcats button.on{border-color:var(--accent);color:var(--accent)}
+.fbody{max-height:420px;overflow:auto;overscroll-behavior:contain}
+.ftable{width:100%;border-collapse:collapse}
+.ftable th{position:sticky;top:0;background:var(--panel);font-size:11.5px;font-weight:500;color:var(--dim);text-align:left;padding:9px 14px;border-bottom:1px solid var(--line);white-space:nowrap}
+.ftable td{font-size:13px;padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:middle}
+.ftable tr{cursor:pointer;transition:background-color 120ms ease}
+.ftable td.r,.ftable th.r{text-align:right;white-space:nowrap}
+.ftable .mq{max-width:420px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.side-tag{display:inline-block;font-size:12px;font-weight:650;padding:2px 8px;border-radius:6px}
+.side-tag.A{color:var(--a);background:color-mix(in srgb,var(--a) 14%,transparent)}
+.side-tag.B{color:var(--b);background:color-mix(in srgb,var(--b) 14%,transparent)}
+.minibar{display:inline-flex;width:70px;height:6px;border-radius:999px;overflow:hidden;background:var(--line);vertical-align:middle;margin-right:8px}
+.minibar i{display:block;height:100%} .minibar .A{background:var(--a)} .minibar .B{background:var(--b)}
+.only-s{display:none}
+.dimq{color:var(--mute);font-size:12.5px;margin-top:2px}
+.fempty{padding:30px;text-align:center;color:var(--mute)}
+@media (hover: hover) and (pointer: fine){
+  .ftable tr:hover td{background:color-mix(in srgb,var(--raise) 70%,transparent)}
+  .ftabs button:hover,.fcats button:hover{color:var(--ink)}
+  .navbar nav button:hover{color:var(--ink)}
+}
+.bigstats{justify-content:space-between;gap:20px 30px;margin-top:20px}
+.bigstat .v{font-size:clamp(32px,4.4vw,52px)}
+.catgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.catcard{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;cursor:pointer;transition:transform 160ms var(--ease-out),border-color 150ms ease}
+.catcard:active{transform:scale(0.98)}
+.catcard .nm{font-weight:650;text-transform:capitalize;font-size:15px}
+.catcard .v{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-top:8px}
+.catcard .s{font-size:12.5px;color:var(--mute)}
+.catcard .track{height:4px;border-radius:999px;background:var(--line);margin-top:12px;overflow:hidden}
+.catcard .fill{height:100%;background:var(--accent);transform-origin:left;transform:scaleX(0);transition:transform 1000ms var(--ease-out)}
+.in .catcard .fill{transform:scaleX(var(--w))}
+.played .catcard .fill{transition:none}
+.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:20px}
+.steps div{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px;color:var(--mute);font-size:14px}
+.steps b{display:block;color:var(--ink);font-size:16px;margin:10px 0 4px}
+.steps .n{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--accent);font-weight:700;font-size:13px}
+.plan{margin-top:20px;max-width:520px;background:linear-gradient(180deg,var(--raise),var(--panel));border:1px solid color-mix(in srgb,var(--accent) 35%,var(--line));border-radius:20px;padding:24px}
+.plan .big{font-size:48px;font-weight:800;letter-spacing:-.04em}
+.plan .per{color:var(--mute);margin-left:8px}
+.plan ul{list-style:none;padding:0;margin:16px 0 0;display:grid;gap:9px}
+.plan li{padding-left:24px;position:relative;font-size:14.5px}
+.plan li::before{content:"";position:absolute;left:2px;top:7px;width:10px;height:6px;border-left:2px solid var(--accent);border-bottom:2px solid var(--accent);transform:rotate(-45deg)}
+.faq{margin-top:16px;border-top:1px solid var(--line);max-width:820px}
+.faq details{border-bottom:1px solid var(--line)}
+.faq summary{list-style:none;cursor:pointer;padding:16px 0;font-weight:600;font-size:15px;display:flex;justify-content:space-between;gap:12px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";color:var(--mute);font-weight:400;font-size:20px;line-height:1;transition:transform 200ms var(--ease-out)}
+.faq details[open] summary::after{transform:rotate(45deg)}
+.faq p{margin:0 0 16px;color:var(--mute);max-width:70ch}
+.foot2{margin-top:48px;padding:24px 0 8px;border-top:1px solid var(--line);color:var(--dim);font-size:12.5px}
+.foot2 .brandlink{margin-bottom:8px}
+@media (max-width: 900px){
+  .navbar nav{display:none}
+  .steps{grid-template-columns:1fr}
+  .ftable .hide-s{display:none}
+  .ftable .only-s{display:block}
+  .ftable .mq{max-width:200px}
+}
+@media (max-width: 560px){
+  .ocean .inner{padding:calc(var(--navh) + 30px) 16px 120px}
+  .pillbtn{display:none}
+  .feed{margin-left:-6px;margin-right:-6px;border-radius:16px}
+  .ftable td,.ftable th{padding:9px 10px}
+  .ftable{table-layout:auto}
+  .ftable .mq{max-width:none;white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+  .ftable .minibar{display:none}
+  .ftable .sub{display:none}
+  .bigstats{justify-content:flex-start}
+}
+.tabbar{display:none}
+@media (max-width: 900px){
+  .tabbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:40;justify-content:space-around;
+    padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px));margin:0;border:0;
+    background:color-mix(in srgb,var(--bg) 78%,transparent);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);
+    box-shadow:0 -1px 0 var(--line);top:auto}
+  .tabbar button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font:inherit;font-size:10.5px;font-weight:500;color:var(--dim);
+    background:none;border:0;padding:4px 0;margin:0;cursor:pointer;border-radius:0}
+  .tabbar svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+  .tabbar button[data-tab="overview"] svg path{fill:currentColor;stroke:none}
+  .tabbar button.on{color:var(--accent);background:none}
+  body{padding-bottom:calc(64px + env(safe-area-inset-bottom,0px))}
+}
 .hidden{display:none!important}
 @media (max-width: 900px){
   .mk .hd{grid-template-columns:1fr;gap:10px}
@@ -309,10 +421,25 @@ nav button:active{transform:scale(0.97)}
 </head>
 <body>
 <header class="navbar" id="navbar"><div class="in">
-  <span class="nb-title">Shark Tracker</span>
+  <a class="brandlink" href="/" data-tab-link="overview"><svg class="logo" viewBox="0 0 28 28" aria-hidden="true"><rect width="28" height="28" rx="8" fill="#0f2a44"/><path d="M5 20 C 10 18, 13 12, 14.5 5 C 17 10, 20 15, 24 20 Z" fill="#5ec8e5"/><path d="M4 21.5 q 5 -2 10 0 t 10 0" stroke="#5ec8e5" stroke-width="1.4" fill="none" stroke-linecap="round" opacity=".6"/></svg><span class="nb-title">Shark Tracker</span></a>
+  <nav>
+    <button data-tab="overview" class="on">Overview</button>
+    <button data-tab="markets">Markets</button>
+    <button data-tab="sharks">Sharks</button>
+    <button data-tab="settings">Settings</button>
+    <button data-tab="guide">Guide</button>
+  </nav>
   <span class="nb-live"><span class="pulse" id="pulse"></span></span>
+  <button class="pillbtn" data-go="markets">Open tracker</button>
   <a href="/logout" class="iconbtn">Log out</a>
 </div></header>
+<nav class="tabbar" aria-label="Sections">
+  <button data-tab="overview" class="on"><svg viewBox="0 0 24 24"><path d="M4 18c4-1.5 6-5 7.5-12 2 5 4.5 9 8.5 12z"/></svg>Overview</button>
+  <button data-tab="markets"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Markets</button>
+  <button data-tab="sharks"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c1.2-4 4-5.5 7-5.5s5.8 1.5 7 5.5"/></svg>Sharks</button>
+  <button data-tab="settings"><svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>Settings</button>
+  <button data-tab="guide"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M9.8 9.5a2.3 2.3 0 1 1 3.2 2.1c-.7.3-1 .8-1 1.5M12 16.5v.1"/></svg>Guide</button>
+</nav>
 <section class="ocean" id="hero">
   <div class="rays"></div>
   <div class="bubbles" aria-hidden="true"><i style="--x:12%;--d:0;--t:9s;--s:6px"></i><i style="--x:22%;--d:3;--t:11s;--s:4px"></i><i style="--x:35%;--d:6;--t:10s;--s:8px"></i><i style="--x:48%;--d:1.5;--t:12s;--s:5px"></i><i style="--x:61%;--d:4.5;--t:9.5s;--s:7px"></i><i style="--x:72%;--d:7;--t:11.5s;--s:4px"></i><i style="--x:84%;--d:2;--t:10.5s;--s:6px"></i><i style="--x:92%;--d:5.5;--t:12.5s;--s:5px"></i></div>
@@ -340,67 +467,81 @@ nav button:active{transform:scale(0.97)}
     <svg class="w1" viewBox="0 0 2400 150" preserveAspectRatio="none"><path d="M0 92 Q 200 66 400 92 T 800 92 T 1200 92 T 1600 92 T 2000 92 T 2400 92 V150 H0 Z" fill="#071b2e"/>
       <path class="crest" d="M0 92 Q 200 66 400 92 T 800 92 T 1200 92 T 1600 92 T 2000 92 T 2400 92" fill="none"/></svg>
   </div>
-  <div class="inner"><div>
-    <h1 class="large">Shark Tracker</h1>
-    <p class="lede" id="hero-lede">Open Polymarket positions of traders with proven profit records.</p>
-    <div class="bigstats" id="bigstats"></div>
-    <div class="livepill"><span class="pulse" id="pulse"></span><span id="updated">Loading…</span></div>
+  <div class="inner">
+    <span class="freepill">Free shark tracking · no paywall</span>
+    <h1 class="large">Track the sharks of Polymarket.</h1>
+    <p class="lede" id="hero-lede">Open positions of traders with proven profit records.</p>
+    <div class="ctas"><button class="cta" data-go="markets">Open live tracker</button><button class="cta ghost" data-go="sharks">See top sharks</button></div>
+    <div class="livepill"><span class="pulse"></span><span id="updated">Loading…</span></div>
+    <div class="feed" id="feed">
+      <div class="feedtop">
+        <div class="ftabs" id="ftabs">
+          <button data-f="agree" class="on">Sharks agree</button>
+          <button data-f="biggest">Biggest bets</button>
+          <button data-f="split">Sharks split</button>
+          <button data-f="top">Top sharks</button>
+        </div>
+        <div class="fcats" id="fcats"></div>
+      </div>
+      <div class="fbody" id="fbody"></div>
     </div>
-    <div class="herocard" id="herocard"></div>
   </div>
 </section>
 <div class="wrap">
-  <div id="banner" style="margin-top:12px"></div>
-  <nav>
-    <button data-tab="overview" class="on">Overview</button>
-    <button data-tab="markets">Markets</button>
-    <button data-tab="sharks">Sharks</button>
-    <button data-tab="settings">Settings</button>
-    <button data-tab="guide">Guide</button>
-  </nav>
+  <div id="banner" style="margin-top:16px"></div>
 
   <!-- OVERVIEW -->
   <section id="tab-overview">
     <div class="sec reveal">
-      <h2 id="h-sig">Where sharks agree</h2>
-      <p class="desc">5+ sharks, 80%+ on one side.</p>
-      <div class="rail stg" id="ov-signals" ></div>
+      <h2>By the numbers</h2>
+      <div class="bigstats stg" id="bigstats"></div>
     </div>
     <div class="sec reveal">
-      <h2 id="h-duel">Where sharks are split</h2>
-      <p class="desc">6+ sharks, at most 60% on one side.</p>
-      <div class="duel stg" id="ov-duels" ></div>
+      <h2 id="h-cats">Every topic sharks trade</h2>
+      <p class="desc">Tap a topic to see its markets.</p>
+      <div class="catgrid stg" id="ov-cats"></div>
     </div>
     <div class="sec reveal">
-      <h2>Shark money by topic</h2>
-      <p class="desc">Current value of open shark bets.</p>
-      <div class="cats stg" id="ov-cats" ></div>
-    </div>
-    <div class="sec reveal">
-      <h2>Largest open shark bets</h2>
-      <div class="bets stg" id="ov-bets" ></div>
-    </div>
-    <div class="sec reveal">
-      <h2>Highest-scored sharks</h2>
-      <p class="desc">Score 0–100: profit, win rate, return on money traded, history length, consistency.</p>
-      <div class="toplist stg" id="ov-top" ></div>
-      <button class="cta" data-go="sharks">All sharks →</button>
-    </div>
-    <div class="sec reveal">
-      <h2>Definitions</h2>
-      <div class="explain" style="margin-top:16px">
-        <div><b>Shark</b>Score 60+ out of 100 and at least 20 finished markets.</div>
-        <div><b>Price</b>A share pays $1 if that side wins. 34¢ ≈ a 34% chance.</div>
-        <div><b>Agreement</b>Share of sharks on the bigger side. 90% = 9 of 10.</div>
-        <div><b>Not advice</b>Public data on what other traders hold. Sharks can be wrong.</div>
+      <h2>How a trader becomes a shark</h2>
+      <div class="steps stg">
+        <div><span class="n">1</span><b>Scan</b>Every refresh pulls the top 1,000 traders from each Polymarket leaderboard, for the last 30 days and all time.</div>
+        <div><span class="n">2</span><b>Verify</b>Each trader is scored 0–100 on profit, win rate, return on money traded, history length and consistency. 60+ with 20+ finished markets = shark.</div>
+        <div><span class="n">3</span><b>Track</b>Their open bets are counted side by side, so you see how many sharks, and which ones, hold each answer.</div>
       </div>
-      <button class="cta" data-go="markets">All markets →</button>
+    </div>
+    <div class="sec reveal">
+      <h2>Free. All of it.</h2>
+      <div class="plan">
+        <div class="price"><span class="big">$0</span><span class="per">forever</span></div>
+        <ul>
+          <li>Live shark positions on every open market</li>
+          <li>Shark scores with the full breakdown</li>
+          <li>Consensus and split markets</li>
+          <li>Biggest bets and top sharks</li>
+          <li>Kalshi price comparison</li>
+          <li>Your own scoring settings</li>
+        </ul>
+        <button class="cta" data-go="markets">Open live tracker</button>
+      </div>
+    </div>
+    <div class="sec reveal">
+      <h2>Questions</h2>
+      <div class="faq">
+        <details><summary>Where does the data come from?</summary><p>Polymarket's public leaderboards and public position data. Nothing needs a login. Kalshi prices come from Kalshi's public market data. Kalshi doesn't publish other traders' positions, so shark counts are Polymarket only.</p></details>
+        <details><summary>How often does it update?</summary><p>A refresh runs automatically, usually every 15–60 minutes. The time of the last update is shown at the top.</p></details>
+        <details><summary>What does a price like 34¢ mean?</summary><p>A share pays $1 if that answer wins. At 34¢ the market gives it about a 34% chance.</p></details>
+        <details><summary>What counts as a shark?</summary><p>A trader scoring 60+ out of 100 with at least 20 finished markets. You can change the rules on the Settings tab.</p></details>
+        <details><summary>Should I copy the sharks?</summary><p>This is information, not advice. Sharks are wrong too, and past profit doesn't guarantee future results.</p></details>
+      </div>
     </div>
     <div class="sec">
       <h2 style="font-size:20px;margin-bottom:12px">Data sources</h2>
       <div class="status" id="status"></div>
-      <p class="note">Public data only. Not financial advice. Past profit does not predict future results.</p>
     </div>
+    <footer class="foot2">
+      <div class="brandlink"><svg class="logo" viewBox="0 0 28 28" aria-hidden="true"><rect width="28" height="28" rx="8" fill="#0f2a44"/><path d="M5 20 C 10 18, 13 12, 14.5 5 C 17 10, 20 15, 24 20 Z" fill="#5ec8e5"/><path d="M4 21.5 q 5 -2 10 0 t 10 0" stroke="#5ec8e5" stroke-width="1.4" fill="none" stroke-linecap="round" opacity=".6"/></svg><span>Shark Tracker</span></div>
+      <p>Not affiliated with Polymarket or Kalshi. Public data only. Not financial advice. Past profit does not predict future results.</p>
+    </footer>
   </section>
 
   <!-- MARKETS -->
@@ -741,72 +882,68 @@ function openMarket(id) {
   const el = document.querySelector(`.mk[data-id="${CSS.escape(id)}"]`);
   if (el) el.scrollIntoView({behavior: "smooth", block: "start"});
 }
+let FEED_TAB = "agree", FEED_CAT = "";
 function renderOverview() {
   if (!DATA) return;
-  const rows = DATA.rows;
-  // strongest signals
-  const sigAll = rows.filter((r) => r.total.A + r.total.B >= 5 && (r.agreement_pct || 0) >= 80);
-  $("#h-sig").textContent = `${sigAll.length.toLocaleString()} markets where sharks agree`;
-  const sig = sigAll.slice()
-    .sort((x, y) => majority(y).n - majority(x).n || majority(y).money - majority(x).money).slice(0, 14);
-  $("#ov-signals").innerHTML = sig.map((r) => {
-    const m = majority(r), col = m.side === "A" ? "var(--a)" : "var(--b)";
-    return `<div class="sig" data-open="${esc(r.id)}">
-      <div class="cat2">${esc(r.category)} · ${fmtDate(r.event_date)}</div>
-      <div class="q">${esc(r.title)}</div>
-      <div class="row2">${ring(r.agreement_pct, col)}
-        <div class="say"><b>${m.n} of ${m.of} sharks</b>hold <span style="color:${col};font-weight:650">${esc(m.label)}</span></div></div>
-      <div class="plain">Market price <b>${cents(m.price)}</b>: about a <b>${pctTxt(m.price)}</b> chance. Sharks paid ${cents(m.entry)} on average.</div>
-      <div class="foot"><span>On ${esc(m.label)}</span><b>${bigMoney(m.money)}</b></div></div>`;
-  }).join("") || `<p class="sub">No strong consensus right now.</p>`;
-  const h = sig[0];
-  if (h) {
-    const m = majority(h), col = m.side === "A" ? "var(--a)" : "var(--b)";
-    $("#herocard").dataset.open = h.id;
-    $("#herocard").innerHTML = `<div class="k">Most-agreed market</div><div class="q">${esc(h.title)}</div>
-      <div class="row2">${ring(h.agreement_pct, col)}<div class="say"><b>${m.n} of ${m.of} sharks</b>hold <span style="color:${col};font-weight:650">${esc(m.label)}</span> · ${bigMoney(m.money)}</div></div>
-      <div class="plain">Market price <b>${cents(m.price)}</b>, about a <b>${pctTxt(m.price)}</b> chance.</div>`;
-    setTimeout(() => $("#herocard").querySelectorAll(".arc").forEach((c) => { c.style.strokeDashoffset = c.dataset.off; }), 300);
-  }
-  // contested
-  const duelAll = rows.filter((r) => r.total.A + r.total.B >= 6 && r.flags.split);
-  $("#h-duel").textContent = `${duelAll.length.toLocaleString()} markets where sharks are split`;
-  const duels = duelAll.slice()
-    .sort((x, y) => (y.total.A + y.total.B) - (x.total.A + x.total.B)).slice(0, 6);
-  $("#ov-duels").innerHTML = duels.map((r) => {
-    const t = r.total.A + r.total.B;
-    return `<div class="card2" data-open="${esc(r.id)}"><div class="q">${esc(r.title)}</div>
-      <div class="tug"><i class="A" style="width:${100 * r.total.A / t}%"></i><i class="B" style="width:${100 * r.total.B / t}%"></i></div>
-      <div class="lr"><span class="A"><b>${r.total.A}</b> ${esc(r.side_labels[0])} · ${bigMoney(r.money.A)}</span><span class="B" style="text-align:right">${esc(r.side_labels[1])} <b>${r.total.B}</b> · ${bigMoney(r.money.B)}</span></div></div>`;
-  }).join("") || `<p class="sub">No big splits right now.</p>`;
-  // money by category
+  const rows = DATA.rows, pm = (DATA.status || {}).polymarket || {};
+  $("#hero-lede").textContent = `${(pm.sharks ?? 0).toLocaleString()} proven traders, picked from ${(pm.traders ?? 0).toLocaleString()} on Polymarket's leaderboards. See which side of each market they're on, how many agree, and how much they've bet.`;
+  // category chips for the feed
   const cats = {};
-  rows.forEach((r) => { cats[r.category] = (cats[r.category] || 0) + r.money.A + r.money.B; });
-  const cl = Object.entries(cats).sort((a, b) => b[1] - a[1]).slice(0, 8), mx = cl.length ? cl[0][1] : 1;
-  $("#ov-cats").innerHTML = cl.map(([c, v]) => `<div class="catrow"><span class="nm">${esc(c)}</span>
-    <div class="track"><div class="fill" style="--w:${Math.max(0.02, v / mx)}"></div></div><span class="v">${bigMoney(v)}</span></div>`).join("");
-  // biggest single bets
-  const bets = [];
-  rows.forEach((r) => ["A", "B"].forEach((sd) => r.polymarket[sd].sharks.forEach((sh) =>
-    bets.push({r, sd, sh}))));
-  bets.sort((x, y) => y.sh.cost - x.sh.cost);
-  $("#ov-bets").innerHTML = bets.slice(0, 8).map(({r, sd, sh}) => `<div class="bet" data-open="${esc(r.id)}">
-    <div class="amt">${bigMoney(sh.cost)}</div><div class="who">${esc(shortName(sh.name))} · score ${sh.score ?? "—"}</div>
-    <div class="on">On <b style="color:${sd === "A" ? "var(--a)" : "var(--b)"}">${esc(r.side_labels[sd === "A" ? 0 : 1])}</b>: ${esc(r.title)}</div></div>`).join("");
-  // top sharks
-  const top = Object.entries(DATA.traders).filter(([, t]) => t.scores.overall)
-    .sort((a, b) => b[1].scores.overall.score - a[1].scores.overall.score).slice(0, 9);
-  $("#ov-top").innerHTML = top.map(([w, t], i) => {
-    const best = Object.entries(t.scores).filter(([c]) => c !== "overall").sort((a, b) => b[1].score - a[1].score)[0];
-    const pnl = (t.boards || {})["overall|all"];
-    return `<div class="ts" data-shark="${esc(w)}"><span class="rk">${i + 1}</span><div style="min-width:0">
-      <div class="nm2">${esc(shortName(t.name))}</div><div class="meta2">${best ? "best at " + esc(best[0]) : ""}${pnl ? " · " + bigMoney(pnl.pnl) + " all-time" : ""}</div></div>
-      <span class="sc2">${t.scores.overall.score}</span></div>`;
-  }).join("");
+  rows.forEach((r) => { const c = cats[r.category] = cats[r.category] || {money: 0, n: 0, multi: 0}; c.money += r.money.A + r.money.B; c.n++; if (r.total.A + r.total.B >= 2) c.multi++; });
+  const cl = Object.entries(cats).sort((a, b) => b[1].money - a[1].money);
+  $("#fcats").innerHTML = [["", "All"], ...cl.slice(0, 6).map(([c]) => [c, c])].map(([v, l]) =>
+    `<button data-c="${esc(v)}" class="${v === FEED_CAT ? "on" : ""}">${esc(l)}</button>`).join("");
+  renderFeed();
+  // topics grid
+  const mx = cl.length ? cl[0][1].money : 1;
+  $("#h-cats").textContent = `${cl.length} topics sharks trade`;
+  $("#ov-cats").innerHTML = cl.map(([c, v]) => `<div class="catcard" data-cat="${esc(c)}"><div class="nm">${esc(c)}</div>
+    <div class="v">${bigMoney(v.money)}</div><div class="s">${v.n.toLocaleString()} markets · ${v.multi.toLocaleString()} with 2+ sharks</div>
+    <div class="track"><div class="fill" style="--w:${Math.max(0.02, v.money / mx)}"></div></div></div>`).join("");
   document.querySelectorAll(".stg").forEach((g) => [...g.children].forEach((c, i) => c.style.setProperty("--i", i)));
-  // after the first time a section has been seen, data refreshes update in place instead of replaying entrances
-  document.querySelectorAll(".reveal.played").forEach((sec) => sec.querySelectorAll(".arc").forEach((c) => { c.style.strokeDashoffset = c.dataset.off; }));
   observeReveals();
+}
+function feedRows() {
+  const rows = DATA.rows.filter((r) => !FEED_CAT || r.category === FEED_CAT);
+  if (FEED_TAB === "agree") return rows.filter((r) => r.total.A + r.total.B >= 3 && (r.agreement_pct || 0) >= 75)
+    .sort((x, y) => majority(y).n - majority(x).n || majority(y).money - majority(x).money).slice(0, 40);
+  if (FEED_TAB === "split") return rows.filter((r) => r.total.A + r.total.B >= 4 && r.flags.split)
+    .sort((x, y) => (y.total.A + y.total.B) - (x.total.A + x.total.B)).slice(0, 40);
+  return rows;
+}
+function renderFeed() {
+  if (!DATA) return;
+  let html = "";
+  if (FEED_TAB === "agree" || FEED_TAB === "split") {
+    const list = feedRows();
+    html = `<table class="ftable"><thead><tr><th>Market</th><th>Sharks</th><th class="hide-s">Shark money</th><th class="r">Price</th></tr></thead><tbody>` +
+      list.map((r) => { const m = majority(r), t = r.total.A + r.total.B || 1;
+        return `<tr data-open="${esc(r.id)}"><td><div class="mq">${esc(r.title)}</div><div class="sub" style="text-transform:capitalize">${esc(r.category)} · ${fmtDate(r.event_date)}</div></td>
+        <td style="white-space:nowrap"><span class="minibar"><i class="A" style="width:${100 * r.total.A / t}%"></i><i class="B" style="width:${100 * r.total.B / t}%"></i></span>
+          ${FEED_TAB === "agree" ? `<b>${m.n}/${m.of}</b> <span class="side-tag ${m.side}">${esc(m.label)}</span>` : `<b style="color:var(--a)">${r.total.A}</b> vs <b style="color:var(--b)">${r.total.B}</b>`}</td>
+        <td class="hide-s">${FEED_TAB === "agree" ? bigMoney(m.money) : bigMoney(r.money.A) + " / " + bigMoney(r.money.B)}</td>
+        <td class="r">${cents(FEED_TAB === "agree" ? m.price : r.polymarket.price_a)}</td></tr>`; }).join("") + `</tbody></table>`;
+    if (!list.length) html = `<div class="fempty">Nothing here for this topic right now.</div>`;
+  } else if (FEED_TAB === "biggest") {
+    const bets = [];
+    feedRows().forEach((r) => ["A", "B"].forEach((sd) => r.polymarket[sd].sharks.forEach((sh) => bets.push({r, sd, sh}))));
+    bets.sort((x, y) => y.sh.cost - x.sh.cost);
+    html = `<table class="ftable"><thead><tr><th>Shark</th><th class="hide-s">Market</th><th>Side</th><th class="r">Size</th><th class="r hide-s">Entry</th><th class="r hide-s">Score</th></tr></thead><tbody>` +
+      bets.slice(0, 40).map(({r, sd, sh}) => `<tr data-open="${esc(r.id)}"><td><b style="white-space:nowrap">${esc(shortName(sh.name))}</b><div class="only-s mq dimq">${esc(r.title)}</div></td>
+        <td class="hide-s"><div class="mq">${esc(r.title)}</div></td><td><span class="side-tag ${sd}">${esc(r.side_labels[sd === "A" ? 0 : 1])}</span></td>
+        <td class="r"><b>${bigMoney(sh.cost)}</b></td><td class="r hide-s">${cents(sh.avg_price)}</td><td class="r hide-s">${sh.score ?? "—"}</td></tr>`).join("") + `</tbody></table>`;
+  } else {
+    const cat = FEED_CAT || "overall";
+    const top = Object.entries(DATA.traders).filter(([, t]) => t.scores[cat])
+      .sort((a, b) => b[1].scores[cat].score - a[1].scores[cat].score).slice(0, 40);
+    html = `<table class="ftable"><thead><tr><th>#</th><th>Shark</th><th class="hide-s">Best topic</th><th class="r hide-s">All-time profit</th><th class="r">Score</th></tr></thead><tbody>` +
+      top.map(([w, t], i) => { const best = Object.entries(t.scores).filter(([c]) => c !== "overall").sort((a, b) => b[1].score - a[1].score)[0];
+        const pnl = (t.boards || {})[`${cat}|all`] || (t.boards || {})["overall|all"];
+        return `<tr data-shark="${esc(w)}"><td class="sub">${i + 1}</td><td style="font-weight:600">${esc(shortName(t.name))}</td>
+        <td class="hide-s" style="text-transform:capitalize">${best ? esc(best[0]) : "—"}</td><td class="r hide-s">${pnl ? bigMoney(pnl.pnl) : "—"}</td>
+        <td class="r"><b style="color:var(--accent)">${t.scores[cat].score}</b></td></tr>`; }).join("") + `</tbody></table>`;
+  }
+  $("#fbody").innerHTML = html;
 }
 let REVEAL_IO = null;
 function observeReveals() {
@@ -832,8 +969,22 @@ function countUp() {
     requestAnimationFrame(step);
   });
 }
-$("#herocard").addEventListener("click", (e) => { const id = e.currentTarget.dataset.open; if (id) openMarket(id); });
+$("#ftabs").addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return;
+  FEED_TAB = b.dataset.f; $("#ftabs").querySelectorAll("button").forEach((x) => x.classList.toggle("on", x === b)); $("#fbody").scrollTop = 0; renderFeed(); });
+$("#fcats").addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return;
+  FEED_CAT = b.dataset.c; $("#fcats").querySelectorAll("button").forEach((x) => x.classList.toggle("on", x === b)); $("#fbody").scrollTop = 0; renderFeed(); });
+document.addEventListener("click", (e) => {
+  const go = e.target.closest("[data-go]");
+  if (go && !e.target.closest("#tab-overview")) { e.preventDefault(); document.querySelector(`nav button[data-tab="${go.dataset.go}"]`).click(); return; }
+  if (e.target.closest(".brandlink[data-tab-link]")) { e.preventDefault(); document.querySelector('nav button[data-tab="overview"]').click(); return; }
+  const inHero = e.target.closest("#hero");
+  if (!inHero) return;
+  const sh = e.target.closest("[data-shark]"); if (sh) { openShark(sh.dataset.shark); return; }
+  const o = e.target.closest("[data-open]"); if (o) openMarket(o.dataset.open);
+});
 $("#tab-overview").addEventListener("click", (e) => {
+  const cc = e.target.closest("[data-cat]");
+  if (cc) { document.querySelector('nav button[data-tab="markets"]').click(); $("#f-cat").value = cc.dataset.cat; $("#f-min").value = 1; SHOWN = 100; renderRows(); return; }
   const go = e.target.closest("[data-go]");
   if (go) { document.querySelector(`nav button[data-tab="${go.dataset.go}"]`).click(); return; }
   const sh = e.target.closest("[data-shark]");
@@ -897,10 +1048,11 @@ $("#reset").onclick = async () => {
 
 /* ---------------- events ---------------- */
 document.querySelectorAll("nav button").forEach((b) => b.onclick = () => {
-  document.querySelectorAll("nav button").forEach((x) => x.classList.toggle("on", x === b));
+  document.querySelectorAll("nav button").forEach((x) => x.classList.toggle("on", x.dataset.tab === b.dataset.tab));
   ["overview", "markets", "sharks", "settings", "guide"].forEach((t) => $("#tab-" + t).classList.toggle("hidden", t !== b.dataset.tab));
-  const navTop = document.querySelector("#tab-markets").parentElement.querySelector("nav").offsetTop - $("#navbar").offsetHeight;
-  if (window.scrollY > navTop) window.scrollTo({top: navTop});
+  $("#hero").classList.toggle("hidden", b.dataset.tab !== "overview");
+  document.querySelector(".wrap").style.paddingTop = b.dataset.tab === "overview" ? "" : "calc(var(--navh) + 8px)";
+  window.scrollTo({top: 0});
 });
 ["#f-q", "#f-cat", "#f-min", "#f-from", "#f-to", "#f-sort", "#f-split", "#f-nosplit"].forEach((s) => $(s).addEventListener("input", () => { SHOWN = 100; renderRows(); }));
 ["#s-q", "#s-cat"].forEach((s) => $(s).addEventListener("input", renderSharks));
