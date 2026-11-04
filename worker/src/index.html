@@ -470,7 +470,13 @@ nav button:active{transform:scale(0.97)}
 .ltable th{font-size:11.5px;font-weight:500;color:var(--dim);text-align:left;padding:8px 10px 8px 0;border-bottom:1px solid var(--line);position:sticky;top:var(--navh);background:var(--bg)}
 .ltable td{font-size:13px;padding:10px 10px 10px 0;border-bottom:1px solid var(--line);vertical-align:top}
 .ltable .r{text-align:right;white-space:nowrap}
-.ltable tr.lr{cursor:pointer;animation:rowin 420ms var(--ease-out)}
+.ltable tr.lr{cursor:pointer}
+.ltable tr.lr.new{animation:rowin 900ms var(--ease-out)}
+.livetag{display:inline-flex;align-items:center;gap:6px;color:var(--a);font-weight:600;margin-left:4px}
+.livetag i{width:7px;height:7px;border-radius:50%;background:var(--a);animation:ping 1.6s ease-out infinite}
+.livetag.off{color:var(--mute);font-weight:400}
+@keyframes ping{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--a) 60%,transparent)}100%{box-shadow:0 0 0 7px transparent}}
+@media (prefers-reduced-motion: reduce){.livetag i{animation:none}}
 @keyframes rowin{from{background:color-mix(in srgb,var(--accent) 12%,transparent)}to{background:transparent}}
 .ltable .who{font-weight:600;white-space:nowrap}
 .ltable .mq3{line-height:1.35}
@@ -481,7 +487,7 @@ nav button:active{transform:scale(0.97)}
 .star{font:inherit;background:none;border:0;color:var(--dim);cursor:pointer;padding:0 4px 0 0;font-size:15px;line-height:1;transition:transform 160ms var(--ease-out),color 120ms ease}
 .star:active{transform:scale(0.85)} .star.on{color:var(--warn)}
 @media (hover: hover) and (pointer: fine){.ltable tr.lr:hover td{background:color-mix(in srgb,var(--raise) 60%,transparent)} .star:hover{color:var(--warn)}}
-@media (prefers-reduced-motion: reduce){.ltable tr.lr{animation:none}}
+@media (prefers-reduced-motion: reduce){.ltable tr.lr.new{animation:none}}
 @media (max-width: 900px){.ltable .hide-s{display:none}}
 /* profit chart */
 .pchart{margin:16px 0 4px}
@@ -1477,9 +1483,53 @@ document.addEventListener("click", (e) => {
 const LV = {view: "latest", range: 24, min: 500, shown: 60};
 try { const sv = JSON.parse(localStorage.getItem("st-lv") || "{}"); if (sv.range) LV.range = sv.range; if (sv.min) LV.min = sv.min; } catch {}
 const tAgo = (t) => { const m = Math.max(0, Math.round((Date.now() / 1000 - t) / 60)); return m < 1 ? "now" : m < 60 ? m + "m" : m < 1440 ? Math.round(m / 60) + "h" : Math.round(m / 1440) + "d"; };
+const LIVE_BUF = new Map(), LIVE = {ok: null, at: 0, polling: false, seen: new Set(), first: true};
+const tkey = (t) => `${t.w}|${t.c}|${t.side}|${t.t}|${Math.round(t.usd)}`;
+function allTrades() {
+  const m = new Map();
+  (((DATA && DATA.feed) || {}).trades || []).forEach((t) => m.set(tkey(t), t));
+  LIVE_BUF.forEach((t, k) => m.set(k, t));
+  return [...m.values()].sort((a, b) => b.t - a.t);
+}
+function ingestTrades(rows) {
+  const tr = (DATA && DATA.traders) || {};
+  rows.forEach((r) => {
+    const w = (r.proxy_wallet || "").toLowerCase(), usd = Math.round((r.size || 0) * (r.price || 0) * 100) / 100, sh = tr[w];
+    if (!w || (!sh && usd < 10000)) return;
+    const t = {t: r.timestamp, w, n: sh ? sh.name : (r.name || r.pseudonym || w.slice(0, 10)), side: r.side, o: r.outcome || "", usd,
+      px: Math.round((r.price || 0) * 1e4) / 1e4, q: r.title || "", c: r.condition_id || "", e: r.event_slug || "",
+      s: sh && sh.scores.overall ? sh.scores.overall.score : sh ? Math.max(...Object.values(sh.scores).map((x) => x.score)) : null};
+    LIVE_BUF.set(tkey(t), t);
+  });
+  if (LIVE_BUF.size > 6000) [...LIVE_BUF.entries()].sort((a, b) => a[1].t - b[1].t).slice(0, LIVE_BUF.size - 5000).forEach(([k]) => LIVE_BUF.delete(k));
+}
+async function pollLive() {
+  if (LIVE.polling) return; LIVE.polling = true;
+  try {
+    const pages = LIVE.first ? 3 : 1; let cursor = null;
+    for (let i = 0; i < pages; i++) {
+      const u = new URL("https://data-api.polymarket.com/v2/trades");
+      u.searchParams.set("limit", LIVE.first ? "1000" : "300"); u.searchParams.set("filter_type", "CASH"); u.searchParams.set("filter_amount", "500");
+      if (cursor) u.searchParams.set("cursor", cursor);
+      const ctl = new AbortController(), to = setTimeout(() => ctl.abort(), 12000);
+      const r = await fetch(u, {cache: "no-store", signal: ctl.signal}); clearTimeout(to);
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      const j = await r.json(); ingestTrades(j.data || []);
+      cursor = j.pagination && j.pagination.next_cursor; if (!cursor) break;
+    }
+    LIVE.ok = true; LIVE.first = false; LIVE.at = Date.now();
+  } catch (e) { LIVE.ok = false; } finally { LIVE.polling = false; }
+  renderLive();
+}
+function liveLoop() {
+  const on = !$("#tab-live").classList.contains("hidden") && !document.hidden;
+  if (on) pollLive();
+  setTimeout(liveLoop, 10000);
+}
+document.addEventListener("visibilitychange", () => { if (!document.hidden && !$("#tab-live").classList.contains("hidden")) pollLive(); });
 function liveTrades() {
-  const F = (DATA && DATA.feed) || {trades: []}, since = Date.now() / 1000 - LV.range * 3600;
-  let list = F.trades.filter((t) => t.t >= since && t.usd >= LV.min);
+  const since = Date.now() / 1000 - LV.range * 3600;
+  let list = allTrades().filter((t) => t.t >= since && t.usd >= LV.min);
   if (LV.view === "sharks") list = list.filter((t) => t.s != null);
   if (LV.view === "following") list = list.filter((t) => WL.has(t.w));
   if (LV.view === "biggest") list = list.slice().sort((a, b) => b.usd - a.usd);
@@ -1488,19 +1538,22 @@ function liveTrades() {
 function renderLive() {
   if (!DATA) return;
   const F = DATA.feed || {trades: [], since: null};
+  const all = allTrades();
   $("#lv-view").querySelectorAll("button").forEach((b) => b.classList.toggle("on", b.dataset.v === LV.view));
   $("#lv-range").querySelectorAll("button").forEach((b) => b.classList.toggle("on", +b.dataset.r === LV.range));
   $("#lv-min").value = String(LV.min);
   const list = liveTrades();
   const buys = list.filter((t) => t.side === "BUY"), vol = list.reduce((x, t) => x + t.usd, 0);
   const sharksIn = new Set(list.filter((t) => t.s != null).map((t) => t.w)).size;
-  $("#lv-desc").textContent = `Every public Polymarket trade over $500, tagged when the trader is one of the ${Object.keys(DATA.traders).length.toLocaleString()} tracked sharks. Other trades are shown only above $10K. The feed adds new trades each refresh.`;
+  const age = LIVE.at ? Math.round((Date.now() - LIVE.at) / 1000) : null;
+  $("#lv-desc").innerHTML = `Every public Polymarket trade over $500, as it happens. Trades by the ${Object.keys(DATA.traders).length.toLocaleString()} tracked sharks are tagged with their score; other traders appear above $10K. ` +
+    (LIVE.ok ? `<span class="livetag"><i></i>Live, checked ${age < 3 ? "just now" : age + "s ago"}</span>` : LIVE.ok === false ? `<span class="livetag off">Couldn't reach Polymarket from this network. Showing the saved feed.</span>` : `<span class="livetag off">Connecting…</span>`);
   $("#lv-stats").innerHTML = [["Trades", list.length.toLocaleString()], ["Volume", bigMoney(vol)],
     ["Buys / sells", list.length ? `${Math.round(100 * buys.length / list.length)}% / ${Math.round(100 * (1 - buys.length / list.length))}%` : "—"],
     ["Sharks active", sharksIn.toLocaleString()]].map(([l, v]) => `<div><div class="l">${l}</div><div class="v">${v}</div></div>`).join("");
   // most active markets among shark trades in range
   const since = Date.now() / 1000 - LV.range * 3600, hot = {};
-  F.trades.filter((t) => t.s != null && t.t >= since && t.usd >= LV.min).forEach((t) => {
+  all.filter((t) => t.s != null && t.t >= since && t.usd >= LV.min).forEach((t) => {
     const h = hot[t.c] = hot[t.c] || {q: t.q, c: t.c, buy: 0, sell: 0, sharks: new Set(), out: {}};
     (t.side === "BUY" ? (h.buy += t.usd) : (h.sell += t.usd)); h.sharks.add(t.w);
     if (t.side === "BUY") h.out[t.o] = (h.out[t.o] || 0) + t.usd;
@@ -1510,15 +1563,16 @@ function renderLive() {
   $("#lv-hot").innerHTML = hl.map((h) => { const top = Object.entries(h.out).sort((a, b) => b[1] - a[1])[0];
     return `<div class="hot" data-open="polymarket|${esc(h.c)}||"><div class="q">${esc(h.q)}</div><div class="v">${bigMoney(h.buy)} bought</div>
       <div class="d">${h.sharks.size} shark${h.sharks.size === 1 ? "" : "s"}${top ? " · mostly " + esc(top[0]) : ""}${h.sell ? " · " + bigMoney(h.sell) + " sold" : ""}</div></div>`; }).join("") || `<p class="sub">No shark trades in this range yet.</p>`;
-  const rows = list.slice(0, LV.shown).map((t) => `<tr class="lr" data-open="polymarket|${esc(t.c)}||">
+  const rows = list.slice(0, LV.shown).map((t) => { const k = tkey(t), isNew = !LIVE.seen.has(k); LIVE.seen.add(k); return `<tr class="lr${isNew && LIVE.ok && !LIVE.first ? " new" : ""}" data-open="polymarket|${esc(t.c)}||">
     <td class="sub" style="white-space:nowrap">${tAgo(t.t)}</td>
     <td><span class="who">${starBtn(t.w)}<a href="#" data-shark="${esc(t.w)}">${esc(shortName(t.n))}</a></span>${t.s != null ? `<span class="badge">Shark ${t.s}</span>` : `<span class="badge wh">Whale</span>`}</td>
     <td><span class="tag ${t.side}">${t.side === "BUY" ? "Buy" : "Sell"}</span> <b>${esc(t.o)}</b></td>
-    <td class="mq3 hide-s">${esc(t.q)}</td><td class="r"><b>${bigMoney(t.usd)}</b></td><td class="r hide-s">${cents(t.px)}</td></tr>`).join("");
+    <td class="mq3 hide-s">${esc(t.q)}</td><td class="r"><b>${bigMoney(t.usd)}</b></td><td class="r hide-s">${cents(t.px)}</td></tr>`; }).join("");
   $("#lv-table").innerHTML = list.length ? `<table class="ltable"><thead><tr><th>Age</th><th>Trader</th><th>Trade</th><th class="hide-s">Market</th><th class="r">Size</th><th class="r hide-s">Price</th></tr></thead><tbody>${rows}</tbody></table>`
     : `<p class="sub" style="padding:24px 0">${LV.view === "following" ? "Follow a trader with the ☆ button and their trades show up here." : "No trades in this range yet."}</p>`;
   $("#lv-more").classList.toggle("hidden", list.length <= LV.shown);
-  $("#lv-note").textContent = F.since ? `Tracking trades since ${fmtTime(F.since)}. Longer ranges fill in as the tracker keeps running. Updated ${fmtTime(F.updated)}.` : "";
+  const oldest = all.length ? all[all.length - 1].t : null;
+  $("#lv-note").textContent = oldest ? `Showing trades back to ${fmtTime(oldest)}. Longer ranges fill in as the tracker keeps running.` : "";
   $("#lv-h").textContent = LV.view === "following" ? "Trades by traders you follow" : "Live shark trades";
 }
 $("#lv-view").addEventListener("click", (e) => { const b = e.target.closest("button"); if (b) { LV.view = b.dataset.v; LV.shown = 60; renderLive(); } });
@@ -1531,6 +1585,10 @@ $("#tab-live").addEventListener("click", (e) => {
   if (e.target.closest("[data-star]") || e.target.closest("a")) return;
   const o = e.target.closest("[data-open]"); if (o) openMarket(o.dataset.open);
 });
+
+liveLoop();
+new MutationObserver(() => { if (!$("#tab-live").classList.contains("hidden")) pollLive(); }).observe($("#tab-live"), {attributes: true, attributeFilter: ["class"]});
+setInterval(() => { if (!$("#tab-live").classList.contains("hidden") && LIVE.ok) renderLive(); }, 5000);
 
 /* ---- profit chart for a shark ---- */
 function profitChart(pn) {
