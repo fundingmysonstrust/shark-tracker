@@ -199,3 +199,50 @@ def test_party_question_never_auto_matches_candidate_market():
     res = kalshi.attach_prices(PoliteClient(), [row], ks, {}, S)
     assert "kalshi" not in row
     assert all(p["confidence"] < S["auto_match_confidence"] for p in res["possible"])
+
+
+# ---------------- combos and feed ----------------
+from collector import combos as combos_mod, feed as feed_mod  # noqa: E402
+
+
+def _leg(title, event, price, agree=100, sharks=5, cat="crypto", end="2999-01-01"):
+    return {"market_id": title, "title": title, "category": cat, "event": event, "end_date": end,
+            "outcome_index": 0, "label": "Yes", "sharks": sharks, "of": sharks, "agree": agree, "money": 1000,
+            "price": price, "url": ""}
+
+
+def test_combo_never_pairs_related_markets():
+    a = _leg("Will Bitcoin dip to $55,000 by December 31?", "Bitcoin price", 0.9)
+    b = _leg("Will Bitcoin reach $90,000 in November?", "Bitcoin price 2", 0.8)
+    c = _leg("Will Ethereum reach $3,500 by December 31?", "Ethereum price", 0.7)
+    assert combos_mod._related(a, b) and not combos_mod._related(a, c)
+    pick = combos_mod._pick([a, b, c], 0.5, 0.95)
+    assert len(pick) < 3 or not any(combos_mod._related(x, y) for x in pick for y in pick if x is not y)
+
+
+def test_combo_price_band_and_horizon():
+    far = _leg("far market", "e1", 0.9, end="2999-01-01")
+    pick = combos_mod._pick([far], 0.5, 0.95)
+    assert pick == []  # beyond the 75-day horizon
+
+
+def test_trade_row_computes_dollars():
+    r = feed_mod._trade_row({"timestamp": 100, "proxy_wallet": "0xAB", "size": 1000, "price": 0.25, "side": "BUY",
+                             "title": "T", "condition_id": "c", "event_slug": "e", "outcome": "Yes", "name": "n",
+                             "transaction_hash": "0xabc"})
+    assert r[5] == 250.0 and r[1] == "0xab" and r[3] == "BUY"
+
+
+def test_feed_keeps_shark_trades_and_big_whales_only():
+    class Fake:
+        def __init__(self, pages): self.pages = pages
+        def get_json(self, url, params=None, ttl=0): return self.pages.pop(0)
+    now = int(__import__("time").time())
+    def tr(w, usd, ts, h):
+        return {"timestamp": ts, "proxy_wallet": w, "size": usd, "price": 1.0, "side": "BUY", "title": "T",
+                "condition_id": "c", "event_slug": "e", "outcome": "Yes", "name": "n", "transaction_hash": h}
+    page = {"data": [tr("0xs", 900, now - 10, "h1"), tr("0xo", 900, now - 20, "h2"), tr("0xo", 20000, now - 30, "h3")],
+            "pagination": {"next_cursor": None}}
+    st = feed_mod.update_feed(Fake([page]), {"0xs"}, None)
+    kept = {(r[1], r[5]) for r in st["trades"]}
+    assert kept == {("0xs", 900.0), ("0xo", 20000.0)}   # small non-shark trade dropped

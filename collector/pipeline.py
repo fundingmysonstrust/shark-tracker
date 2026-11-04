@@ -24,6 +24,7 @@ import time
 from typing import Any, Optional
 
 from . import combos as combos_mod
+from . import feed as feed_mod
 from . import kalshi
 from . import polymarket as pm
 from .beliefs import Position, tally, to_beliefs
@@ -292,12 +293,27 @@ def run(user_settings: Optional[dict], decisions: Optional[dict], state: Optiona
     all_rows = len(rows)
     rows = _slim_rows(rows)
 
+    # 9. Live trade feed and profit curves (never fail the refresh).
+    shark_info = {w: {"name": traders[w].name, "score": scores[w].get("overall", {}).get("score",
+                      max(v["score"] for v in scores[w].values()))} for w in sharks}
+    feed_state, pnl_state = state.get("feed", {}), state.get("pnl", {})
+    feed_data = {"trades": [], "since": None}
+    try:
+        feed_state = feed_mod.update_feed(client, set(sharks), feed_state)
+        feed_data = feed_mod.feed_for_site(feed_state, shark_info)
+        ranked = sorted(sharks, key=lambda w: -shark_info[w]["score"])
+        pnl_state = feed_mod.update_pnl(client, ranked, pnl_state)
+    except Exception as e:  # noqa: BLE001
+        log.warning("Feed step failed: %s", e)
+    pnl_state = {w: v for w, v in pnl_state.items() if w in set(sharks)}
+
     trader_out = {}
     for w in sharks:
         t = traders[w]
         trader_out[w] = {"name": t.name, "profile_url": t.profile_url, "scores": scores[w],
                          "history": t.history, "boards": {f"{c}|{p}": v for (c, p), v in t.boards.items()},
                          "positions_fetched_at": pos_cache.get(w, {}).get("fetched_at"),
+                         "pnl": pnl_state.get(w),
                          "positions": _shark_positions(pos_cache.get(w, {}).get("rows", []), titles, markets, cut)}
 
     took = round(time.time() - t_start)
@@ -324,8 +340,8 @@ def run(user_settings: Optional[dict], decisions: Optional[dict], state: Optiona
 
     data = {"generated_at": int(time.time()), "settings": S, "status": status, "totals": totals,
             "rows": rows, "rows_total": all_rows, "traders": trader_out, "skipped": skipped,
-            "possible_matches": possible, "combos": combo_data}
+            "possible_matches": possible, "combos": combo_data, "feed": feed_data}
     new_state = {"history": hist_cache, "positions": pos_cache, "events": ev_cache, "titles": titles,
-                 "kalshi": kstate, "combos": combo_state}
+                 "kalshi": kstate, "combos": combo_state, "feed": feed_state, "pnl": pnl_state}
     log.info("refresh done in %ss: %d rows, %s", took, len(rows), status["polymarket"]["message"])
     return data, new_state

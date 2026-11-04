@@ -136,8 +136,8 @@ def fetch_history(client: PoliteClient, wallet: str, sample: int = 100,
     n = len(closed) + len(unclaimed)
 
     st = (client.get_json(f"{DATA}/user-stats", {"user": wallet}, ttl=ttl) or {}).get("data") or {}
-    return {"wins_sample": wins, "settled_sample": n,
-            "traded": st.get("trades"), "fetched_at": int(time.time())}
+    return {"wins_sample": wins, "settled_sample": n, "traded": st.get("trades"),
+            "biggest_win": st.get("biggest_win"), "joined": st.get("join_date"), "fetched_at": int(time.time())}
 
 
 def fetch_open_positions(client: PoliteClient, wallet: str, min_value: float = 1.0,

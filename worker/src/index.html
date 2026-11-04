@@ -402,6 +402,9 @@ nav button:active{transform:scale(0.97)}
 .gw-wrap{position:absolute;left:50%;top:50%;width:min(1100px,150vw);margin-left:calc(min(1100px,150vw) / -2);margin-top:-210px;
   will-change:transform,opacity;transform-origin:50% 50%}
 .gw{width:100%;height:auto;display:block;overflow:visible;filter:drop-shadow(0 40px 50px rgba(0,0,0,.55))}
+.gw-jaw-o{transform-origin:684px 188px;transform:rotate(var(--jaw,0deg))}
+.gw-jaw-i{transform-origin:684px 188px;animation:chomp 2.6s ease-in-out infinite}
+@keyframes chomp{0%,100%{transform:rotate(0)}42%,58%{transform:rotate(-6deg)}}
 .gw-tail{transform-origin:166px 158px;animation:tailbeat 1.5s ease-in-out infinite alternate}
 .gw-pec{transform-origin:584px 190px;animation:pec 3s ease-in-out infinite alternate}
 @keyframes tailbeat{from{transform:rotate(-9deg) scaleX(.96)}to{transform:rotate(9deg) scaleX(1.02)}}
@@ -432,7 +435,7 @@ nav button:active{transform:scale(0.97)}
   .dive{height:auto}
   .dive .stage{position:relative;height:auto;padding:90px 0 60px}
   .gw-wrap{position:relative;left:auto;top:auto;margin:0 auto;width:min(900px,120vw);transform:none!important;opacity:1!important}
-  .gw-tail,.gw-pec,.godrays,.snow i{animation:none}
+  .gw-tail,.gw-pec,.gw-jaw-i,.godrays,.snow i{animation:none}
   .panels{position:relative;display:grid;gap:40px;place-items:start;padding:20px 24px 0}
   .panel{grid-area:auto;opacity:1;transform:none;filter:none}
   .dots,.scrollhint{display:none}
@@ -455,6 +458,72 @@ nav button:active{transform:scale(0.97)}
 .pos-up{color:var(--a);font-weight:600} .pos-dn{color:var(--bad);font-weight:600}
 @media (hover: hover) and (pointer: fine){.prow:hover td{background:color-mix(in srgb,var(--raise) 60%,transparent)}}
 @media (max-width: 900px){.ptable .hide-s{display:none}}
+/* ===== live ===== */
+.lvbar{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;padding:12px 0;border-top:1px solid var(--line)}
+.lvbar select{font:inherit;font-size:13px;padding:5px 8px;border:1px solid var(--line2);border-radius:6px;background:var(--panel);color:var(--ink)}
+.hot{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:2px 20px;padding:11px 0;border-top:1px solid var(--line);cursor:pointer;align-items:baseline}
+.hot .q{font-size:14px;font-weight:550;line-height:1.35}
+.hot .d{font-size:12.5px;color:var(--mute);grid-column:1}
+.hot .v{font-weight:650;text-align:right;font-variant-numeric:tabular-nums}
+.hot .w{grid-column:2 / span 2;grid-row:2;text-align:right;font-size:12.5px;color:var(--mute)}
+.ltable{width:100%;border-collapse:collapse}
+.ltable th{font-size:11.5px;font-weight:500;color:var(--dim);text-align:left;padding:8px 10px 8px 0;border-bottom:1px solid var(--line);position:sticky;top:var(--navh);background:var(--bg)}
+.ltable td{font-size:13px;padding:10px 10px 10px 0;border-bottom:1px solid var(--line);vertical-align:top}
+.ltable .r{text-align:right;white-space:nowrap}
+.ltable tr.lr{cursor:pointer;animation:rowin 420ms var(--ease-out)}
+@keyframes rowin{from{background:color-mix(in srgb,var(--accent) 12%,transparent)}to{background:transparent}}
+.ltable .who{font-weight:600;white-space:nowrap}
+.ltable .mq3{line-height:1.35}
+.badge{display:inline-block;font-size:11.5px;font-weight:600;color:var(--accent);margin-left:6px}
+.badge.wh{color:var(--mute);font-weight:500}
+.tag{font-size:12px;font-weight:650}
+.tag.BUY{color:var(--a)} .tag.SELL{color:var(--b)}
+.star{font:inherit;background:none;border:0;color:var(--dim);cursor:pointer;padding:0 4px 0 0;font-size:15px;line-height:1;transition:transform 160ms var(--ease-out),color 120ms ease}
+.star:active{transform:scale(0.85)} .star.on{color:var(--warn)}
+@media (hover: hover) and (pointer: fine){.ltable tr.lr:hover td{background:color-mix(in srgb,var(--raise) 60%,transparent)} .star:hover{color:var(--warn)}}
+@media (prefers-reduced-motion: reduce){.ltable tr.lr{animation:none}}
+@media (max-width: 900px){.ltable .hide-s{display:none}}
+/* profit chart */
+.pchart{margin:16px 0 4px}
+.pchart svg{width:100%;height:130px;display:block;overflow:visible}
+.pchart .ln{fill:none;stroke:var(--accent);stroke-width:2;stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke;stroke-dasharray:1;stroke-dashoffset:1}
+.pchart.go .ln{animation:draw 900ms var(--ease-out) forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.pchart .ar{fill:url(#pcg);opacity:0;transition:opacity 600ms ease 300ms} .pchart.go .ar{opacity:1}
+.pchart .ax{display:flex;justify-content:space-between;font-size:11.5px;color:var(--dim);margin-top:4px}
+@media (prefers-reduced-motion: reduce){.pchart .ln{stroke-dasharray:none;animation:none!important} .pchart .ar{opacity:1;transition:none}}
+.moresheet{position:fixed;right:10px;bottom:calc(68px + env(safe-area-inset-bottom,0px));z-index:50;display:flex;flex-direction:column;min-width:170px;
+  background:color-mix(in srgb,var(--panel) 94%,transparent);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border:1px solid var(--line2);border-radius:14px;padding:6px;box-shadow:0 20px 40px rgba(0,0,0,.4)}
+.moresheet button,.moresheet a{font:inherit;font-size:14px;text-align:left;color:var(--ink);background:none;border:0;padding:11px 12px;border-radius:8px;cursor:pointer;text-decoration:none}
+.moresheet button:active,.moresheet a:active{background:var(--raise)}
+@media (min-width: 901px){.moresheet{display:none!important}}
+/* ===== parlay builder ===== */
+.pbar{display:flex;flex-wrap:wrap;gap:16px 28px;align-items:flex-end;padding:14px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.ctl{display:flex;flex-direction:column;gap:6px}
+.ctl .cl{font-size:12px;color:var(--mute)}
+.ctl select{font:inherit;font-size:13.5px;padding:6px 9px;border:1px solid var(--line2);border-radius:6px;background:var(--panel);color:var(--ink)}
+.stepper{display:inline-flex;align-items:center;border:1px solid var(--line2);border-radius:8px;overflow:hidden}
+.stepper button{font:inherit;font-size:18px;line-height:1;width:36px;height:34px;background:var(--panel);color:var(--ink);border:0;cursor:pointer;transition:transform 160ms var(--ease-out),background-color 120ms ease}
+.stepper button:active{transform:scale(0.94)} .stepper button:disabled{color:var(--dim);cursor:default}
+.stepper output{min-width:38px;text-align:center;font-weight:650;font-variant-numeric:tabular-nums}
+.pt{padding:26px 0;border-bottom:1px solid var(--line)}
+.pt .top{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:6px}
+.pt h3{margin:0;font-size:18px;letter-spacing:-.015em}
+.pt .sub2{font-size:13px;color:var(--mute);margin-top:2px}
+.pt .pay{text-align:right}
+.pt .pay b{display:block;font-size:34px;font-weight:700;letter-spacing:-.035em;line-height:1;font-variant-numeric:tabular-nums}
+.pt .pay span{font-size:12.5px;color:var(--mute)}
+.pt .lg{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:2px 12px;padding:11px 0;border-top:1px solid var(--line);cursor:pointer}
+.pt .lg .n{color:var(--dim);font-size:13px;font-variant-numeric:tabular-nums;grid-row:1 / span 2}
+.pt .lg .t{font-size:14px;font-weight:550;line-height:1.35}
+.pt .lg .t b{font-weight:700}
+.pt .lg .d{font-size:12.5px;color:var(--mute)}
+.pt .lg .p{grid-column:3;grid-row:1 / span 2;align-self:center;text-align:right;font-variant-numeric:tabular-nums;font-size:14px;font-weight:600}
+.pt .warn{font-size:12.5px;color:var(--warn);margin:8px 0 0}
+@media (hover: hover) and (pointer: fine){.pt .lg:hover .t{color:var(--accent)}}
+.cbgrid{display:block;max-width:880px}
+.cbc{background:none;border:0;border-radius:0;border-top:1px solid var(--line);padding:20px 0}
 /* ===== recommendations ===== */
 .cbrecord{display:flex;flex-wrap:wrap;gap:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
 .cbrecord > div{flex:1 1 150px;padding:12px 16px 12px 0}
@@ -524,6 +593,7 @@ nav button:active{transform:scale(0.97)}
   <nav>
     <button data-tab="overview" class="on">Overview</button>
     <button data-tab="markets">Markets</button>
+    <button data-tab="live">Live</button>
     <button data-tab="combos">Recommendations</button>
     <button data-tab="sharks">Sharks</button>
     <button data-tab="settings">Settings</button>
@@ -536,11 +606,14 @@ nav button:active{transform:scale(0.97)}
 <nav class="tabbar" aria-label="Sections">
   <button data-tab="overview" class="on"><svg viewBox="0 0 24 24"><path d="M4 18c4-1.5 6-5 7.5-12 2 5 4.5 9 8.5 12z"/></svg>Overview</button>
   <button data-tab="markets"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Markets</button>
+  <button data-tab="live"><svg viewBox="0 0 24 24"><path d="M3 12h4l2.5-6 4 12 2.5-6H21"/></svg>Live</button>
   <button data-tab="combos"><svg viewBox="0 0 24 24"><path d="M5 19V9M12 19V5M19 19v-7"/></svg>Combos</button>
   <button data-tab="sharks"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c1.2-4 4-5.5 7-5.5s5.8 1.5 7 5.5"/></svg>Sharks</button>
-  <button data-tab="settings"><svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>Settings</button>
-  <button data-tab="guide"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M9.8 9.5a2.3 2.3 0 1 1 3.2 2.1c-.7.3-1 .8-1 1.5M12 16.5v.1"/></svg>Guide</button>
+  <button id="moreBtn" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="18" cy="12" r="1.2"/></svg>More</button>
 </nav>
+<div class="moresheet hidden" id="moreSheet">
+  <button data-tab="settings">Settings</button><button data-tab="guide">Guide</button><a href="/logout">Log out</a>
+</div>
 <section class="ocean" id="hero">
   <div class="rays"></div>
   <div class="bubbles" aria-hidden="true"><i style="--x:12%;--d:0;--t:9s;--s:6px"></i><i style="--x:22%;--d:3;--t:11s;--s:4px"></i><i style="--x:35%;--d:6;--t:10s;--s:8px"></i><i style="--x:48%;--d:1.5;--t:12s;--s:5px"></i><i style="--x:61%;--d:4.5;--t:9.5s;--s:7px"></i><i style="--x:72%;--d:7;--t:11.5s;--s:4px"></i><i style="--x:84%;--d:2;--t:10.5s;--s:6px"></i><i style="--x:92%;--d:5.5;--t:12.5s;--s:5px"></i></div>
@@ -596,7 +669,7 @@ nav button:active{transform:scale(0.97)}
     <div class="gw-wrap" id="gw"><svg class="gw" viewBox="0 0 820 330" aria-hidden="true">
   <defs>
     <linearGradient id="gwSkin" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#2a3d50"/><stop offset=".38" stop-color="#4c6276"/><stop offset=".56" stop-color="#7a8d9d"/>
+      <stop offset="0" stop-color="#1a2836"/><stop offset=".38" stop-color="#3d5164"/><stop offset=".56" stop-color="#7a8d9d"/>
       <stop offset=".62" stop-color="#cfd9e1"/><stop offset="1" stop-color="#eef3f6"/>
     </linearGradient>
     <linearGradient id="gwFin" x1="0" y1="0" x2="0" y2="1">
@@ -611,6 +684,8 @@ nav button:active{transform:scale(0.97)}
     <linearGradient id="gwShade" x1="0" y1="0" x2="0" y2="1">
       <stop offset=".55" stop-color="#05121f" stop-opacity="0"/><stop offset="1" stop-color="#05121f" stop-opacity=".35"/>
     </linearGradient>
+    <radialGradient id="gwGape" cx=".6" cy=".35" r=".8"><stop offset="0" stop-color="#4a0f1a"/><stop offset=".55" stop-color="#1c060c"/><stop offset="1" stop-color="#050102"/></radialGradient>
+    <linearGradient id="gwJaw" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9aa9b6"/><stop offset=".5" stop-color="#dbe4ea"/><stop offset="1" stop-color="#f2f6f8"/></linearGradient>
     <clipPath id="gwBodyClip"><path id="gwBodyPath" d="M 786 166 C 774 140, 746 116, 702 102 C 650 86, 586 80, 518 82 C 438 84, 358 98, 290 118 C 238 132, 198 145, 168 155 L 156 160 C 196 175, 252 194, 322 207 C 402 221, 484 225, 564 219 C 634 213, 694 200, 740 187 C 766 180, 781 172, 786 166 Z"/></clipPath>
   </defs>
   <!-- far-side pectoral, behind the body -->
@@ -647,12 +722,24 @@ nav button:active{transform:scale(0.97)}
   <path class="gw-pec" d="M 558 198 C 546 228, 526 264, 498 302 C 494 308, 500 312, 507 306 C 546 274, 584 240, 608 206 Z" fill="url(#gwPec)"/>
   <!-- pelvic fin -->
   <path d="M 340 208 C 334 220, 326 230, 318 238 C 334 232, 350 222, 362 212 Z" fill="#6f8395"/>
-  <!-- snout, mouth, nostril, eye -->
-  <path d="M 784 166 C 772 170, 758 176, 738 180 C 716 184, 694 184, 676 182" stroke="#2a3a48" stroke-width="1.6" fill="none" opacity=".7" stroke-linecap="round"/>
-  <path d="M 744 180 l 3 4 l 3 -4 l 3 4 l 3 -4 l 3 3" stroke="#f4f7f9" stroke-width="1" fill="none" opacity=".55"/>
-  <path d="M 768 150 C 772 152, 774 154, 774 156" stroke="#1d2a36" stroke-width="1.6" fill="none" opacity=".6" stroke-linecap="round"/>
-  <ellipse cx="736" cy="144" rx="5.2" ry="4.6" fill="#05090d"/>
-  <circle cx="737.6" cy="142.6" r="1.2" fill="#dbe9f3" opacity=".9"/>
+  <!-- aggressive head: open gape, teeth, brow, eye -->
+  <path d="M 784 169 C 762 177, 728 186, 684 186 C 702 214, 740 226, 776 216 Q 766 194, 784 169 Z" fill="url(#gwGape)"/>
+  <path d="M 780 172 C 760 179, 728 188, 690 188" stroke="#7a1f2a" stroke-width="3" fill="none" opacity=".75" stroke-linecap="round"/>
+  <path d="M 781.3 170.0 L 778.2 182.5 L 778.1 171.1 Z M 775.4 172.0 L 772.2 183.9 L 772.0 173.0 Z M 769.1 173.9 L 765.7 185.4 L 765.4 175.0 Z M 762.3 175.9 L 758.8 186.7 L 758.3 176.9 Z M 755.0 177.7 L 751.4 188.0 L 750.8 178.7 Z M 747.3 179.5 L 743.6 189.2 L 742.8 180.4 Z M 739.1 181.1 L 735.3 190.2 L 734.4 181.9 Z M 730.5 182.5 L 726.5 191.1 L 725.6 183.2 Z M 721.5 183.8 L 717.4 191.7 L 716.3 184.3 Z M 712.0 184.8 L 707.8 192.1 L 706.6 185.2 Z M 702.1 185.5 L 697.8 192.2 L 696.5 185.8 Z M 691.8 185.9 L 687.4 191.9 L 686.0 186.0 Z" fill="#f4f6f4" stroke="#aab6bf" stroke-width=".5"/>
+  <g class="gw-jaw-o"><g class="gw-jaw-i">
+    <path d="M 684 188 C 690 234, 742 254, 782 224 L 776 216 C 740 226, 702 214, 684 188 Z" fill="url(#gwJaw)"/>
+    <path d="M 782 224 C 742 254, 690 234, 684 188" stroke="#1f2f3e" stroke-width="1" fill="none" opacity=".45"/>
+    <path d="M 771.7 217.1 L 770.4 211.6 L 766.8 218.1 Z M 760.8 218.9 L 759.6 212.8 L 756.0 219.3 Z M 750.0 219.5 L 748.8 212.8 L 745.2 219.4 Z M 739.5 218.9 L 738.3 211.6 L 734.8 218.2 Z M 729.2 217.1 L 728.2 209.2 L 724.7 215.9 Z M 719.4 214.2 L 718.5 205.7 L 715.2 212.6 Z M 710.2 210.3 L 709.4 201.2 L 706.3 208.2 Z M 701.7 205.3 L 701.1 195.7 L 698.2 202.7 Z M 694.1 199.4 L 693.7 189.2 L 691.0 196.4 Z M 687.5 192.5 L 687.3 181.8 L 684.8 189.2 Z" fill="#f4f6f4" stroke="#aab6bf" stroke-width=".5"/>
+  </g></g>
+  <path d="M 768 150 C 772 152, 774 154, 774 156" stroke="#101a24" stroke-width="1.8" fill="none" opacity=".7" stroke-linecap="round"/>
+  <path d="M 714 126 C 730 128, 744 134, 760 146" stroke="#0e1822" stroke-width="5.5" fill="none" stroke-linecap="round" opacity=".75"/>
+  <path d="M 716 120 C 732 122, 748 130, 764 143" stroke="#53697c" stroke-width="1.2" fill="none" opacity=".35" stroke-linecap="round"/>
+  <ellipse cx="738" cy="145" rx="6.4" ry="3.6" transform="rotate(18 738 145)" fill="#02060a"/>
+  <ellipse cx="738" cy="145" rx="6.4" ry="3.6" transform="rotate(18 738 145)" fill="none" stroke="#c9d6df" stroke-width=".5" opacity=".35"/>
+  <circle cx="740" cy="144" r="1.1" fill="#e8f1f7" opacity=".9"/>
+  <g stroke="#c4d2dc" stroke-width="1.1" fill="none" opacity=".28" stroke-linecap="round">
+    <path d="M 560 130 L 590 146"/><path d="M 568 124 L 598 140"/><path d="M 470 118 L 492 130"/>
+  </g>
 </svg></div>
     <div class="fog"></div>
     <div class="panels">
@@ -760,11 +847,48 @@ nav button:active{transform:scale(0.97)}
     <button class="btn more hidden" id="more">Show more</button>
   </section>
 
+  <!-- LIVE -->
+  <section id="tab-live" class="hidden">
+    <div class="sec" style="padding-top:8px">
+      <h2 id="lv-h">Live shark trades</h2>
+      <p class="desc" id="lv-desc"></p>
+      <div class="lvbar">
+        <span class="seg" id="lv-view"><button data-v="latest" class="on">Latest</button><button data-v="biggest">Biggest</button><button data-v="sharks">Sharks only</button><button data-v="following">Following</button></span>
+        <span class="seg" id="lv-range"><button data-r="1">1H</button><button data-r="6">6H</button><button data-r="24" class="on">24H</button><button data-r="168">7D</button><button data-r="720">30D</button></span>
+        <label class="ctl" style="flex-direction:row;align-items:center;gap:8px"><span class="cl">Min size</span>
+          <select id="lv-min"><option value="500">$500</option><option value="1000">$1K</option><option value="5000">$5K</option><option value="10000">$10K</option><option value="50000">$50K</option></select></label>
+      </div>
+      <div class="cbrecord" id="lv-stats"></div>
+    </div>
+    <div class="sec" style="padding-top:20px">
+      <h2 style="font-size:20px">Most active with sharks</h2>
+      <p class="desc" id="lv-hot-d"></p>
+      <div id="lv-hot"></div>
+    </div>
+    <div class="sec" style="padding-top:20px">
+      <div id="lv-table"></div>
+      <button class="btn more hidden" id="lv-more">Show more</button>
+      <p class="note" id="lv-note"></p>
+    </div>
+  </section>
+
   <!-- RECOMMENDATIONS -->
   <section id="tab-combos" class="hidden">
     <div class="sec" style="padding-top:8px">
-      <h2 id="cb-h">Recommended combos</h2>
-      <p class="desc">3-leg combos built from the markets where the most sharks agree, one set per topic. Each is listed once at the prices of the moment, then tracked live until it settles.</p>
+      <h2>Parlay builder</h2>
+      <p class="desc">Pick how many legs you want. Each topic gets a ready-made parlay from the picks the most sharks agree on, with the combined price and payout at current prices.</p>
+      <div class="pbar">
+        <div class="ctl"><span class="cl">Legs</span>
+          <div class="stepper"><button id="pb-minus" aria-label="Fewer legs">&minus;</button><output id="pb-n" aria-live="polite">3</output><button id="pb-plus" aria-label="More legs">+</button></div></div>
+        <div class="ctl"><span class="cl">Style</span>
+          <span class="seg" id="pb-style"><button data-s="consensus" class="on">Highest agreement</button><button data-s="payout">Bigger payout</button></span></div>
+        <div class="ctl"><span class="cl">Topic</span><select id="pb-cat"><option value="">All topics</option></select></div>
+      </div>
+      <div id="pb-list"></div>
+    </div>
+    <div class="sec">
+      <h2 id="cb-h">Tracked combos</h2>
+      <p class="desc">3-leg parlays listed once a day per topic and tracked with live returns until they settle.</p>
       <div class="cbrecord" id="cb-record"></div>
       <div class="filters" style="margin-top:14px">
         <label>Topic<select id="cb-cat"><option value="">All</option></select></label>
@@ -772,7 +896,7 @@ nav button:active{transform:scale(0.97)}
         <label>Status<select id="cb-status"><option value="open">Open</option><option value="">All</option><option value="won">Won</option><option value="lost">Lost</option></select></label>
       </div>
       <div class="cbgrid" id="cb-grid"></div>
-      <p class="note">Combined payout multiplies each leg's price, which assumes the legs are independent. Related markets are excluded, but real-world links can remain. A combo loses if any leg loses. This is public data, not advice or a prediction; sharks can be wrong.</p>
+      <p class="note">A parlay's combined price multiplies each leg's price, which assumes the legs are independent. Related markets are excluded, but real-world links can remain. A parlay loses if any leg loses. This is public data, not advice or a prediction; sharks can be wrong.</p>
     </div>
   </section>
 
@@ -781,6 +905,7 @@ nav button:active{transform:scale(0.97)}
     <div class="filters">
       <label>Search<input id="s-q" type="search" placeholder="name"></label>
       <label>Category<select id="s-cat"><option value="overall">Overall</option></select></label>
+      <label class="chk"><input id="s-follow" type="checkbox"> Following only</label>
     </div>
     <div class="count" id="s-count"></div>
     <div id="sharks"></div>
@@ -864,7 +989,7 @@ async function load() {
     const [r, rm] = await Promise.all([fetch("/api/data", {cache: "no-store"}), fetch("/api/meta", {cache: "no-store"})]);
     if (r.status === 401 || rm.status === 401) { location.reload(); return; }
     DATA = await r.json(); META = (await rm.json()) || {};
-    renderHeader(); fillCats(); renderOverview(); renderDive(); renderCombos(); renderPossible(); renderRows(); renderSharks(); if (!SETTINGS_DONE) { SETTINGS_DONE = true; renderSettings(); }
+    renderHeader(); fillCats(); renderOverview(); renderDive(); renderParlays(); renderCombos(); renderLive(); renderPossible(); renderRows(); renderSharks(); if (!SETTINGS_DONE) { SETTINGS_DONE = true; renderSettings(); }
   } catch (e) {
     $("#banner").innerHTML = `<div class="banner bad">Couldn't load data (${esc(e.message)}). Reload the page to try again.</div>`;
   }
@@ -1068,6 +1193,14 @@ function renderPositions(w) {
   const total = list.reduce((x, p) => x + (p.value || 0), 0);
   const all = (t.boards || {})["overall|all"], m30 = (t.boards || {})["overall|30d"];
   const h = t.history || {};
+  const pn = t.pnl || null;
+  const tr = ((DATA.feed || {}).trades || []).filter((x) => x.w === w).slice(0, 12);
+  const extra = [
+    pn && pn.vol ? ["Total volume", bigMoney(pn.vol)] : null,
+    pn && pn.n ? ["Trades", pn.n.toLocaleString()] : null,
+    h.biggest_win ? ["Biggest win", bigMoney(h.biggest_win)] : null,
+    h.joined ? ["On Polymarket since", new Date(h.joined * 1000).toLocaleDateString("en-US", {month: "short", year: "numeric"})] : null,
+  ].filter(Boolean);
   const stats = [
     ["Open positions shown", list.length],
     ["Value of those", bigMoney(total)],
@@ -1075,6 +1208,7 @@ function renderPositions(w) {
     ["30-day profit", m30 ? bigMoney(m30.pnl) : "—"],
     ["Win rate (recent settled)", h.settled_sample ? Math.round(100 * h.wins_sample / h.settled_sample) + "%" : "—"],
     ["Markets traded", h.traded ? Number(h.traded).toLocaleString() : "—"],
+    ...extra,
   ];
   const rows = list.map((p) => {
     const pl = p.entry && p.now != null ? (p.now / p.entry - 1) * 100 : null;
@@ -1086,20 +1220,24 @@ function renderPositions(w) {
       <td class="r ${cls}">${pl == null ? "—" : (pl >= 0 ? "+" : "") + pl.toFixed(0) + "%"}</td>
       <td class="r hide-s sub">${p.at ? ago(p.at) : "—"}</td></tr>`;
   }).join("");
-  box.innerHTML = `<div class="posstats">${stats.map(([l, v]) => `<div><div class="l">${l}</div><div class="v">${v}</div></div>`).join("")}</div>
+  box.innerHTML = `${profitChart(pn)}<div class="posstats">${stats.map(([l, v]) => `<div><div class="l">${l}</div><div class="v">${v}</div></div>`).join("")}</div>
     <div class="posbar"><b>Open positions</b><span class="seg">
       <button data-possort="${esc(w)}|recent" class="${mode === "recent" ? "on" : ""}">Most recent</button>
       <button data-possort="${esc(w)}|largest" class="${mode === "largest" ? "on" : ""}">Largest</button></span>
+      ${starBtn(w)}<span class="sub">follow</span>
       <a href="${esc(t.profile_url)}" target="_blank" rel="noopener" class="btn sm extlink">View recent and closed positions on Polymarket</a></div>
     ${list.length ? `<table class="ptable"><thead><tr><th>Market</th><th>Holds</th><th class="r">Value</th><th class="r hide-s">Entry → now</th><th class="r">Change</th><th class="r hide-s">Updated</th></tr></thead><tbody>${rows}</tbody></table>`
       : `<p class="sub">No open positions loaded for this shark yet. They fill in on the next refresh.</p>`}
+    ${tr.length ? `<div class="posbar"><b>Recent trades</b><span class="sub">from the live feed</span></div><table class="ptable"><tbody>${tr.map((x) => `<tr class="prow" data-open="polymarket|${esc(x.c)}||"><td class="sub" style="width:44px">${tAgo(x.t)}</td><td><span class="tag ${x.side}">${x.side === "BUY" ? "Buy" : "Sell"}</span> <b>${esc(x.o)}</b> <span class="sub">at ${cents(x.px)}</span></td><td class="mq2 hide-s">${esc(x.q)}</td><td class="r"><b>${bigMoney(x.usd)}</b></td></tr>`).join("")}</tbody></table>` : ""}
     ${t.positions_fetched_at ? `<p class="sub" style="margin-top:8px">Positions checked ${ago(t.positions_fetched_at)}. Change = current price vs. the shark's average entry.</p>` : ""}`;
+  requestAnimationFrame(() => box.querySelector(".pchart")?.classList.add("go"));
 }
 
 function renderSharks() {
   if (!DATA) return;
   const q = $("#s-q").value.trim().toLowerCase(), cat = $("#s-cat").value;
-  const list = Object.entries(DATA.traders).filter(([w, t]) => t.scores[cat] && (!q || t.name.toLowerCase().includes(q)))
+  const onlyF = $("#s-follow") && $("#s-follow").checked;
+  const list = Object.entries(DATA.traders).filter(([w, t]) => t.scores[cat] && (!q || t.name.toLowerCase().includes(q)) && (!onlyF || WL.has(w)))
     .sort((a, b) => b[1].scores[cat].score - a[1].scores[cat].score);
   $("#s-count").textContent = `${list.length.toLocaleString()} sharks have a ${cat} record. Tap one for the score breakdown.`;
   $("#sharks").innerHTML = list.slice(0, 500).map(([w, t], i) => {
@@ -1110,7 +1248,7 @@ function renderSharks() {
     return `<div id="sh-${esc(w)}"><div class="sh" data-toggle="${esc(w)}">
       <div class="rank">#${i + 1}</div>
       <div style="display:flex;align-items:center;gap:10px;min-width:0">
-        <div style="min-width:0"><div class="nm">${esc(shortName(t.name))} <a href="${esc(t.profile_url)}" target="_blank" rel="noopener" class="sub">profile</a></div>
+        <div style="min-width:0"><div class="nm">${starBtn(w)}${esc(shortName(t.name))} <a href="${esc(t.profile_url)}" target="_blank" rel="noopener" class="sub">profile</a></div>
         <div class="sub">${esc(top)}${pnl ? " · all-time " + bigMoney(pnl.pnl) : ""}</div></div></div>
       <div class="mw"><div class="meter"><i style="width:${sc.score}%"></i></div></div>
       <div class="sc">${sc.score}</div>
@@ -1289,8 +1427,10 @@ function diveFrame() {
     const k = e(p);
     const x = -62 + 112 * k;                 // vw
     const y = Math.sin(p * Math.PI * 2) * 3;  // vh, gentle rise and fall
-    const sc = 0.42 + 0.78 * k;
-    const rot = -6 + 10 * k;
+    const sc = 0.42 + 0.95 * k;
+    const rot = 5 - 17 * k;                 // stalks level, then rises into the strike
+    const open = Math.sin(Math.PI * Math.min(1, Math.max(0, (p - 0.12) / 0.76)));
+    $("#gw").style.setProperty("--jaw", (-10 + 12 * open).toFixed(1) + "deg");
     const op = Math.min(1, 0.25 + p * 3);
     const g = $("#gw");
     g.style.transform = `translate3d(${x}vw, ${y}vh, 0) scale(${sc}) rotate(${rot}deg)`;
@@ -1317,6 +1457,158 @@ function countOne(el) {
 addEventListener("scroll", () => { if (!DIVE_RAF) DIVE_RAF = requestAnimationFrame(diveFrame); }, {passive: true});
 addEventListener("resize", () => { if (!DIVE_RAF) DIVE_RAF = requestAnimationFrame(diveFrame); });
 new IntersectionObserver(([e]) => $("#dive").classList.toggle("paused", !e.isIntersecting)).observe($("#dive"));
+
+
+/* ---------------- follow list ---------------- */
+let WL = new Set();
+try { WL = new Set(JSON.parse(localStorage.getItem("st-wl") || "[]")); } catch {}
+const saveWL = () => { try { localStorage.setItem("st-wl", JSON.stringify([...WL])); } catch {} };
+const starBtn = (w) => `<button class="star ${WL.has(w) ? "on" : ""}" data-star="${esc(w)}" aria-label="${WL.has(w) ? "Unfollow" : "Follow"}" title="${WL.has(w) ? "Following" : "Follow this trader"}">${WL.has(w) ? "★" : "☆"}</button>`;
+document.addEventListener("click", (e) => {
+  const b = e.target.closest("[data-star]");
+  if (!b) return;
+  e.stopPropagation(); e.preventDefault();
+  const w = b.dataset.star; WL.has(w) ? WL.delete(w) : WL.add(w); saveWL();
+  document.querySelectorAll(`[data-star="${CSS.escape(w)}"]`).forEach((x) => { x.classList.toggle("on", WL.has(w)); x.textContent = WL.has(w) ? "★" : "☆"; });
+  if (LV.view === "following") renderLive();
+}, true);
+
+/* ---------------- live trades ---------------- */
+const LV = {view: "latest", range: 24, min: 500, shown: 60};
+try { const sv = JSON.parse(localStorage.getItem("st-lv") || "{}"); if (sv.range) LV.range = sv.range; if (sv.min) LV.min = sv.min; } catch {}
+const tAgo = (t) => { const m = Math.max(0, Math.round((Date.now() / 1000 - t) / 60)); return m < 1 ? "now" : m < 60 ? m + "m" : m < 1440 ? Math.round(m / 60) + "h" : Math.round(m / 1440) + "d"; };
+function liveTrades() {
+  const F = (DATA && DATA.feed) || {trades: []}, since = Date.now() / 1000 - LV.range * 3600;
+  let list = F.trades.filter((t) => t.t >= since && t.usd >= LV.min);
+  if (LV.view === "sharks") list = list.filter((t) => t.s != null);
+  if (LV.view === "following") list = list.filter((t) => WL.has(t.w));
+  if (LV.view === "biggest") list = list.slice().sort((a, b) => b.usd - a.usd);
+  return list;
+}
+function renderLive() {
+  if (!DATA) return;
+  const F = DATA.feed || {trades: [], since: null};
+  $("#lv-view").querySelectorAll("button").forEach((b) => b.classList.toggle("on", b.dataset.v === LV.view));
+  $("#lv-range").querySelectorAll("button").forEach((b) => b.classList.toggle("on", +b.dataset.r === LV.range));
+  $("#lv-min").value = String(LV.min);
+  const list = liveTrades();
+  const buys = list.filter((t) => t.side === "BUY"), vol = list.reduce((x, t) => x + t.usd, 0);
+  const sharksIn = new Set(list.filter((t) => t.s != null).map((t) => t.w)).size;
+  $("#lv-desc").textContent = `Every public Polymarket trade over $500, tagged when the trader is one of the ${Object.keys(DATA.traders).length.toLocaleString()} tracked sharks. Other trades are shown only above $10K. The feed adds new trades each refresh.`;
+  $("#lv-stats").innerHTML = [["Trades", list.length.toLocaleString()], ["Volume", bigMoney(vol)],
+    ["Buys / sells", list.length ? `${Math.round(100 * buys.length / list.length)}% / ${Math.round(100 * (1 - buys.length / list.length))}%` : "—"],
+    ["Sharks active", sharksIn.toLocaleString()]].map(([l, v]) => `<div><div class="l">${l}</div><div class="v">${v}</div></div>`).join("");
+  // most active markets among shark trades in range
+  const since = Date.now() / 1000 - LV.range * 3600, hot = {};
+  F.trades.filter((t) => t.s != null && t.t >= since && t.usd >= LV.min).forEach((t) => {
+    const h = hot[t.c] = hot[t.c] || {q: t.q, c: t.c, buy: 0, sell: 0, sharks: new Set(), out: {}};
+    (t.side === "BUY" ? (h.buy += t.usd) : (h.sell += t.usd)); h.sharks.add(t.w);
+    if (t.side === "BUY") h.out[t.o] = (h.out[t.o] || 0) + t.usd;
+  });
+  const hl = Object.values(hot).sort((a, b) => b.buy - a.buy).slice(0, 6);
+  $("#lv-hot-d").textContent = `Biggest shark buying in the last ${LV.range >= 24 ? (LV.range / 24) + " day" + (LV.range > 24 ? "s" : "") : LV.range + " hour" + (LV.range > 1 ? "s" : "")}.`;
+  $("#lv-hot").innerHTML = hl.map((h) => { const top = Object.entries(h.out).sort((a, b) => b[1] - a[1])[0];
+    return `<div class="hot" data-open="polymarket|${esc(h.c)}||"><div class="q">${esc(h.q)}</div><div class="v">${bigMoney(h.buy)} bought</div>
+      <div class="d">${h.sharks.size} shark${h.sharks.size === 1 ? "" : "s"}${top ? " · mostly " + esc(top[0]) : ""}${h.sell ? " · " + bigMoney(h.sell) + " sold" : ""}</div></div>`; }).join("") || `<p class="sub">No shark trades in this range yet.</p>`;
+  const rows = list.slice(0, LV.shown).map((t) => `<tr class="lr" data-open="polymarket|${esc(t.c)}||">
+    <td class="sub" style="white-space:nowrap">${tAgo(t.t)}</td>
+    <td><span class="who">${starBtn(t.w)}<a href="#" data-shark="${esc(t.w)}">${esc(shortName(t.n))}</a></span>${t.s != null ? `<span class="badge">Shark ${t.s}</span>` : `<span class="badge wh">Whale</span>`}</td>
+    <td><span class="tag ${t.side}">${t.side === "BUY" ? "Buy" : "Sell"}</span> <b>${esc(t.o)}</b></td>
+    <td class="mq3 hide-s">${esc(t.q)}</td><td class="r"><b>${bigMoney(t.usd)}</b></td><td class="r hide-s">${cents(t.px)}</td></tr>`).join("");
+  $("#lv-table").innerHTML = list.length ? `<table class="ltable"><thead><tr><th>Age</th><th>Trader</th><th>Trade</th><th class="hide-s">Market</th><th class="r">Size</th><th class="r hide-s">Price</th></tr></thead><tbody>${rows}</tbody></table>`
+    : `<p class="sub" style="padding:24px 0">${LV.view === "following" ? "Follow a trader with the ☆ button and their trades show up here." : "No trades in this range yet."}</p>`;
+  $("#lv-more").classList.toggle("hidden", list.length <= LV.shown);
+  $("#lv-note").textContent = F.since ? `Tracking trades since ${fmtTime(F.since)}. Longer ranges fill in as the tracker keeps running. Updated ${fmtTime(F.updated)}.` : "";
+  $("#lv-h").textContent = LV.view === "following" ? "Trades by traders you follow" : "Live shark trades";
+}
+$("#lv-view").addEventListener("click", (e) => { const b = e.target.closest("button"); if (b) { LV.view = b.dataset.v; LV.shown = 60; renderLive(); } });
+$("#lv-range").addEventListener("click", (e) => { const b = e.target.closest("button"); if (b) { LV.range = +b.dataset.r; LV.shown = 60; saveLV(); renderLive(); } });
+$("#lv-min").addEventListener("input", (e) => { LV.min = +e.target.value; LV.shown = 60; saveLV(); renderLive(); });
+$("#lv-more").addEventListener("click", () => { LV.shown += 100; renderLive(); });
+const saveLV = () => { try { localStorage.setItem("st-lv", JSON.stringify({range: LV.range, min: LV.min})); } catch {} };
+$("#tab-live").addEventListener("click", (e) => {
+  const sh = e.target.closest("[data-shark]"); if (sh) { e.preventDefault(); openShark(sh.dataset.shark); return; }
+  if (e.target.closest("[data-star]") || e.target.closest("a")) return;
+  const o = e.target.closest("[data-open]"); if (o) openMarket(o.dataset.open);
+});
+
+/* ---- profit chart for a shark ---- */
+function profitChart(pn) {
+  if (!pn || !pn.pts || pn.pts.length < 3) return "";
+  const pts = pn.pts, xs = pts.map((p) => p[0]), ys = pts.map((p) => p[1]);
+  const x0 = Math.min(...xs), x1 = Math.max(...xs), lo = Math.min(0, ...ys), hi = Math.max(0, ...ys), sp = (hi - lo) || 1;
+  const X = (x) => 4 + 592 * (x - x0) / ((x1 - x0) || 1), Y = (y) => 6 + 108 * (1 - (y - lo) / sp);
+  const d = pts.map((p, i) => (i ? "L" : "M") + X(p[0]).toFixed(1) + " " + Y(p[1]).toFixed(1)).join(" ");
+  const zero = Y(0).toFixed(1);
+  const fmtD = (t) => new Date(t * 1000).toLocaleDateString("en-US", {month: "short", year: "numeric", timeZone: ET});
+  return `<div class="pchart"><svg viewBox="0 0 600 120" preserveAspectRatio="none" role="img" aria-label="All-time profit curve">
+    <defs><linearGradient id="pcg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--accent)" stop-opacity=".28"/><stop offset="1" stop-color="var(--accent)" stop-opacity="0"/></linearGradient></defs>
+    <line x1="4" x2="596" y1="${zero}" y2="${zero}" stroke="var(--line2)" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
+    <path class="ar" d="${d} L ${X(x1).toFixed(1)} ${zero} L ${X(x0).toFixed(1)} ${zero} Z"/>
+    <path class="ln" pathLength="1" d="${d}"/></svg>
+    <div class="ax"><span>${fmtD(x0)}</span><span>Profit over time · now <b style="color:var(--ink)">${bigMoney(ys[ys.length - 1])}</b></span><span>${fmtD(x1)}</span></div></div>`;
+}
+
+/* ---------------- parlay builder ---------------- */
+const P_STOP = new Set("a an the will be is are was were of in on at by to for from with and or as than this that these those it its who what which when how does do did has have had yes no market price".split(" "));
+const P_GENERIC = new Set("reach dip hit win wins before after race election elections cap highest lowest new next first above below between january february march april may june july august september october november december final deal game games match winner winners nominee nomination party candidate seat seats vs total over under".split(" "));
+const ptok = (t) => new Set(String(t || "").toLowerCase().replace(/[^a-z0-9\s]/g, " ").split(/\s+/)
+  .filter((w) => w.length > 1 && !/^\d+$/.test(w) && !P_STOP.has(w) && !P_GENERIC.has(w)));
+const pRelated = (a, b) => a.event === b.event || [...a.tok].some((w) => b.tok.has(w));
+const PB = {n: 3, style: "consensus", cat: ""};
+try { const sv = JSON.parse(localStorage.getItem("st-pb") || "{}"); if (sv.n >= 2 && sv.n <= 10) PB.n = sv.n; if (sv.style) PB.style = sv.style; } catch {}
+const PBANDS = {consensus: [0.50, 0.93], payout: [0.25, 0.65]};
+function parlayPool() {
+  const today = new Date().toISOString().slice(0, 10), horizon = new Date(Date.now() + 75 * 864e5).toISOString().slice(0, 10);
+  const out = [];
+  DATA.rows.forEach((r) => {
+    const a = r.total.A, b = r.total.B, n = a + b;
+    if (n < 3 || (r.agreement_pct || 0) < 80) return;
+    const side = a >= b ? "A" : "B", pm = r.polymarket, price = side === "A" ? pm.price_a : pm.price_b;
+    const end = (r.end_date || "").slice(0, 10);
+    if (price == null || price < 0.02 || price > 0.98 || !end || end < today || end > horizon) return;
+    out.push({id: r.id, title: r.title, event: r.event_title || r.title, category: r.category, end,
+      label: r.side_labels[side === "A" ? 0 : 1], sharks: Math.max(a, b), of: n, agree: r.agreement_pct,
+      money: r.money[side], price, tok: ptok(r.title + " " + (r.event_title || ""))});
+  });
+  return out;
+}
+function pickParlay(pool, n, [lo, hi]) {
+  const c = pool.filter((l) => l.price >= lo && l.price <= hi).sort((x, y) => y.agree - x.agree || y.sharks - x.sharks || y.money - x.money);
+  const out = [];
+  for (const l of c) { if (!out.some((o) => pRelated(l, o))) out.push(l); if (out.length === n) break; }
+  return out;
+}
+function renderParlays() {
+  if (!DATA) return;
+  const pool = parlayPool(), n = PB.n;
+  $("#pb-n").textContent = n;
+  $("#pb-minus").disabled = n <= 2; $("#pb-plus").disabled = n >= 10;
+  $("#pb-style").querySelectorAll("button").forEach((b) => b.classList.toggle("on", b.dataset.s === PB.style));
+  const cats = [...new Set(pool.map((l) => l.category))].sort(), sel = $("#pb-cat");
+  sel.innerHTML = `<option value="">All topics</option>` + cats.map((c) => `<option ${c === PB.cat ? "selected" : ""}>${esc(c)}</option>`).join("");
+  const groups = PB.cat ? [[PB.cat, pool.filter((l) => l.category === PB.cat)]] : [["All topics, best mix", pool], ...cats.map((c) => [c, pool.filter((l) => l.category === c)])];
+  const band = PBANDS[PB.style];
+  $("#pb-list").innerHTML = groups.map(([name, legs]) => {
+    const pick = pickParlay(legs, n, band);
+    if (pick.length < 2) return PB.cat ? `<div class="pt"><h3>${esc(name)}</h3><p class="sub2">Not enough strong picks in this topic right now (${pick.length} qualifying). Try the other style or fewer legs.</p></div>` : "";
+    const price = pick.reduce((x, l) => x * l.price, 1), avg = Math.round(pick.reduce((x, l) => x + l.agree, 0) / pick.length);
+    const short = pick.length < n;
+    return `<div class="pt"><div class="top"><div><h3>${esc(name.charAt(0).toUpperCase() + name.slice(1))} · ${pick.length} leg${pick.length === 1 ? "" : "s"}</h3>
+      <div class="sub2">Average shark agreement ${avg}% · combined price ${cents(price)} · market-implied chance ${(price * 100).toFixed(price < 0.1 ? 1 : 0)}%</div></div>
+      <div class="pay"><b>${(1 / price).toFixed(price < 0.1 ? 1 : 2)}x</b><span>payout if every leg hits</span></div></div>
+      ${short ? `<p class="warn">You asked for ${n} legs; only ${pick.length} unrelated picks qualify in this topic.</p>` : ""}
+      ${pick.map((l, i) => `<div class="lg" data-open="${esc(l.id)}"><span class="n">${i + 1}</span>
+        <div class="t"><b>${esc(l.label)}</b> · ${esc(l.title)}</div>
+        <div class="d">${l.sharks} of ${l.of} sharks (${l.agree}%) · ${bigMoney(l.money)} · settles ${fmtDate(l.end)}</div><div class="p">${cents(l.price)}</div></div>`).join("")}</div>`;
+  }).join("") || `<div class="sub">No picks qualify right now.</div>`;
+  try { localStorage.setItem("st-pb", JSON.stringify({n: PB.n, style: PB.style})); } catch {}
+}
+$("#pb-minus").addEventListener("click", () => { if (PB.n > 2) { PB.n--; renderParlays(); } });
+$("#pb-plus").addEventListener("click", () => { if (PB.n < 10) { PB.n++; renderParlays(); } });
+$("#pb-style").addEventListener("click", (e) => { const b = e.target.closest("button"); if (b) { PB.style = b.dataset.s; renderParlays(); } });
+$("#pb-cat").addEventListener("input", (e) => { PB.cat = e.target.value; renderParlays(); });
+$("#pb-list").addEventListener("click", (e) => { const o = e.target.closest("[data-open]"); if (o) openMarket(o.dataset.open); });
 
 /* ---------------- recommendations ---------------- */
 function fmtAgo(sec) { return ago(sec); }
@@ -1410,16 +1702,20 @@ $("#reset").onclick = async () => {
 };
 
 /* ---------------- events ---------------- */
-document.querySelectorAll("nav button").forEach((b) => b.onclick = () => {
-  document.querySelectorAll("nav button").forEach((x) => x.classList.toggle("on", x.dataset.tab === b.dataset.tab));
-  ["overview", "markets", "combos", "sharks", "settings", "guide"].forEach((t) => $("#tab-" + t).classList.toggle("hidden", t !== b.dataset.tab));
+document.querySelectorAll("nav button[data-tab], #moreSheet button[data-tab]").forEach((b) => b.onclick = () => {
+  $("#moreSheet").classList.add("hidden"); $("#moreBtn").setAttribute("aria-expanded", "false");
+  document.querySelectorAll("nav button[data-tab]").forEach((x) => x.classList.toggle("on", x.dataset.tab === b.dataset.tab));
+  $("#moreBtn").classList.toggle("on", b.dataset.tab === "settings" || b.dataset.tab === "guide");
+  ["overview", "markets", "live", "combos", "sharks", "settings", "guide"].forEach((t) => $("#tab-" + t).classList.toggle("hidden", t !== b.dataset.tab));
   $("#hero").classList.toggle("hidden", b.dataset.tab !== "overview");
   $("#dive").classList.toggle("hidden", b.dataset.tab !== "overview");
   document.querySelector(".wrap").style.paddingTop = b.dataset.tab === "overview" ? "" : "calc(var(--navh) + 8px)";
   window.scrollTo({top: 0});
 });
+$("#moreBtn").addEventListener("click", (e) => { e.stopPropagation(); const sh = $("#moreSheet"); const open = sh.classList.toggle("hidden") === false; $("#moreBtn").setAttribute("aria-expanded", String(open)); });
+document.addEventListener("click", (e) => { if (!e.target.closest("#moreSheet") && !e.target.closest("#moreBtn")) { $("#moreSheet").classList.add("hidden"); $("#moreBtn").setAttribute("aria-expanded", "false"); } });
 ["#f-q", "#f-cat", "#f-min", "#f-from", "#f-to", "#f-sort", "#f-split", "#f-nosplit"].forEach((s) => $(s).addEventListener("input", () => { SHOWN = 100; renderRows(); }));
-["#s-q", "#s-cat"].forEach((s) => $(s).addEventListener("input", renderSharks));
+["#s-q", "#s-cat", "#s-follow"].forEach((s) => $(s).addEventListener("input", renderSharks));
 $("#more").onclick = () => { SHOWN += 100; renderRows(); };
 $("#rows").addEventListener("click", (e) => {
   const sh = e.target.closest("[data-shark]");
@@ -1446,7 +1742,7 @@ $("#sharks").addEventListener("click", (e) => {
 });
 function openShark(w) {
   document.querySelector('nav button[data-tab="sharks"]').click();
-  $("#s-q").value = ""; renderSharks();
+  $("#s-q").value = ""; if ($("#s-follow")) $("#s-follow").checked = false; renderSharks();
   const el = document.getElementById("sh-" + w);
   if (el) { el.querySelector("[data-bd]").classList.remove("hidden"); renderPositions(w); el.scrollIntoView({behavior: "smooth", block: "center"}); }
   else alert("That trader isn't in the current shark list.");
