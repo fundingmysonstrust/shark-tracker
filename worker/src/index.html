@@ -388,7 +388,7 @@ nav button:active{transform:scale(0.97)}
 }
 
 /* ===== dive slide: scroll-driven shark + totals ===== */
-.dive{position:relative;height:230vh;background:#030a13}
+.dive{position:relative;height:190vh;background:#030a13}
 .dive .stage{position:sticky;top:0;height:100svh;overflow:hidden}
 .dive .deep{position:absolute;inset:0;background:
   radial-gradient(80% 60% at 50% -10%,rgba(56,150,200,.28),transparent 70%),
@@ -401,22 +401,18 @@ nav button:active{transform:scale(0.97)}
 .snow i{position:absolute;width:calc(3px * var(--z));height:calc(3px * var(--z));border-radius:50%;background:rgba(200,230,245,.5);
   opacity:calc(.25 + var(--z) * .3);filter:blur(calc((1.2 - var(--z)) * 1.2px));animation:snow var(--t) linear infinite}
 @keyframes snow{from{transform:translate3d(0,-30px,0)}to{transform:translate3d(20px,60px,0)}}
-.gw-wrap{--gw:min(1180px,160vw);position:absolute;left:50%;top:50%;width:var(--gw);margin-left:calc(var(--gw) / -2);margin-top:calc(var(--gw) * -0.175);
+.gw-wrap{--gw:min(1180px,160vw);position:absolute;left:50%;top:50%;width:var(--gw);margin-left:calc(var(--gw) / -2);margin-top:calc(var(--gw) * -0.17);
   will-change:transform,opacity;transform-origin:50% 55%}
 .gw-shake{width:100%}
-.gw-shake.hit{animation:hit 380ms steps(1,end)}
-@keyframes hit{0%{transform:translate(0,0)}12%{transform:translate(-14px,8px)}25%{transform:translate(16px,-9px)}38%{transform:translate(-10px,-5px)}52%{transform:translate(8px,6px)}68%{transform:translate(-4px,3px)}84%{transform:translate(2px,-1px)}100%{transform:translate(0,0)}}
-.gw{width:100%;height:auto;display:block;overflow:visible;filter:drop-shadow(0 30px 40px rgba(0,0,0,.55))}
-.gw .sh-tail{transform-origin:118px 192px;transform:rotate(var(--tail,0deg))}
-.gw .sh-tail-i{transform-origin:118px 192px;animation:tailidle 1.3s ease-in-out infinite alternate}
-.gw .sh-jaw{transform-origin:790px 244px;transform:rotate(var(--jaw,0deg))}
-.gw .sh-pec{transform-origin:742px 236px;transform:rotate(var(--pec,0deg))}
-.gw .sh-pec-i{transform-origin:742px 236px;animation:pecidle 3s ease-in-out infinite alternate}
-.gw .sh-dorsal{transform-origin:560px 92px;animation:dorsal 2.6s ease-in-out infinite alternate}
-@keyframes tailidle{from{transform:rotate(-5deg)}to{transform:rotate(5deg)}}
+.gw{width:100%;height:auto;display:block;overflow:visible;filter:drop-shadow(0 30px 40px rgba(0,0,0,.5))}
+.gw .sh-tail{transform-origin:128px 192px;transform:rotate(var(--tail,0deg))}
+.gw .sh-tail-i{transform-origin:128px 192px;animation:tailidle 1.2s ease-in-out infinite alternate}
+.gw .sh-pec{transform-origin:730px 214px;transform:rotate(var(--pec,0deg))}
+.gw .sh-pec-i{transform-origin:730px 214px;animation:pecidle 3s ease-in-out infinite alternate}
+.gw .sh-dorsal{transform-origin:560px 100px;animation:dorsal 2.6s ease-in-out infinite alternate}
+@keyframes tailidle{from{transform:rotate(-4deg)}to{transform:rotate(4deg)}}
 @keyframes pecidle{from{transform:rotate(-2deg)}to{transform:rotate(3deg)}}
-@keyframes dorsal{from{transform:rotate(-1deg)}to{transform:rotate(1deg)}}
-.dive .stage.flash .deep{filter:brightness(1.7)}
+@keyframes dorsal{from{transform:rotate(-.8deg)}to{transform:rotate(.8deg)}}
 .dive .fog{position:absolute;inset:0;pointer-events:none;background:radial-gradient(70% 60% at 50% 55%,transparent 30%,rgba(2,9,16,.85) 100%)}
 .panels{position:absolute;inset:0;display:grid;place-items:end start;padding:0 max(24px,6vw) 13vh;pointer-events:none}
 .panel{grid-area:1 / 1;max-width:620px;opacity:0;transform:translateY(24px);filter:blur(4px);
@@ -434,7 +430,7 @@ nav button:active{transform:scale(0.97)}
 .dive.moved .scrollhint{opacity:0}
 .dive.paused *{animation-play-state:paused!important}
 @media (max-width: 560px){
-  .dive{height:215vh}
+  .dive{height:180vh}
   .gw-wrap{margin-top:-240px}
   .panels{padding:0 20px calc(14vh + 64px)}
   .dots{right:12px}
@@ -444,7 +440,7 @@ nav button:active{transform:scale(0.97)}
   .dive .stage{position:relative;height:auto;padding:90px 0 60px}
   .gw-wrap{position:relative;left:auto;top:auto;margin:0 auto;width:min(900px,120vw);transform:none!important;opacity:1!important}
   .gw *,.godrays,.snow i,.gw-shake{animation:none!important}
-  .gw .sh-tail,.gw .sh-jaw,.gw .sh-pec{transform:none!important}
+  .gw .sh-tail,.gw .sh-pec{transform:none!important}
   .panels{position:relative;display:grid;gap:40px;place-items:start;padding:20px 24px 0}
   .panel{grid-area:auto;opacity:1;transform:none;filter:none}
   .dots,.scrollhint{display:none}
@@ -691,83 +687,62 @@ a.lk{color:var(--accent);text-decoration:none} a.lk:hover{text-decoration:underl
     <div class="deep"></div>
     <div class="godrays"></div>
     <div class="snow" aria-hidden="true"><i style="left:6%;top:12%;--z:0.6;--t:22s"></i><i style="left:14%;top:64%;--z:1;--t:30s"></i><i style="left:22%;top:30%;--z:0.5;--t:26s"></i><i style="left:31%;top:82%;--z:0.8;--t:34s"></i><i style="left:38%;top:18%;--z:1.2;--t:28s"></i><i style="left:46%;top:52%;--z:0.6;--t:24s"></i><i style="left:55%;top:74%;--z:0.9;--t:32s"></i><i style="left:62%;top:8%;--z:0.7;--t:27s"></i><i style="left:69%;top:40%;--z:1.1;--t:36s"></i><i style="left:77%;top:66%;--z:0.5;--t:23s"></i><i style="left:84%;top:22%;--z:0.9;--t:31s"></i><i style="left:91%;top:58%;--z:0.6;--t:29s"></i><i style="left:10%;top:92%;--z:0.8;--t:25s"></i><i style="left:50%;top:90%;--z:0.5;--t:33s"></i><i style="left:88%;top:86%;--z:1;--t:30s"></i><i style="left:26%;top:46%;--z:0.4;--t:21s"></i></div>
-    <div class="gw-wrap" id="gw"><div class="gw-shake"><svg class="gw" viewBox="0 0 1000 350" aria-hidden="true">
+    <div class="gw-wrap" id="gw"><div class="gw-shake"><svg class="gw" viewBox="0 0 1000 340" aria-hidden="true">
   <defs>
     <linearGradient id="rkSkin" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#202c36"/><stop offset=".35" stop-color="#3b4b59"/><stop offset=".58" stop-color="#667785"/><stop offset=".72" stop-color="#9eacb6"/>
+      <stop offset="0" stop-color="#1c2833"/><stop offset=".4" stop-color="#364653"/><stop offset=".7" stop-color="#5f707d"/><stop offset="1" stop-color="#8d9ba5"/>
     </linearGradient>
-    <linearGradient id="rkBelly" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#dfe5e8"/><stop offset="1" stop-color="#f4f6f6"/></linearGradient>
-    <linearGradient id="rkFin" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1e2a34"/><stop offset=".7" stop-color="#34434f"/><stop offset="1" stop-color="#52626e"/></linearGradient>
-    <linearGradient id="rkFinB" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2a3843"/><stop offset="1" stop-color="#1b252e"/></linearGradient>
-    <radialGradient id="rkSheen" cx=".62" cy=".1" r=".6"><stop offset="0" stop-color="#b9cbd8" stop-opacity=".28"/><stop offset="1" stop-color="#b9cbd8" stop-opacity="0"/></radialGradient>
-    <linearGradient id="rkShade" x1="0" y1="0" x2="0" y2="1"><stop offset=".6" stop-color="#05090d" stop-opacity="0"/><stop offset="1" stop-color="#05090d" stop-opacity=".32"/></linearGradient>
-    <radialGradient id="rkGape" cx=".7" cy=".3" r=".9"><stop offset="0" stop-color="#5a1c24"/><stop offset=".5" stop-color="#26090e"/><stop offset="1" stop-color="#0a0305"/></radialGradient>
-    <clipPath id="rkBodyClip"><path id="rkBodyP" d="M 990 172 C 972 150, 930 124, 868 108 C 800 90, 720 80, 640 78 C 560 76, 470 86, 380 108 C 300 128, 224 156, 150 182 L 112 190 L 150 200 C 230 224, 330 248, 440 260 C 540 270, 640 270, 722 260 C 772 252, 806 242, 826 228 C 868 212, 934 194, 990 172 Z"/></clipPath>
+    <linearGradient id="rkBelly" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#dde4e8"/><stop offset="1" stop-color="#f3f5f6"/></linearGradient>
+    <linearGradient id="rkFin" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1b2630"/><stop offset=".7" stop-color="#32414d"/><stop offset="1" stop-color="#4d5d69"/></linearGradient>
+    <linearGradient id="rkFinB" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2a3843"/><stop offset="1" stop-color="#18222b"/></linearGradient>
+    <radialGradient id="rkSheen" cx=".6" cy=".1" r=".6"><stop offset="0" stop-color="#b9cbd8" stop-opacity=".26"/><stop offset="1" stop-color="#b9cbd8" stop-opacity="0"/></radialGradient>
+    <linearGradient id="rkShade" x1="0" y1="0" x2="0" y2="1"><stop offset=".55" stop-color="#05090d" stop-opacity="0"/><stop offset="1" stop-color="#05090d" stop-opacity=".3"/></linearGradient>
+    <clipPath id="rkBodyClip"><path id="rkBodyP" d="M 988 172 C 962 150, 920 128, 860 114 C 790 100, 700 94, 620 94 C 520 94, 420 106, 330 126 C 250 144, 180 166, 128 186 L 124 192 L 128 198 C 182 208, 252 216, 332 226 C 422 236, 522 242, 612 242 C 702 242, 792 234, 852 222 C 912 210, 958 194, 988 172 Z"/></clipPath>
   </defs>
-  <!-- far-side pectoral and pelvic fins -->
-  <path d="M 700 252 C 660 290, 620 318, 576 336 C 626 316, 668 290, 716 262 Z" fill="#161f27"/>
-  <!-- tail: heterocercal, upper lobe larger -->
+  <!-- far-side pectoral -->
+  <path d="M 716 226 C 684 262, 646 296, 610 318 C 650 302, 684 280, 728 238 Z" fill="#141d25"/>
+  <!-- crescent tail with strong keel -->
   <g class="sh-tail"><g class="sh-tail-i">
-    <path d="M 124 188 C 108 150, 78 96, 26 28 C 22 22, 16 24, 18 32 C 34 74, 52 112, 70 150 C 92 154, 110 166, 124 188 Z" fill="url(#rkFin)"/>
-    <path d="M 126 194 C 108 218, 84 252, 46 296 C 66 292, 92 280, 122 262 C 130 240, 130 214, 126 194 Z" fill="url(#rkFin)"/>
-    <path d="M 30 36 C 52 84, 80 130, 116 178" stroke="#6f808c" stroke-width="2" fill="none" opacity=".35" stroke-linecap="round"/>
-    <path d="M 20 30 L 26 28 L 34 44 L 22 36 Z" fill="#cfd8de" opacity=".55"/>
+    <path d="M 132 188 C 114 150, 86 96, 36 20 C 34 16, 28 20, 30 26 C 50 94, 78 150, 104 192 C 90 230, 78 262, 62 302 C 98 264, 118 234, 134 200 Z" fill="url(#rkFin)"/>
+    <path d="M 40 30 C 62 90, 88 144, 118 188" stroke="#7d8e9a" stroke-width="2" fill="none" opacity=".32" stroke-linecap="round"/>
   </g></g>
   <!-- anal, pelvic, second dorsal -->
-  <path d="M 236 224 C 226 246, 212 262, 192 272 C 218 266, 244 254, 262 232 Z" fill="url(#rkFinB)"/>
-  <path d="M 372 252 C 358 280, 338 300, 308 312 C 344 304, 380 284, 404 258 Z" fill="url(#rkFinB)"/>
-  <path d="M 262 144 C 270 126, 276 112, 278 100 C 284 114, 294 128, 308 138 Z" fill="url(#rkFin)"/>
-  <!-- first dorsal fin -->
+  <path d="M 262 216 C 252 238, 236 254, 214 262 C 242 258, 270 246, 286 222 Z" fill="url(#rkFinB)"/>
+  <path d="M 396 236 C 384 264, 364 284, 338 294 C 376 288, 408 268, 426 240 Z" fill="url(#rkFinB)"/>
+  <path d="M 272 140 C 280 126, 286 116, 288 106 C 294 118, 304 130, 318 136 Z" fill="url(#rkFin)"/>
+  <!-- first dorsal fin: tall, with a concave trailing edge -->
   <g class="sh-dorsal">
-    <path d="M 478 92 C 520 64, 562 22, 588 -20 C 594 30, 614 70, 656 90 C 600 90, 540 90, 478 92 Z" fill="url(#rkFin)"/>
-    <path d="M 588 -12 C 592 34, 610 66, 646 88" stroke="#8da0ad" stroke-width="2" fill="none" opacity=".35" stroke-linecap="round"/>
-    <path d="M 596 40 C 606 62, 624 78, 648 88 L 634 88 C 614 78, 602 62, 596 40 Z" fill="#aab8c2" opacity=".28"/>
+    <path d="M 462 106 C 504 82, 544 48, 566 8 C 572 50, 596 86, 644 104 C 588 102, 520 102, 462 106 Z" fill="url(#rkFin)"/>
+    <path d="M 566 14 C 570 54, 592 86, 634 102" stroke="#8da0ad" stroke-width="2" fill="none" opacity=".35" stroke-linecap="round"/>
   </g>
   <!-- body -->
   <use href="#rkBodyP" fill="url(#rkSkin)"/>
   <g clip-path="url(#rkBodyClip)">
-    <!-- irregular countershading line -->
-    <path d="M 100 196 C 180 192, 260 190, 340 186 C 372 190, 396 184, 430 188 C 470 182, 500 190, 540 184 C 580 190, 620 182, 660 186 C 700 180, 730 184, 770 176 C 800 180, 830 172, 860 170 C 900 176, 950 174, 996 168 L 996 300 L 100 300 Z" fill="url(#rkBelly)"/>
-    <path d="M 300 188 q 6 6 12 -2 M 420 190 q 8 6 14 -2 M 560 186 q 8 6 14 -3 M 690 184 q 8 5 14 -3" stroke="#e8edf0" stroke-width="3" fill="none" opacity=".8" stroke-linecap="round"/>
-    <rect x="100" y="70" width="900" height="210" fill="url(#rkSheen)"/>
-    <rect x="100" y="70" width="900" height="210" fill="url(#rkShade)"/>
-    <!-- subtle lateral line and skin texture -->
-    <path d="M 860 134 C 760 124, 600 124, 440 140 C 340 152, 230 170, 140 186" stroke="#8a9ba8" stroke-width="1.2" fill="none" opacity=".28"/>
-    <g stroke="#0f1820" stroke-width="1.4" fill="none" opacity=".16" stroke-linecap="round">
-      <path d="M 420 120 q 14 4 30 0"/><path d="M 470 112 q 14 4 30 0"/><path d="M 560 104 q 16 4 34 0"/><path d="M 360 138 q 14 4 28 0"/><path d="M 640 100 q 16 4 34 0"/><path d="M 520 128 q 14 4 30 0"/>
+    <path d="M 100 196 C 200 192, 300 188, 380 184 C 420 188, 450 182, 490 186 C 540 180, 580 188, 630 182 C 680 188, 720 180, 770 182 C 820 176, 870 180, 930 174 C 960 172, 980 172, 996 168 L 996 300 L 100 300 Z" fill="url(#rkBelly)"/>
+    <rect x="100" y="80" width="900" height="180" fill="url(#rkSheen)"/>
+    <rect x="100" y="80" width="900" height="180" fill="url(#rkShade)"/>
+    <path d="M 860 130 C 760 118, 600 118, 440 134 C 340 146, 230 164, 140 186" stroke="#8a9ba8" stroke-width="1.2" fill="none" opacity=".26"/>
+    <g stroke="#0f1820" stroke-width="1.4" fill="none" opacity=".15" stroke-linecap="round">
+      <path d="M 420 118 q 14 4 30 0"/><path d="M 480 110 q 14 4 30 0"/><path d="M 560 104 q 16 4 34 0"/><path d="M 360 134 q 14 4 28 0"/><path d="M 640 100 q 16 4 34 0"/><path d="M 520 124 q 14 4 30 0"/>
     </g>
   </g>
   <!-- gill slits -->
-  <g stroke="#0b1218" stroke-width="2.4" fill="none" stroke-linecap="round" opacity=".7">
-    <path d="M 706 116 C 716 138, 718 164, 708 190"/><path d="M 722 114 C 732 136, 734 162, 724 188"/>
-    <path d="M 738 113 C 748 135, 750 161, 740 186"/><path d="M 754 112 C 764 134, 766 160, 756 184"/><path d="M 770 112 C 780 133, 782 158, 773 181"/>
+  <g stroke="#0b1218" stroke-width="2.2" fill="none" stroke-linecap="round" opacity=".7">
+    <path d="M 716 116 C 724 136, 726 158, 718 178"/><path d="M 732 114 C 740 134, 742 156, 734 176"/><path d="M 748 113 C 756 133, 758 154, 750 174"/>
+    <path d="M 764 113 C 772 132, 774 152, 766 171"/><path d="M 780 113 C 788 131, 790 150, 782 168"/>
   </g>
-  <g stroke="#c9d5dd" stroke-width="1" fill="none" opacity=".25" stroke-linecap="round">
-    <path d="M 710 116 C 720 138, 722 164, 712 190"/><path d="M 726 114 C 736 136, 738 162, 728 188"/><path d="M 742 113 C 752 135, 754 161, 744 186"/>
-  </g>
-  <!-- pectoral fin -->
+  <!-- long sickle pectoral fin -->
   <g class="sh-pec"><g class="sh-pec-i">
-    <path d="M 742 236 C 706 276, 640 326, 548 356 C 596 332, 636 308, 668 288 C 694 282, 710 270, 722 256 Z" fill="url(#rkFinB)"/>
-    <path d="M 720 246 C 672 288, 618 326, 560 346" stroke="#8da0ad" stroke-width="2" fill="none" opacity=".4" stroke-linecap="round"/>
+    <path d="M 730 214 C 700 256, 656 296, 592 330 C 644 308, 676 290, 700 262 C 716 252, 724 236, 730 214 Z" fill="url(#rkFinB)"/>
+    <path d="M 724 222 C 690 262, 646 298, 600 324" stroke="#8da0ad" stroke-width="2" fill="none" opacity=".35" stroke-linecap="round"/>
   </g></g>
-  <!-- mouth interior: shape is rewritten by script as the jaw moves -->
-  <path id="gwGape" d="M 826 226 C 868 212, 934 194, 988 174 L 950 234 C 912 242, 872 240, 826 230 Z" fill="url(#rkGape)"/>
-  <path id="gwUpT" d="M 833.8 223.4 L 839.3 234.7 L 841.3 221.0 Z M 843.5 220.3 L 849.9 233.9 L 851.5 217.9 Z M 853.8 217.1 L 861.0 232.8 L 862.2 214.6 Z M 864.6 213.8 L 872.4 231.2 L 873.3 211.2 Z M 875.7 210.4 L 884.2 229.2 L 884.7 207.7 Z M 887.3 206.9 L 896.1 226.5 L 896.5 204.1 Z M 899.1 203.3 L 908.1 223.1 L 908.4 200.4 Z M 911.1 199.6 L 920.1 219.1 L 920.5 196.7 Z M 923.2 195.8 L 932.1 214.4 L 932.7 192.8 Z M 935.4 192.0 L 944.0 209.1 L 944.9 188.9 Z M 947.5 188.0 L 955.6 203.3 L 957.0 184.9 Z M 959.6 184.0 L 967.1 197.1 L 968.9 180.8 Z M 971.5 179.9 L 978.2 190.6 L 980.6 176.7 Z" fill="#ece6d6"/>
-  <path d="M 833.8 223.4 L 839.3 234.7 L 841.3 221.0 Z M 843.5 220.3 L 849.9 233.9 L 851.5 217.9 Z M 853.8 217.1 L 861.0 232.8 L 862.2 214.6 Z M 864.6 213.8 L 872.4 231.2 L 873.3 211.2 Z M 875.7 210.4 L 884.2 229.2 L 884.7 207.7 Z M 887.3 206.9 L 896.1 226.5 L 896.5 204.1 Z M 899.1 203.3 L 908.1 223.1 L 908.4 200.4 Z M 911.1 199.6 L 920.1 219.1 L 920.5 196.7 Z M 923.2 195.8 L 932.1 214.4 L 932.7 192.8 Z M 935.4 192.0 L 944.0 209.1 L 944.9 188.9 Z M 947.5 188.0 L 955.6 203.3 L 957.0 184.9 Z M 959.6 184.0 L 967.1 197.1 L 968.9 180.8 Z M 971.5 179.9 L 978.2 190.6 L 980.6 176.7 Z" fill="none" stroke="#9d9582" stroke-width=".6" opacity=".7"/>
-  <!-- lower jaw: continuous with the belly, hinged at the mouth corner -->
-  <g class="sh-jaw">
-    <path d="M 712 252 C 760 256, 800 248, 826 230 C 872 240, 918 242, 952 234 C 958 244, 944 256, 920 261 C 872 274, 800 270, 734 259 Z" fill="url(#rkBelly)"/>
-    <path d="M 746 262 C 800 270, 872 272, 920 261 C 944 256, 958 244, 952 234" stroke="#9aa8b1" stroke-width="1.3" fill="none" opacity=".5"/>
-    <path d="M 834.3 231.7 L 838.9 222.2 L 844.0 233.5 Z M 846.8 234.0 L 851.4 221.8 L 856.5 235.5 Z M 859.2 235.8 L 863.6 221.4 L 868.8 237.0 Z M 871.4 237.3 L 875.4 221.1 L 880.8 238.1 Z M 883.4 238.3 L 886.7 221.1 L 892.6 238.7 Z M 895.2 238.8 L 897.6 221.4 L 904.0 238.9 Z M 906.5 238.9 L 908.1 222.2 L 915.1 238.7 Z M 917.4 238.6 L 918.2 223.2 L 925.6 238.0 Z M 927.9 237.8 L 928.0 224.3 L 935.7 236.8 Z M 937.8 236.5 L 937.3 225.4 L 945.1 235.1 Z" fill="#ece6d6"/>
-    <path d="M 834.3 231.7 L 838.9 222.2 L 844.0 233.5 Z M 846.8 234.0 L 851.4 221.8 L 856.5 235.5 Z M 859.2 235.8 L 863.6 221.4 L 868.8 237.0 Z M 871.4 237.3 L 875.4 221.1 L 880.8 238.1 Z M 883.4 238.3 L 886.7 221.1 L 892.6 238.7 Z M 895.2 238.8 L 897.6 221.4 L 904.0 238.9 Z M 906.5 238.9 L 908.1 222.2 L 915.1 238.7 Z M 917.4 238.6 L 918.2 223.2 L 925.6 238.0 Z M 927.9 237.8 L 928.0 224.3 L 935.7 236.8 Z M 937.8 236.5 L 937.3 225.4 L 945.1 235.1 Z" fill="none" stroke="#9d9582" stroke-width=".6" opacity=".7"/>
-  </g>
-
-  <!-- upper lip, nostril, eye -->
-  <path d="M 826 226 C 868 212, 934 194, 988 174" stroke="#e9eef0" stroke-width="2" fill="none" opacity=".5" stroke-linecap="round"/>
-  <path d="M 962 146 q 8 3 10 12" stroke="#0a1118" stroke-width="2.2" fill="none" stroke-linecap="round" opacity=".7"/>
-  <circle cx="906" cy="150" r="6.4" fill="#05080b"/>
-  <circle cx="908" cy="148" r="1.6" fill="#dfe9f0" opacity=".85"/>
-  <path d="M 884 140 C 896 136, 916 138, 928 146" stroke="#10171d" stroke-width="2" fill="none" opacity=".35" stroke-linecap="round"/>
+  <!-- closed mouth, underslung jaw line, nostril, eye -->
+  <path d="M 986 174 C 946 194, 902 208, 856 216" stroke="#0a1015" stroke-width="2.2" fill="none" stroke-linecap="round" opacity=".8"/>
+  <path d="M 986 176 C 948 198, 906 212, 862 220" stroke="#e8edf0" stroke-width="1.6" fill="none" stroke-linecap="round" opacity=".55"/>
+  <path d="M 856 216 q -7 -2 -11 5" stroke="#0a1015" stroke-width="2" fill="none" stroke-linecap="round" opacity=".6"/>
+  <path d="M 962 146 q 8 3 10 12" stroke="#0a1118" stroke-width="2" fill="none" stroke-linecap="round" opacity=".6"/>
+  <circle cx="902" cy="148" r="5.6" fill="#05080b"/>
+  <circle cx="904" cy="146" r="1.4" fill="#dfe9f0" opacity=".85"/>
 </svg></div></div>
     <div class="fog"></div>
     <div class="panels">
@@ -1483,53 +1458,23 @@ function renderDive() {
   diveFrame();
 }
 let DIVE_STEP = -1, DIVE_RAF = 0;
-let DIVE_PREV = 0, DIVE_SKEW = 0, DIVE_HIT = [false, false];
-const JAW_H = [790, 244];
-function setJaw(g, deg) {
-  g.style.setProperty("--jaw", deg.toFixed(1) + "deg");
-  const a = deg * Math.PI / 180, c = Math.cos(a), sn = Math.sin(a);
-  const rot = ([x, y]) => { const dx = x - JAW_H[0], dy = y - JAW_H[1]; return [JAW_H[0] + dx * c - dy * sn, JAW_H[1] + dx * sn + dy * c]; };
-  const jt = rot([952, 234]), jc = rot([826, 230]);
-  g.querySelector("#gwGape").setAttribute("d", `M 826 226 C 868 212, 934 194, 988 174 L ${jt[0].toFixed(1)} ${jt[1].toFixed(1)} L ${jc[0].toFixed(1)} ${jc[1].toFixed(1)} Z`);
-}
-function hitNow(stage, g) {
-  const sh = g.querySelector(".gw-shake");
-  sh.classList.remove("hit"); void sh.offsetWidth; sh.classList.add("hit");
-  stage.classList.add("flash"); setTimeout(() => stage.classList.remove("flash"), 80);
-  setTimeout(() => sh.classList.remove("hit"), 400);
-}
 function diveFrame() {
   DIVE_RAF = 0;
   const sec = $("#dive"); if (!sec || sec.classList.contains("hidden")) return;
   const r = sec.getBoundingClientRect(), span = sec.offsetHeight - innerHeight;
   const p = Math.min(1, Math.max(0, -r.top / Math.max(1, span)));
   sec.classList.toggle("moved", p > 0.02);
-  const calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const g = $("#gw");
-  if (calm) { setJaw(g, 2); }
-  else {
-    const cl = (x) => Math.min(1, Math.max(0, x)), seg = (a, b, x) => cl((x - a) / (b - a));
-    const eIn = (t) => t * t * t, eOut = (t) => 1 - Math.pow(1 - t, 3), sn = Math.sin;
-    // short, hard timeline: cruise 0-.3, strike .3-.42, thrash and leave .42-1
-    const stalk = seg(0, 0.3, p), strike = seg(0.3, 0.42, p), after = seg(0.42, 1, p);
-    const x = -58 + 34 * stalk + 14 * eIn(strike) + 12 * eOut(after);
-    const y = 4 * sn(p * 20) * (1 - strike) - 4 * eIn(strike) + 3 * eOut(after);
-    const sc = 0.42 + 0.08 * stalk + 0.34 * eIn(strike) - 0.1 * after;
-    const rot = 2 + 2.5 * sn(p * 26) * (1 - strike) - 9 * eIn(strike) + 11 * eOut(seg(0.42, 0.62, p)) + 2.4 * sn(p * 80) * seg(0.42, 0.5, p) * (1 - seg(0.5, 0.75, p));
-    DIVE_SKEW += ((-(p - DIVE_PREV) * 360) - DIVE_SKEW) * 0.35; DIVE_PREV = p;
-    const sk = Math.max(-9, Math.min(9, DIVE_SKEW));
-    g.style.transform = `translate3d(${x}vw, ${y}vh, 0) scale(${sc}) rotate(${rot}deg) skewX(${sk}deg)`;
-    g.style.opacity = Math.min(1, 0.25 + p * 6);
-    // jaw: shut while cruising, gapes, snaps closed on the bite, then works as it thrashes
-    let jaw = -6 + 2 * sn(p * 30) * (1 - strike);
-    jaw += 32 * eIn(seg(0.3, 0.405, p));
-    jaw -= 36 * seg(0.405, 0.43, p);
-    jaw += 12 * Math.max(0, sn(p * 90)) * seg(0.44, 0.5, p) * (1 - seg(0.7, 0.85, p));
-    setJaw(g, jaw);
-    g.style.setProperty("--tail", (sn(p * 70) * (7 + 14 * (strike + after * 0.4))).toFixed(1) + "deg");
-    g.style.setProperty("--pec", (-4 + 8 * sn(p * 26) - 6 * strike).toFixed(1) + "deg");
-    [0.412, 0.7].forEach((th, i) => { const past = p >= th; if (past !== DIVE_HIT[i]) { DIVE_HIT[i] = past; hitNow(sec.querySelector(".stage"), g); } });
-    if (Math.abs(DIVE_SKEW) > 0.15 && !DIVE_RAF) DIVE_RAF = requestAnimationFrame(diveFrame);
+  if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    const sn = Math.sin, g = $("#gw");
+    // a steady cruise across the frame, body undulating as it goes
+    const x = -80 + 160 * p;
+    const y = 3 * sn(p * 14) - 2 * sn(p * Math.PI);
+    const sc = 0.78 + 0.12 * sn(p * Math.PI);
+    const rot = 1.5 * sn(p * 18) + 2 * (p - 0.5);
+    g.style.transform = `translate3d(${x}vw, ${y}vh, 0) scale(${sc}) rotate(${rot}deg)`;
+    g.style.opacity = Math.min(1, p * 8, (1 - p) * 8 + 0.2);
+    g.style.setProperty("--tail", (sn(p * 90) * 10).toFixed(1) + "deg");
+    g.style.setProperty("--pec", (-3 + 4 * sn(p * 30)).toFixed(1) + "deg");
   }
   const step = p < 0.34 ? 0 : p < 0.68 ? 1 : 2;
   if (step !== DIVE_STEP) {
