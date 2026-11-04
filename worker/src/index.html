@@ -606,6 +606,32 @@ a.lk{color:var(--accent);text-decoration:none} a.lk:hover{text-decoration:underl
   .set{grid-template-columns:1fr 60px} .set .exp{grid-column:1 / -1} .set input[type=range]{grid-column:1}
   nav{gap:18px}
 }
+/* ===== apple-style polish ===== */
+:root{--ease-drawer:cubic-bezier(0.32,0.72,0,1)}
+.navbar .in{position:relative}
+.navbar nav button.on{background:none}
+.nb-pill{position:absolute;top:50%;left:0;height:30px;margin-top:-15px;border-radius:8px;background:var(--raise);pointer-events:none;z-index:0;opacity:0;
+  transition:transform 320ms var(--ease-drawer),width 320ms var(--ease-drawer),opacity 160ms ease}
+.nb-pill.ready{opacity:1}
+.navbar nav button{position:relative;z-index:1}
+.navbar nav{z-index:1}
+[id^="tab-"]:not(.hidden){animation:tabin 280ms var(--ease-out) both}
+@keyframes tabin{from{opacity:0;transform:translateY(8px);filter:blur(3px)}to{opacity:1;transform:none;filter:none}}
+.moresheet{transform-origin:100% 100%}
+.moresheet:not(.hidden){animation:sheetin 240ms var(--ease-drawer) both}
+@keyframes sheetin{from{opacity:0;transform:translateY(10px) scale(.94)}to{opacity:1;transform:none}}
+.catcard,.sig{position:relative;overflow:hidden}
+.catcard::after,.sig::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity 220ms ease;
+  background:radial-gradient(260px circle at var(--mx,50%) var(--my,0%),rgba(150,215,240,.13),transparent 70%)}
+@media (hover:hover) and (pointer:fine){
+  .catcard:hover::after,.sig:hover::after{opacity:1}
+  .catcard,.sig{transition:transform 160ms var(--ease-out),border-color 150ms ease,box-shadow 220ms ease}
+}
+#hero .inner{will-change:transform,opacity}
+@media (prefers-reduced-motion: reduce){
+  [id^="tab-"]:not(.hidden),.moresheet:not(.hidden){animation:none}
+  .nb-pill{transition:none}
+}
 </style>
 </head>
 <body>
@@ -1937,6 +1963,58 @@ function openShark(w) {
 
 load();
 setInterval(() => { if (!document.hidden) load(); }, 5 * 60 * 1000);
+
+/* ---------------- apple-style polish ---------------- */
+(() => {
+  const calm = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // sliding nav highlight
+  const nav = document.querySelector(".navbar nav");
+  if (nav) {
+    const pill = document.createElement("span"); pill.className = "nb-pill"; nav.parentElement.prepend(pill);
+    const place = () => {
+      const on = nav.querySelector("button.on"); if (!on || !nav.offsetWidth) { pill.classList.remove("ready"); return; }
+      pill.style.width = on.offsetWidth + "px"; pill.style.transform = `translateX(${on.offsetLeft}px)`; pill.classList.add("ready");
+    };
+    nav.addEventListener("click", () => requestAnimationFrame(place));
+    addEventListener("resize", place); place(); setTimeout(place, 300);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(place);
+  }
+  // cursor light on cards
+  if (matchMedia("(hover:hover) and (pointer:fine)").matches) {
+    let raf = 0, tgt = null, px = 0, py = 0;
+    document.addEventListener("pointermove", (e) => {
+      const c = e.target.closest && e.target.closest(".catcard,.sig"); if (!c) return;
+      tgt = c; px = e.clientX; py = e.clientY;
+      if (!raf) raf = requestAnimationFrame(() => { raf = 0; const r = tgt.getBoundingClientRect(); tgt.style.setProperty("--mx", (px - r.left) + "px"); tgt.style.setProperty("--my", (py - r.top) + "px"); });
+    }, {passive: true});
+  }
+  // hero recedes as you scroll away
+  const hero = document.querySelector("#hero .inner"), ocean = document.querySelector("#hero");
+  if (hero) {
+    let ticking = false;
+    const upd = () => {
+      ticking = false; if (calm() || ocean.classList.contains("hidden")) { hero.style.opacity = ""; hero.style.transform = ""; return; }
+      const p = Math.min(1, Math.max(0, scrollY / Math.max(1, ocean.offsetHeight * 0.7)));
+      hero.style.opacity = (1 - p * 1.1).toFixed(3); hero.style.transform = `translate3d(0,${(p * 36).toFixed(1)}px,0) scale(${(1 - p * 0.04).toFixed(4)})`;
+    };
+    addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(upd); } }, {passive: true});
+    upd();
+  }
+  // swipe the More sheet down to dismiss
+  const sh = document.querySelector("#moreSheet");
+  if (sh) {
+    let y0 = 0, t0 = 0, dy = 0, drag = false;
+    sh.addEventListener("pointerdown", (e) => { drag = true; y0 = e.clientY; t0 = performance.now(); dy = 0; });
+    sh.addEventListener("pointermove", (e) => { if (!drag) return; dy = Math.max(0, e.clientY - y0); if (dy > 6) { sh.style.animation = "none"; sh.style.transition = "none"; sh.style.transform = `translateY(${dy * 0.8}px)`; } });
+    const end = () => {
+      if (!drag) return; drag = false;
+      const v = dy / Math.max(1, performance.now() - t0);
+      sh.style.transition = ""; sh.style.transform = ""; sh.style.animation = "";
+      if (dy > 60 || v > 0.4) { sh.classList.add("hidden"); document.querySelector("#moreBtn").setAttribute("aria-expanded", "false"); }
+    };
+    sh.addEventListener("pointerup", end); sh.addEventListener("pointercancel", end);
+  }
+})();
 </script>
 </body>
 </html>
