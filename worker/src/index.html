@@ -3,15 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0d0e10">
+<meta name="theme-color" content="#050b14">
 <meta name="color-scheme" content="dark light">
 <meta name="robots" content="noindex, nofollow">
 <title>Shark Tracker</title>
 <style>
 :root{
-  --bg:#0d0e10; --panel:#131417; --raise:#17191c; --ink:#e8e8ea; --mute:#9a9ca3; --dim:#6b6e76;
-  --line:#24262b; --line2:#30333a; --accent:#7aa2f7;
-  --a:#5fb98d; --b:#d98a4e; --warn:#d4a64a; --bad:#e06c6c; --good:#5fb98d;
+  --bg:#050b14; --panel:#0a1422; --raise:#0e1b2d; --ink:#eaf1f8; --mute:#93a4b8; --dim:#62758c;
+  --line:#152338; --line2:#1f3049; --accent:#5ec8e5;
+  --a:#3ad1b5; --b:#ff8a6b; --warn:#f2c14e; --bad:#ff6b6b; --good:#3ad1b5;
   --sans:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
   --ease-out:cubic-bezier(0.23, 1, 0.32, 1);
 }
@@ -37,9 +37,9 @@ body{--navh:calc(48px + env(safe-area-inset-top,0px))}
 .nb-live{margin-left:auto;line-height:0}
 .navbar.scrolled{box-shadow:0 1px 0 var(--line)}
 .navbar.scrolled .nb-title{opacity:1;transform:none}
-.hero{padding:calc(var(--navh) + 18px) 0 4px}
-.large{margin:0;font-size:clamp(30px,5vw,40px);line-height:1.08;font-weight:700;letter-spacing:-.025em}
-.lede{margin:6px 0 0;color:var(--mute);font-size:14px}
+
+
+
 .pulse{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--good);margin-right:7px;vertical-align:2px}
 .pulse.stale{background:var(--warn)} .pulse.bad{background:var(--bad)}
 .iconbtn{font:inherit;font-size:12.5px;color:var(--mute);background:none;border:0;padding:0;cursor:pointer}
@@ -141,6 +141,119 @@ details.card summary{cursor:pointer}
 @media (prefers-reduced-transparency: reduce){
   .navbar,nav{background:var(--bg);backdrop-filter:none;-webkit-backdrop-filter:none}
 }
+
+/* ===== ocean overview ===== */
+.ocean{position:relative;overflow:hidden;min-height:min(86svh,760px);display:flex;align-items:flex-end;
+  background:radial-gradient(120% 80% at 70% 0%,#0d2f4d 0%,#071a2e 45%,var(--bg) 100%);margin-bottom:8px}
+.ocean .rays{position:absolute;inset:0;background:repeating-linear-gradient(100deg,transparent 0 60px,rgba(94,200,229,.035) 60px 120px);
+  mask-image:linear-gradient(180deg,#000 0%,transparent 70%);-webkit-mask-image:linear-gradient(180deg,#000 0%,transparent 70%)}
+.ocean .inner{position:relative;z-index:2;width:100%;max-width:1180px;margin:0 auto;padding:calc(var(--navh) + 40px) 24px 120px;
+  display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,.9fr);gap:48px;align-items:end}
+.herocard{background:color-mix(in srgb,var(--raise) 70%,transparent);backdrop-filter:blur(16px) saturate(160%);-webkit-backdrop-filter:blur(16px) saturate(160%);
+  border:1px solid rgba(255,255,255,.08);border-radius:22px;padding:22px;box-shadow:0 30px 60px rgba(0,0,0,.35);cursor:pointer;
+  animation:float 7s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.herocard .k{font-size:12.5px;color:var(--accent);font-weight:600;margin-bottom:10px}
+.herocard .q{font-weight:650;font-size:17px;line-height:1.3;letter-spacing:-.01em;margin-bottom:16px}
+.herocard .row2{display:flex;align-items:center;gap:16px}
+.herocard .say{font-size:14px;color:var(--mute)} .herocard .say b{display:block;color:var(--ink);font-size:22px;letter-spacing:-.02em}
+.herocard .plain{margin-top:14px}
+@media (max-width: 900px){.ocean .inner{grid-template-columns:1fr}.herocard{display:none}}
+@media (prefers-reduced-motion: reduce){.herocard{animation:none}}
+.eyebrow{font-size:13px;font-weight:600;color:var(--accent);letter-spacing:.02em;margin:0 0 10px}
+.ocean h1.large{font-size:clamp(44px,8vw,92px);line-height:.98;letter-spacing:-.04em;font-weight:800;margin:0;max-width:11ch}
+.ocean h1 .fade{color:var(--mute)}
+.ocean .lede{font-size:clamp(15px,1.6vw,18px);color:var(--mute);max-width:56ch;margin:16px 0 0;line-height:1.5}
+.bigstats{display:flex;flex-wrap:wrap;gap:16px 30px;margin-top:34px}
+.bigstat .v{font-size:clamp(28px,3.4vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1}
+.bigstat .l{font-size:13px;color:var(--mute);margin-top:6px}
+.water{position:absolute;left:0;right:0;bottom:0;height:150px;z-index:1;pointer-events:none}
+.water svg{position:absolute;bottom:0;left:0;width:200%;height:100%}
+.water .w1{animation:drift 18s linear infinite;opacity:.55}
+.water .w2{animation:drift 26s linear infinite reverse;opacity:.35}
+@keyframes drift{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.fin{position:absolute;z-index:1;bottom:58px;left:0;width:72px;height:56px;animation:swim 22s linear infinite;pointer-events:none}
+.fin svg{width:100%;height:100%;animation:bob 3.2s ease-in-out infinite}
+@keyframes swim{from{transform:translateX(-120px)}to{transform:translateX(calc(100vw + 120px))}}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(5px) rotate(2deg)}}
+.livepill{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;color:var(--mute);margin-top:22px}
+/* sections */
+.sec{padding:56px 0 8px}
+.sec h2{font-size:clamp(26px,3.6vw,38px);letter-spacing:-.03em;line-height:1.08;margin:0;font-weight:750}
+.sec .kicker{font-size:13px;font-weight:600;color:var(--accent);margin:0 0 8px}
+.sec .desc{color:var(--mute);margin:10px 0 22px;max-width:62ch;font-size:15px}
+.rail{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 24px 18px;margin:0 -24px;scrollbar-width:none;overscroll-behavior-x:contain}
+.rail::-webkit-scrollbar{display:none}
+.sig{flex:0 0 min(340px,82vw);scroll-snap-align:start;scroll-margin-left:24px;background:linear-gradient(180deg,var(--raise),var(--panel));
+  border:1px solid var(--line);border-radius:20px;padding:20px;cursor:pointer;display:flex;flex-direction:column;gap:14px;
+  transition:transform 200ms var(--ease-out),border-color 200ms ease}
+.sig:active{transform:scale(0.98)}
+.sig .q{font-weight:650;font-size:15.5px;line-height:1.3;letter-spacing:-.01em;min-height:3.9em;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.sig .cat2{font-size:12px;color:var(--dim);text-transform:capitalize}
+.sig .row2{display:flex;align-items:center;gap:16px}
+.ring{width:84px;height:84px;flex:none;position:relative}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring .trk{stroke:var(--line2)} .ring .arc{stroke-linecap:round;transition:stroke-dashoffset 1100ms var(--ease-out)}
+.ring .pct{position:absolute;inset:0;display:grid;place-items:center;font-weight:700;font-size:19px;letter-spacing:-.02em}
+.sig .say{font-size:14px;line-height:1.4;color:var(--mute)}
+.sig .say b{color:var(--ink);font-size:20px;font-weight:700;letter-spacing:-.02em;display:block;line-height:1.15}
+.sig .foot{display:flex;justify-content:space-between;font-size:12.5px;color:var(--mute);border-top:1px solid var(--line);padding-top:12px}
+.sig .foot b{color:var(--ink);font-weight:600}
+.tug{display:flex;height:8px;border-radius:999px;overflow:hidden;background:var(--line)}
+.tug i{display:block;height:100%;transform-origin:left;transform:scaleX(0);transition:transform 900ms var(--ease-out)}
+.tug .A{background:var(--a)} .tug .B{background:var(--b);transform-origin:right}
+.in .tug i{transform:scaleX(1)}
+.duel{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.duel .card2{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;cursor:pointer}
+.duel .q{font-weight:650;font-size:15px;line-height:1.3;margin-bottom:12px}
+.duel .lr{display:flex;justify-content:space-between;font-size:13px;margin-top:8px;color:var(--mute)}
+.duel .lr b{font-size:20px;letter-spacing:-.02em}
+.duel .lr .A b{color:var(--a)} .duel .lr .B b{color:var(--b)}
+.cats{display:flex;flex-direction:column;gap:12px;max-width:820px}
+.catrow{display:grid;grid-template-columns:110px minmax(0,1fr) 92px;gap:14px;align-items:center;font-size:14px}
+.catrow .nm{text-transform:capitalize;color:var(--mute)}
+.catrow .track{height:14px;border-radius:999px;background:var(--line);overflow:hidden}
+.catrow .fill{height:100%;border-radius:999px;background:linear-gradient(90deg,#1f7fa3,var(--accent));transform-origin:left;transform:scaleX(0);transition:transform 1000ms var(--ease-out)}
+.catrow .v{text-align:right;font-weight:600}
+.in .catrow .fill{transform:scaleX(var(--w))}
+.bets{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.bet{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;cursor:pointer}
+.bet .amt{font-size:26px;font-weight:700;letter-spacing:-.03em}
+.bet .who{font-size:13px;color:var(--mute);margin-top:2px}
+.bet .on{font-size:14px;margin-top:10px;line-height:1.35}
+.bet .on b{color:var(--a)}
+.toplist{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+.ts{display:flex;align-items:center;gap:14px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 14px;cursor:pointer}
+.ts .rk{font-size:13px;color:var(--dim);width:22px}
+.ts .nm2{font-weight:650;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ts .meta2{font-size:12px;color:var(--mute)}
+.ts .sc2{margin-left:auto;font-weight:700;font-size:18px;color:var(--accent)}
+.explain{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.explain div{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;font-size:14px;color:var(--mute)}
+.explain b{display:block;color:var(--ink);font-size:15px;margin-bottom:4px}
+.cta{display:inline-flex;align-items:center;gap:8px;margin-top:22px;font:inherit;font-weight:600;font-size:14px;color:var(--bg);background:var(--ink);
+  border:0;border-radius:999px;padding:11px 20px;cursor:pointer;transition:transform 160ms var(--ease-out)}
+.cta:active{transform:scale(0.97)}
+.reveal{opacity:0;transform:translateY(24px);transition:opacity 700ms var(--ease-out),transform 700ms var(--ease-out)}
+.reveal.in{opacity:1;transform:none}
+.plain{font-size:13px;color:var(--mute);margin-top:8px}
+.plain b{color:var(--ink)}
+@media (hover: hover) and (pointer: fine){
+  .sig:hover,.duel .card2:hover,.bet:hover,.ts:hover{border-color:var(--line2)}
+  .sig:hover{transform:translateY(-3px)}
+}
+@media (prefers-reduced-motion: reduce){
+  .water .w1,.water .w2,.fin,.fin svg{animation:none}
+  .fin{display:none}
+  .reveal{transform:none;transition:opacity 300ms ease}
+  .tug i,.catrow .fill,.ring .arc{transition:none}
+}
+@media (max-width: 560px){
+  .ocean .inner{padding:calc(var(--navh) + 26px) 16px 110px}
+  .rail{margin:0 -16px;padding:4px 16px 18px} .sig{scroll-margin-left:16px}
+  .catrow{grid-template-columns:84px minmax(0,1fr) 70px;gap:10px;font-size:13px}
+  .sec{padding:44px 0 4px}
+}
 .hidden{display:none!important}
 @media (max-width: 900px){
   .mk .hd{grid-template-columns:1fr;gap:10px}
@@ -167,28 +280,88 @@ details.card summary{cursor:pointer}
 <header class="navbar" id="navbar"><div class="in">
   <span class="nb-title">Shark Tracker</span>
   <span class="nb-live"><span class="pulse" id="pulse"></span></span>
-  <button class="iconbtn" id="theme" title="Switch light / dark">Light</button>
   <a href="/logout" class="iconbtn">Log out</a>
 </div></header>
-<div class="wrap">
-  <div class="hero" id="hero">
-    <h1 class="large">Shark Tracker</h1>
-    <p class="lede">Positions of proven Polymarket traders · <span id="updated">Loading…</span></p>
+<section class="ocean" id="hero">
+  <div class="rays"></div>
+  <div class="fin" aria-hidden="true"><svg viewBox="0 0 72 56"><path d="M6 54 C 22 46, 30 24, 34 2 C 44 18, 56 38, 70 54 Z" fill="#9fb3c8"/><path d="M34 2 C 44 18, 56 38, 70 54 L 52 54 C 46 40, 40 24, 34 2 Z" fill="#6f879f"/></svg></div>
+  <div class="water" aria-hidden="true">
+    <svg class="w2" viewBox="0 0 2400 150" preserveAspectRatio="none"><path d="M0 70 Q 150 40 300 70 T 600 70 T 900 70 T 1200 70 T 1500 70 T 1800 70 T 2100 70 T 2400 70 V150 H0 Z" fill="#0b2a44"/></svg>
+    <svg class="w1" viewBox="0 0 2400 150" preserveAspectRatio="none"><path d="M0 92 Q 200 66 400 92 T 800 92 T 1200 92 T 1600 92 T 2000 92 T 2400 92 V150 H0 Z" fill="#071b2e"/></svg>
   </div>
-  <div class="kpis" id="kpis"></div>
-  <div id="banner"></div>
-  <div class="status" id="status"></div>
-  <p class="note">Public data only. Not financial advice. Past profit does not predict future results.</p>
-
+  <div class="inner"><div>
+    <p class="eyebrow">Shark Tracker</p>
+    <h1 class="large">Follow the sharks.<br><span class="fade">See what they hold.</span></h1>
+    <p class="lede">We find Polymarket's consistently profitable traders, check their track records, and show you which side of each market they're on, in plain English.</p>
+    <div class="bigstats" id="bigstats"></div>
+    <div class="livepill"><span class="pulse" id="pulse"></span><span id="updated">Loading…</span></div>
+    </div>
+    <div class="herocard" id="herocard"></div>
+  </div>
+</section>
+<div class="wrap">
+  <div id="banner" style="margin-top:12px"></div>
   <nav>
-    <button data-tab="markets" class="on">Markets</button>
+    <button data-tab="overview" class="on">Overview</button>
+    <button data-tab="markets">Markets</button>
     <button data-tab="sharks">Sharks</button>
     <button data-tab="settings">Settings</button>
     <button data-tab="guide">Guide</button>
   </nav>
 
+  <!-- OVERVIEW -->
+  <section id="tab-overview">
+    <div class="sec reveal">
+      <p class="kicker">Strongest signals</p>
+      <h2>Where the sharks agree.</h2>
+      <p class="desc">Markets where most proven traders are on the same side. Swipe through. Tap one to see every shark and their bet.</p>
+      <div class="rail" id="ov-signals"></div>
+    </div>
+    <div class="sec reveal">
+      <p class="kicker">Contested</p>
+      <h2>Where the sharks disagree.</h2>
+      <p class="desc">Big markets where sharks are split almost evenly. A split means even the best traders see it differently.</p>
+      <div class="duel" id="ov-duels"></div>
+    </div>
+    <div class="sec reveal">
+      <p class="kicker">Follow the money</p>
+      <h2>Where the sharks are swimming.</h2>
+      <p class="desc">What sharks' open bets are worth right now, by topic.</p>
+      <div class="cats" id="ov-cats"></div>
+    </div>
+    <div class="sec reveal">
+      <p class="kicker">Biggest bets</p>
+      <h2>The largest single positions.</h2>
+      <p class="desc">The biggest individual shark bets on markets that are still open.</p>
+      <div class="bets" id="ov-bets"></div>
+    </div>
+    <div class="sec reveal">
+      <p class="kicker">The sharks</p>
+      <h2>Top-rated traders.</h2>
+      <p class="desc">Scored 0–100 on profit, win rate, return on money traded, track-record length and consistency.</p>
+      <div class="toplist" id="ov-top"></div>
+      <button class="cta" data-go="sharks">See all sharks →</button>
+    </div>
+    <div class="sec reveal">
+      <p class="kicker">How to read this</p>
+      <h2>Simple on the surface.</h2>
+      <div class="explain" style="margin-top:20px">
+        <div><b>What's a shark?</b>A trader with a strong, long, profitable track record on Polymarket. Score 60+ out of 100 and at least 20 finished markets.</div>
+        <div><b>What does 34¢ mean?</b>A share pays $1 if that side wins. 34¢ means the market gives it about a 34% chance.</div>
+        <div><b>What's agreement?</b>The share of sharks on the bigger side. 90% means 9 out of 10 sharks hold the same side.</div>
+        <div><b>Is this advice?</b>No. It shows what other traders hold, using public data. Sharks can be wrong.</div>
+      </div>
+      <button class="cta" data-go="markets">Explore every market →</button>
+    </div>
+    <div class="sec">
+      <p class="kicker">Data sources</p>
+      <div class="status" id="status"></div>
+      <p class="note">Public data only. Not financial advice. Past profit does not predict future results.</p>
+    </div>
+  </section>
+
   <!-- MARKETS -->
-  <section id="tab-markets">
+  <section id="tab-markets" class="hidden">
     <div class="filters">
       <label class="grow">Search<input id="f-q" type="search" placeholder="team, candidate, shark…"></label>
       <label>Category<select id="f-cat"><option value="">All</option></select></label>
@@ -302,7 +475,7 @@ async function load() {
     const [r, rm] = await Promise.all([fetch("/api/data", {cache: "no-store"}), fetch("/api/meta", {cache: "no-store"})]);
     if (r.status === 401 || rm.status === 401) { location.reload(); return; }
     DATA = await r.json(); META = (await rm.json()) || {};
-    renderHeader(); fillCats(); renderPossible(); renderRows(); renderSharks(); if (!SETTINGS_DONE) { SETTINGS_DONE = true; renderSettings(); }
+    renderHeader(); fillCats(); renderOverview(); renderPossible(); renderRows(); renderSharks(); if (!SETTINGS_DONE) { SETTINGS_DONE = true; renderSettings(); }
   } catch (e) {
     $("#banner").innerHTML = `<div class="banner bad">Couldn't load data (${esc(e.message)}). Reload the page to try again.</div>`;
   }
@@ -320,7 +493,7 @@ function renderHeader() {
   const ageMin = (Date.now() / 1000 - DATA.generated_at) / 60;
   const failing = META.last_failure && META.last_failure > (META.last_success || 0);
   $("#pulse").className = "pulse" + (failing ? " bad" : ageMin > 45 ? " stale" : "");
-  $("#updated").innerHTML = `updated ${fmtTime(DATA.generated_at)} (${ago(DATA.generated_at)})`;
+  $("#updated").innerHTML = `Live data · updated ${fmtTime(DATA.generated_at)} (${ago(DATA.generated_at)})`;
   let b = "";
   if (failing)
     b += `<div class="banner bad">The latest refresh failed at ${fmtTime(META.last_failure)}: “${esc(String(META.last_error || "").slice(0, 160))}${String(META.last_error || "").length > 160 ? "…" : ""}”. Showing the last good data from ${fmtTime(DATA.generated_at)}.</div>`;
@@ -331,12 +504,13 @@ function renderHeader() {
   const rows = DATA.rows;
   const strong = rows.filter((r) => r.total.A + r.total.B >= 3 && (r.agreement_pct || 0) >= 80).length;
   const tracked = rows.reduce((t, r) => t + r.money.A + r.money.B, 0);
-  $("#kpis").innerHTML = [
-    ["Sharks", (pm.sharks ?? Object.keys(DATA.traders).length).toLocaleString(), `from ${(pm.traders || 0).toLocaleString()} leaderboard traders`],
-    ["Markets with sharks", (DATA.rows_total ?? rows.length).toLocaleString(), `${rows.filter((r) => r.total.A + r.total.B >= 2).length.toLocaleString()} with 2+ sharks`],
-    ["Strong consensus", strong.toLocaleString(), "3+ sharks, 80%+ on one side"],
-    ["Shark money", bigMoney(tracked), "current value of their bets"],
-  ].map(([l, v, sub]) => `<div class="kpi"><div class="l">${l}</div><div class="v">${v}</div><div class="s">${esc(sub)}</div></div>`).join("");
+  $("#bigstats").innerHTML = [
+    [pm.sharks ?? Object.keys(DATA.traders).length, "", "proven sharks"],
+    [DATA.rows_total ?? rows.length, "", "markets they're in"],
+    [strong, "", "strong consensus picks"],
+    [tracked, "$", "riding on open bets"],
+  ].map(([v, pre, l]) => `<div class="bigstat"><div class="v" data-count="${v}" data-pre="${pre}">${pre ? bigMoney(v) : Number(v).toLocaleString()}</div><div class="l">${l}</div></div>`).join("");
+  countUp();
   const runs = (META.runs || []).slice(0, 6).map((r) => `<span class="${r.ok ? "" : "f"}" title="${esc(r.message)}">${fmtTime(r.at).replace(" ET", "").replace(/^\w+ \d+, /, "")}${r.ok ? "" : " (failed)"}</span>`).join("");
   $("#status").innerHTML = `
     <div><span class="dot ${pm.ok ? "ok" : "bad"}"></span><b>Polymarket</b>${pm.ok ? "" : " · problem"}<br>${esc(pm.message)}
@@ -502,6 +676,120 @@ function renderSharks() {
   }).join("");
 }
 
+
+/* ---------------- overview (story) ---------------- */
+const pctTxt = (p) => p == null ? "—" : Math.round(p * 100) + "%";
+function majority(r) {
+  const a = r.total.A, b = r.total.B, side = a >= b ? "A" : "B";
+  return {side, label: r.side_labels[side === "A" ? 0 : 1], n: Math.max(a, b), of: a + b,
+          price: side === "A" ? r.polymarket.price_a : r.polymarket.price_b, money: r.money[side],
+          entry: r.polymarket[side].avg_price};
+}
+function ring(pct, color) {
+  const C = 2 * Math.PI * 34, off = C * (1 - pct / 100);
+  return `<div class="ring"><svg viewBox="0 0 84 84"><circle class="trk" cx="42" cy="42" r="34" fill="none" stroke-width="8"/>
+    <circle class="arc" cx="42" cy="42" r="34" fill="none" stroke="${color}" stroke-width="8" stroke-dasharray="${C}" stroke-dashoffset="${C}" data-off="${off}"/></svg>
+    <div class="pct">${pct}%</div></div>`;
+}
+function openMarket(id) {
+  document.querySelector('nav button[data-tab="markets"]').click();
+  OPEN.add(id); $("#f-min").value = 1; $("#f-q").value = ""; renderRows();
+  const el = document.querySelector(`.mk[data-id="${CSS.escape(id)}"]`);
+  if (el) el.scrollIntoView({behavior: "smooth", block: "start"});
+}
+function renderOverview() {
+  if (!DATA) return;
+  const rows = DATA.rows;
+  // strongest signals
+  const sig = rows.filter((r) => r.total.A + r.total.B >= 5 && (r.agreement_pct || 0) >= 80)
+    .sort((x, y) => majority(y).n - majority(x).n || majority(y).money - majority(x).money).slice(0, 14);
+  $("#ov-signals").innerHTML = sig.map((r) => {
+    const m = majority(r), col = m.side === "A" ? "var(--a)" : "var(--b)";
+    return `<div class="sig" data-open="${esc(r.id)}">
+      <div class="cat2">${esc(r.category)} · ${fmtDate(r.event_date)}</div>
+      <div class="q">${esc(r.title)}</div>
+      <div class="row2">${ring(r.agreement_pct, col)}
+        <div class="say"><b>${m.n} of ${m.of} sharks</b>hold <span style="color:${col};font-weight:650">${esc(m.label)}</span></div></div>
+      <div class="plain">Market price <b>${cents(m.price)}</b>: about a <b>${pctTxt(m.price)}</b> chance. Sharks paid ${cents(m.entry)} on average.</div>
+      <div class="foot"><span>Shark money on ${esc(m.label)}</span><b>${bigMoney(m.money)}</b></div></div>`;
+  }).join("") || `<p class="sub">No strong consensus right now.</p>`;
+  const h = sig[0];
+  if (h) {
+    const m = majority(h), col = m.side === "A" ? "var(--a)" : "var(--b)";
+    $("#herocard").dataset.open = h.id;
+    $("#herocard").innerHTML = `<div class="k">Strongest consensus right now</div><div class="q">${esc(h.title)}</div>
+      <div class="row2">${ring(h.agreement_pct, col)}<div class="say"><b>${m.n} of ${m.of} sharks</b>hold <span style="color:${col};font-weight:650">${esc(m.label)}</span> · ${bigMoney(m.money)}</div></div>
+      <div class="plain">Market price <b>${cents(m.price)}</b>, about a <b>${pctTxt(m.price)}</b> chance.</div>`;
+    setTimeout(() => $("#herocard").querySelectorAll(".arc").forEach((c) => { c.style.strokeDashoffset = c.dataset.off; }), 300);
+  }
+  // contested
+  const duels = rows.filter((r) => r.total.A + r.total.B >= 6 && r.flags.split)
+    .sort((x, y) => (y.total.A + y.total.B) - (x.total.A + x.total.B)).slice(0, 6);
+  $("#ov-duels").innerHTML = duels.map((r) => {
+    const t = r.total.A + r.total.B;
+    return `<div class="card2" data-open="${esc(r.id)}"><div class="q">${esc(r.title)}</div>
+      <div class="tug"><i class="A" style="width:${100 * r.total.A / t}%"></i><i class="B" style="width:${100 * r.total.B / t}%"></i></div>
+      <div class="lr"><span class="A"><b>${r.total.A}</b> ${esc(r.side_labels[0])} · ${bigMoney(r.money.A)}</span><span class="B" style="text-align:right">${esc(r.side_labels[1])} <b>${r.total.B}</b> · ${bigMoney(r.money.B)}</span></div></div>`;
+  }).join("") || `<p class="sub">No big splits right now.</p>`;
+  // money by category
+  const cats = {};
+  rows.forEach((r) => { cats[r.category] = (cats[r.category] || 0) + r.money.A + r.money.B; });
+  const cl = Object.entries(cats).sort((a, b) => b[1] - a[1]).slice(0, 8), mx = cl.length ? cl[0][1] : 1;
+  $("#ov-cats").innerHTML = cl.map(([c, v]) => `<div class="catrow"><span class="nm">${esc(c)}</span>
+    <div class="track"><div class="fill" style="--w:${Math.max(0.02, v / mx)}"></div></div><span class="v">${bigMoney(v)}</span></div>`).join("");
+  // biggest single bets
+  const bets = [];
+  rows.forEach((r) => ["A", "B"].forEach((sd) => r.polymarket[sd].sharks.forEach((sh) =>
+    bets.push({r, sd, sh}))));
+  bets.sort((x, y) => y.sh.cost - x.sh.cost);
+  $("#ov-bets").innerHTML = bets.slice(0, 8).map(({r, sd, sh}) => `<div class="bet" data-open="${esc(r.id)}">
+    <div class="amt">${bigMoney(sh.cost)}</div><div class="who">${esc(shortName(sh.name))} · score ${sh.score ?? "—"}</div>
+    <div class="on">On <b style="color:${sd === "A" ? "var(--a)" : "var(--b)"}">${esc(r.side_labels[sd === "A" ? 0 : 1])}</b>: ${esc(r.title)}</div></div>`).join("");
+  // top sharks
+  const top = Object.entries(DATA.traders).filter(([, t]) => t.scores.overall)
+    .sort((a, b) => b[1].scores.overall.score - a[1].scores.overall.score).slice(0, 9);
+  $("#ov-top").innerHTML = top.map(([w, t], i) => {
+    const best = Object.entries(t.scores).filter(([c]) => c !== "overall").sort((a, b) => b[1].score - a[1].score)[0];
+    const pnl = (t.boards || {})["overall|all"];
+    return `<div class="ts" data-shark="${esc(w)}"><span class="rk">${i + 1}</span><div style="min-width:0">
+      <div class="nm2">${esc(shortName(t.name))}</div><div class="meta2">${best ? "best at " + esc(best[0]) : ""}${pnl ? " · " + bigMoney(pnl.pnl) + " all-time" : ""}</div></div>
+      <span class="sc2">${t.scores.overall.score}</span></div>`;
+  }).join("");
+  observeReveals();
+}
+let REVEAL_IO = null;
+function observeReveals() {
+  if (!REVEAL_IO) REVEAL_IO = new IntersectionObserver((es) => es.forEach((e) => {
+    if (!e.isIntersecting) return;
+    e.target.classList.add("in");
+    e.target.querySelectorAll(".arc").forEach((c) => { c.style.strokeDashoffset = c.dataset.off; });
+    REVEAL_IO.unobserve(e.target);
+  }), {threshold: 0.15, rootMargin: "0px 0px -8% 0px"});
+  document.querySelectorAll(".reveal:not(.in), .sig, .duel .card2").forEach((el) => REVEAL_IO.observe(el));
+  document.querySelectorAll(".in .arc, .sig.in .arc").forEach((c) => { c.style.strokeDashoffset = c.dataset.off; });
+}
+function countUp() {
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  document.querySelectorAll("[data-count]").forEach((el) => {
+    if (el.dataset.done === el.dataset.count) return;
+    const to = +el.dataset.count, from = +(el.dataset.done || 0), pre = el.dataset.pre, t0 = performance.now(), dur = reduce ? 0 : 1200;
+    el.dataset.done = to;
+    const fmt = (v) => pre ? bigMoney(v) : Math.round(v).toLocaleString();
+    const step = (t) => { const k = dur ? Math.min(1, (t - t0) / dur) : 1, e = 1 - Math.pow(1 - k, 3);
+      el.textContent = fmt(from + (to - from) * e); if (k < 1) requestAnimationFrame(step); };
+    requestAnimationFrame(step);
+  });
+}
+$("#herocard").addEventListener("click", (e) => { const id = e.currentTarget.dataset.open; if (id) openMarket(id); });
+$("#tab-overview").addEventListener("click", (e) => {
+  const go = e.target.closest("[data-go]");
+  if (go) { document.querySelector(`nav button[data-tab="${go.dataset.go}"]`).click(); return; }
+  const sh = e.target.closest("[data-shark]");
+  if (sh) { openShark(sh.dataset.shark); return; }
+  const o = e.target.closest("[data-open]");
+  if (o) openMarket(o.dataset.open);
+});
+
 /* ---------------- settings ---------------- */
 const SETTINGS_UI = [
   ["shark_threshold", "Shark score threshold", "A trader counts as a shark when their score (0–100) is at least this.", 0, 100, 1],
@@ -558,7 +846,7 @@ $("#reset").onclick = async () => {
 /* ---------------- events ---------------- */
 document.querySelectorAll("nav button").forEach((b) => b.onclick = () => {
   document.querySelectorAll("nav button").forEach((x) => x.classList.toggle("on", x === b));
-  ["markets", "sharks", "settings", "guide"].forEach((t) => $("#tab-" + t).classList.toggle("hidden", t !== b.dataset.tab));
+  ["overview", "markets", "sharks", "settings", "guide"].forEach((t) => $("#tab-" + t).classList.toggle("hidden", t !== b.dataset.tab));
   const navTop = document.querySelector("#tab-markets").parentElement.querySelector("nav").offsetTop - $("#navbar").offsetHeight;
   if (window.scrollY > navTop) window.scrollTo({top: navTop});
 });
@@ -590,19 +878,9 @@ function openShark(w) {
   const nav = $("#navbar"), title = document.querySelector(".large");
   new IntersectionObserver(([e]) => nav.classList.toggle("scrolled", !e.isIntersecting),
     {rootMargin: "-48px 0px 0px 0px", threshold: 0}).observe(title);
+  addEventListener("scroll", () => { const h = $("#hero"); if (h) h.style.setProperty("--sy", Math.min(1, scrollY / 600)); }, {passive: true});
 })();
-(function theme() {
-  const apply = (t) => {
-    if (t) document.documentElement.dataset.theme = t; else delete document.documentElement.dataset.theme;
-    document.querySelector('meta[name="theme-color"]').content = t === "light" ? "#fafaf9" : "#0d0e10";
-    $("#theme").textContent = t === "light" ? "Dark" : "Light";
-  };
-  try { apply(localStorage.getItem("st-theme")); } catch {}
-  $("#theme").onclick = () => {
-    const next = document.documentElement.dataset.theme === "light" ? "" : "light";
-    apply(next); try { localStorage.setItem("st-theme", next); } catch {}
-  };
-})();
+
 load();
 setInterval(() => { if (!document.hidden) load(); }, 5 * 60 * 1000);
 </script>
