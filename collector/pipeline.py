@@ -23,6 +23,7 @@ import logging
 import time
 from typing import Any, Optional
 
+from . import combos as combos_mod
 from . import kalshi
 from . import polymarket as pm
 from .beliefs import Position, tally, to_beliefs
@@ -50,7 +51,7 @@ def _score_all(t: pm.PMTrader, S: dict, open_count: Optional[int]) -> dict[str, 
 # Positions are saved between refreshes as short lists (to keep the saved
 # state small); market titles are saved once per market in state["titles"].
 POS_FIELDS = ("conditionId", "outcome", "outcomeIndex", "oppositeOutcome", "size", "avgPrice",
-              "initialValue", "currentValue", "curPrice", "eventSlug", "endDate")
+              "initialValue", "currentValue", "curPrice", "eventSlug", "endDate", "timestamp")
 
 
 def _r(x: Any, nd: int = 2) -> Any:
@@ -86,6 +87,26 @@ def _slim_rows(rows: list[dict], min_money_single: float = 500, cap: int = 3000)
         r.pop("match", None)
         r["tags"] = (r.get("tags") or [])[:5]
     return keep[:cap]
+
+
+def _shark_positions(rows: list, titles: dict, markets: dict, cut: float, limit: int = 25) -> list[dict]:
+    """A shark's open positions for the detail view: biggest by current value, newest activity first."""
+    out = []
+    for row in map(_expand_position, rows):
+        px = float(row.get("curPrice") or 0)
+        if px < cut or px > 1 - cut:
+            continue
+        cid = row["conditionId"]
+        m = markets.get(cid)
+        out.append({
+            "id": cid, "title": titles.get(cid) or row.get("title") or cid,
+            "category": m.category if m else "other", "outcome": row.get("outcome"),
+            "cost": _r(row.get("initialValue")), "value": _r(row.get("currentValue")),
+            "entry": row.get("avgPrice"), "now": row.get("curPrice"),
+            "end": (row.get("endDate") or "")[:10] or None, "at": row.get("timestamp"),
+        })
+    out.sort(key=lambda r: r["value"] or 0, reverse=True)
+    return out[:limit]
 
 
 def run(user_settings: Optional[dict], decisions: Optional[dict], state: Optional[dict],
@@ -261,6 +282,13 @@ def run(user_settings: Optional[dict], decisions: Optional[dict], state: Optiona
         log.warning("Kalshi step failed: %s", e)
         status["kalshi"] = {"ok": False, "message": f"Kalshi prices unavailable this time ({type(e).__name__})."}
 
+    # 8. Recommended combos with live returns (never fails the refresh).
+    combo_data, combo_state = {"combos": [], "record": {}}, state.get("combos", {})
+    try:
+        combo_data, combo_state = combos_mod.update(client, rows, state.get("combos"))
+    except Exception as e:  # noqa: BLE001
+        log.warning("Combos step failed: %s", e)
+
     all_rows = len(rows)
     rows = _slim_rows(rows)
 
@@ -269,7 +297,8 @@ def run(user_settings: Optional[dict], decisions: Optional[dict], state: Optiona
         t = traders[w]
         trader_out[w] = {"name": t.name, "profile_url": t.profile_url, "scores": scores[w],
                          "history": t.history, "boards": {f"{c}|{p}": v for (c, p), v in t.boards.items()},
-                         "positions_fetched_at": pos_cache.get(w, {}).get("fetched_at")}
+                         "positions_fetched_at": pos_cache.get(w, {}).get("fetched_at"),
+                         "positions": _shark_positions(pos_cache.get(w, {}).get("rows", []), titles, markets, cut)}
 
     took = round(time.time() - t_start)
     status["polymarket"] = {
@@ -295,8 +324,8 @@ def run(user_settings: Optional[dict], decisions: Optional[dict], state: Optiona
 
     data = {"generated_at": int(time.time()), "settings": S, "status": status, "totals": totals,
             "rows": rows, "rows_total": all_rows, "traders": trader_out, "skipped": skipped,
-            "possible_matches": possible}
+            "possible_matches": possible, "combos": combo_data}
     new_state = {"history": hist_cache, "positions": pos_cache, "events": ev_cache, "titles": titles,
-                 "kalshi": kstate}
+                 "kalshi": kstate, "combos": combo_state}
     log.info("refresh done in %ss: %d rows, %s", took, len(rows), status["polymarket"]["message"])
     return data, new_state
