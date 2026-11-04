@@ -22,7 +22,7 @@
 }
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
-body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 var(--sans);font-feature-settings:"tnum" 1}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 var(--sans);font-feature-settings:"tnum" 1;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
 button,a,.mk .hd,.sh,summary{touch-action:manipulation}
 button,nav,.iconbtn,.btn,summary{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
 a{color:var(--accent);text-decoration:none}
@@ -131,10 +131,10 @@ details.card summary{cursor:pointer}
   .btn:hover{border-color:var(--mute)}
 }
 @media (pointer: coarse){.filters input,.filters select{font-size:16px}}
-@media (prefers-reduced-motion: reduce){.btn:active{transform:none} @starting-style{.detail{transform:none}}}
+@media (prefers-reduced-motion: reduce){.btn:active,nav button:active,.sig:active,.duel .card2:active,.bet:active,.ts:active,.herocard:active,.mk .hd:active,.sh:active{transform:none} @starting-style{.detail{transform:none}}}
 @media (prefers-reduced-motion: no-preference){
   @supports (animation-timeline: view()){
-    .mk,.sh{animation:reveal linear both;animation-timeline:view();animation-range:entry 0% entry 35%}
+    /* lists are high-frequency surfaces: no reveal there */
     @keyframes reveal{from{opacity:.35;transform:translateY(14px)}to{opacity:1;transform:none}}
   }
 }
@@ -143,7 +143,7 @@ details.card summary{cursor:pointer}
 }
 
 /* ===== ocean overview ===== */
-.ocean{position:relative;overflow:hidden;min-height:min(86svh,760px);display:flex;align-items:flex-end;
+.ocean{position:relative;overflow:hidden;min-height:min(72svh,640px);display:flex;align-items:flex-end;
   background:radial-gradient(120% 80% at 70% 0%,#0d2f4d 0%,#071a2e 45%,var(--bg) 100%);margin-bottom:8px}
 .ocean .rays{position:absolute;inset:0;background:repeating-linear-gradient(100deg,transparent 0 60px,rgba(94,200,229,.035) 60px 120px);
   mask-image:linear-gradient(180deg,#000 0%,transparent 70%);-webkit-mask-image:linear-gradient(180deg,#000 0%,transparent 70%)}
@@ -151,15 +151,15 @@ details.card summary{cursor:pointer}
   display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,.9fr);gap:48px;align-items:end}
 .herocard{background:color-mix(in srgb,var(--raise) 70%,transparent);backdrop-filter:blur(16px) saturate(160%);-webkit-backdrop-filter:blur(16px) saturate(160%);
   border:1px solid rgba(255,255,255,.08);border-radius:22px;padding:22px;box-shadow:0 30px 60px rgba(0,0,0,.35);cursor:pointer;
-  animation:float 7s ease-in-out infinite}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+  transition:transform 160ms var(--ease-out)}
+.herocard:active{transform:scale(0.98)}
 .herocard .k{font-size:12.5px;color:var(--accent);font-weight:600;margin-bottom:10px}
 .herocard .q{font-weight:650;font-size:17px;line-height:1.3;letter-spacing:-.01em;margin-bottom:16px}
 .herocard .row2{display:flex;align-items:center;gap:16px}
 .herocard .say{font-size:14px;color:var(--mute)} .herocard .say b{display:block;color:var(--ink);font-size:22px;letter-spacing:-.02em}
 .herocard .plain{margin-top:14px}
 @media (max-width: 900px){.ocean .inner{grid-template-columns:1fr}.herocard{display:none}}
-@media (prefers-reduced-motion: reduce){.herocard{animation:none}}
+
 .eyebrow{font-size:13px;font-weight:600;color:var(--accent);letter-spacing:.02em;margin:0 0 10px}
 .ocean h1.large{font-size:clamp(44px,8vw,92px);line-height:.98;letter-spacing:-.04em;font-weight:800;margin:0;max-width:11ch}
 .ocean h1 .fade{color:var(--mute)}
@@ -168,14 +168,35 @@ details.card summary{cursor:pointer}
 .bigstat .v{font-size:clamp(28px,3.4vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1}
 .bigstat .l{font-size:13px;color:var(--mute);margin-top:6px}
 .water{position:absolute;left:0;right:0;bottom:0;height:150px;z-index:1;pointer-events:none}
-.water svg{position:absolute;bottom:0;left:0;width:200%;height:100%}
-.water .w1{animation:drift 18s linear infinite;opacity:.55}
-.water .w2{animation:drift 26s linear infinite reverse;opacity:.35}
+.water.front{z-index:3}
+.water svg{position:absolute;bottom:0;left:0;width:200%;height:100%;will-change:transform}
+.water .w1{animation:drift 18s linear infinite}
+.water .w2{animation:drift 26s linear infinite reverse;opacity:.7}
+.water .w3{animation:drift 40s linear infinite;opacity:.45}
+.water .crest{stroke:rgba(150,215,240,.22);stroke-width:1.5;vector-effect:non-scaling-stroke}
 @keyframes drift{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-.fin{position:absolute;z-index:1;bottom:58px;left:0;width:72px;height:56px;animation:swim 22s linear infinite;pointer-events:none}
-.fin svg{width:100%;height:100%;animation:bob 3.2s ease-in-out infinite}
-@keyframes swim{from{transform:translateX(-120px)}to{transform:translateX(calc(100vw + 120px))}}
-@keyframes bob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(5px) rotate(2deg)}}
+.ocean .rays{animation:rays 48s linear infinite alternate;will-change:transform}
+@keyframes rays{from{transform:translateX(-30px)}to{transform:translateX(30px)}}
+/* sharks: fin above the waterline, dim body below it */
+.shark{position:absolute;left:0;pointer-events:none;will-change:transform}
+.shark svg{display:block;width:100%;height:100%;overflow:visible}
+.shark.near{z-index:2;bottom:22px;width:220px;height:90px;animation:swim 24s linear infinite}
+.shark.far{z-index:1;bottom:66px;width:120px;height:49px;opacity:.45;animation:swim-back 46s linear infinite;animation-delay:-18s}
+.shark.far svg{transform:scaleX(-1)}
+.shark .tail{transform-origin:24px 60px;animation:tail 1.1s ease-in-out infinite alternate}
+.shark .dorsal{transform-origin:110px 54px;animation:lean 3.4s ease-in-out infinite}
+.shark .wake path{fill:none;stroke:rgba(180,225,245,.35);stroke-width:1.5;stroke-linecap:round;transform-origin:80px 56px;animation:wake 1.6s ease-out infinite}
+.shark .wake path:nth-child(2){animation-delay:.8s}
+@keyframes swim{from{transform:translate3d(-260px,0,0)}to{transform:translate3d(calc(100vw + 260px),0,0)}}
+@keyframes swim-back{from{transform:translate3d(calc(100vw + 160px),0,0)}to{transform:translate3d(-160px,0,0)}}
+@keyframes tail{from{transform:rotate(-7deg)}to{transform:rotate(7deg)}}
+@keyframes lean{0%,100%{transform:rotate(-2deg) translateY(0)}50%{transform:rotate(2deg) translateY(2px)}}
+@keyframes wake{from{opacity:.9;transform:scale(.6)}to{opacity:0;transform:scale(1.4) translateX(-8px)}}
+.bubbles{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden}
+.bubbles i{position:absolute;bottom:-12px;left:var(--x);width:var(--s);height:var(--s);border-radius:50%;
+  border:1px solid rgba(160,220,240,.35);background:rgba(160,220,240,.06);animation:bubble var(--t) linear infinite;animation-delay:calc(var(--d) * -1s)}
+@keyframes bubble{0%{transform:translate3d(0,0,0);opacity:0}10%{opacity:1}50%{transform:translate3d(8px,-45vh,0)}90%{opacity:.6}100%{transform:translate3d(-6px,-90vh,0);opacity:0}}
+.ocean.paused *{animation-play-state:paused!important}
 .livepill{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;color:var(--mute);margin-top:22px}
 /* sections */
 .sec{padding:56px 0 8px}
@@ -188,6 +209,10 @@ details.card summary{cursor:pointer}
   border:1px solid var(--line);border-radius:20px;padding:20px;cursor:pointer;display:flex;flex-direction:column;gap:14px;
   transition:transform 200ms var(--ease-out),border-color 200ms ease}
 .sig:active{transform:scale(0.98)}
+.duel .card2,.bet,.ts,.mk .hd,.sh{transition:transform 160ms var(--ease-out),border-color 150ms ease}
+.duel .card2:active,.bet:active,.ts:active{transform:scale(0.98)}
+.mk .hd:active,.sh:active{transform:scale(0.995)}
+nav button:active{transform:scale(0.97)}
 .sig .q{font-weight:650;font-size:15.5px;line-height:1.3;letter-spacing:-.01em;min-height:3.9em;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .sig .cat2{font-size:12px;color:var(--dim);text-transform:capitalize}
 .sig .row2{display:flex;align-items:center;gap:16px}
@@ -234,18 +259,24 @@ details.card summary{cursor:pointer}
 .cta{display:inline-flex;align-items:center;gap:8px;margin-top:22px;font:inherit;font-weight:600;font-size:14px;color:var(--bg);background:var(--ink);
   border:0;border-radius:999px;padding:11px 20px;cursor:pointer;transition:transform 160ms var(--ease-out)}
 .cta:active{transform:scale(0.97)}
-.reveal{opacity:0;transform:translateY(24px);transition:opacity 700ms var(--ease-out),transform 700ms var(--ease-out)}
+.reveal{opacity:0;transform:translateY(20px);transition:opacity 600ms var(--ease-out),transform 600ms var(--ease-out)}
+/* first reveal only: children cascade 50ms apart */
+.reveal.in:not(.played) .stg > *{animation:rise 480ms var(--ease-out) both;animation-delay:calc(min(var(--i,0),8) * 50ms)}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.played .tug i,.played .catrow .fill,.played .ring .arc{transition:none}
 .reveal.in{opacity:1;transform:none}
 .plain{font-size:13px;color:var(--mute);margin-top:8px}
 .plain b{color:var(--ink)}
 @media (hover: hover) and (pointer: fine){
   .sig:hover,.duel .card2:hover,.bet:hover,.ts:hover{border-color:var(--line2)}
   .sig:hover{transform:translateY(-3px)}
+  .sig:hover:active{transform:translateY(-3px) scale(0.98)}
 }
 @media (prefers-reduced-motion: reduce){
-  .water .w1,.water .w2,.fin,.fin svg{animation:none}
-  .fin{display:none}
+  .water svg,.shark,.shark *,.bubbles i,.ocean .rays{animation:none!important}
+  .shark.near{transform:translateX(62vw)} .shark.far{display:none} .bubbles{display:none}
   .reveal{transform:none;transition:opacity 300ms ease}
+  .reveal.in .stg > *{animation:none}
   .tug i,.catrow .fill,.ring .arc{transition:none}
 }
 @media (max-width: 560px){
@@ -284,15 +315,34 @@ details.card summary{cursor:pointer}
 </div></header>
 <section class="ocean" id="hero">
   <div class="rays"></div>
-  <div class="fin" aria-hidden="true"><svg viewBox="0 0 72 56"><path d="M6 54 C 22 46, 30 24, 34 2 C 44 18, 56 38, 70 54 Z" fill="#9fb3c8"/><path d="M34 2 C 44 18, 56 38, 70 54 L 52 54 C 46 40, 40 24, 34 2 Z" fill="#6f879f"/></svg></div>
+  <div class="bubbles" aria-hidden="true"><i style="--x:12%;--d:0;--t:9s;--s:6px"></i><i style="--x:22%;--d:3;--t:11s;--s:4px"></i><i style="--x:35%;--d:6;--t:10s;--s:8px"></i><i style="--x:48%;--d:1.5;--t:12s;--s:5px"></i><i style="--x:61%;--d:4.5;--t:9.5s;--s:7px"></i><i style="--x:72%;--d:7;--t:11.5s;--s:4px"></i><i style="--x:84%;--d:2;--t:10.5s;--s:6px"></i><i style="--x:92%;--d:5.5;--t:12.5s;--s:5px"></i></div>
+  <div class="shark far"><svg viewBox="0 0 220 90" aria-hidden="true">
+      <g class="body"><path d="M14 58 C 50 44, 120 42, 168 52 C 182 55, 192 58, 198 60 C 190 62, 178 66, 164 68 C 118 76, 52 74, 14 62 Z" fill="#14324e" opacity=".55"/>
+        <path d="M96 66 C 104 74, 112 80, 122 84 C 114 76, 110 70, 108 66 Z" fill="#14324e" opacity=".5"/></g>
+      <g class="tail"><path d="M18 60 C 10 50, 4 40, 0 30 C 8 40, 14 48, 22 56 Z M18 62 C 10 70, 6 78, 2 86 C 10 78, 16 72, 24 64 Z" fill="#14324e" opacity=".5"/></g>
+      <path class="dorsal" d="M86 54 C 98 44, 104 26, 106 6 C 114 22, 124 40, 140 54 Z" fill="#a9bccf"/>
+      <path d="M106 6 C 114 22, 124 40, 140 54 L 126 54 C 120 40, 113 24, 106 6 Z" fill="#7690a9"/>
+      <g class="wake"><path d="M82 55 q -10 -4 -20 0" /><path d="M76 57 q -14 -6 -28 0" /></g>
+    </svg></div>
   <div class="water" aria-hidden="true">
+    <svg class="w3" viewBox="0 0 2400 150" preserveAspectRatio="none"><path d="M0 52 Q 120 34 240 52 T 480 52 T 720 52 T 960 52 T 1200 52 T 1440 52 T 1680 52 T 1920 52 T 2160 52 T 2400 52 V150 H0 Z" fill="#0e3150"/></svg>
     <svg class="w2" viewBox="0 0 2400 150" preserveAspectRatio="none"><path d="M0 70 Q 150 40 300 70 T 600 70 T 900 70 T 1200 70 T 1500 70 T 1800 70 T 2100 70 T 2400 70 V150 H0 Z" fill="#0b2a44"/></svg>
-    <svg class="w1" viewBox="0 0 2400 150" preserveAspectRatio="none"><path d="M0 92 Q 200 66 400 92 T 800 92 T 1200 92 T 1600 92 T 2000 92 T 2400 92 V150 H0 Z" fill="#071b2e"/></svg>
+  </div>
+  <div class="shark near"><svg viewBox="0 0 220 90" aria-hidden="true">
+      <g class="body"><path d="M14 58 C 50 44, 120 42, 168 52 C 182 55, 192 58, 198 60 C 190 62, 178 66, 164 68 C 118 76, 52 74, 14 62 Z" fill="#14324e" opacity=".55"/>
+        <path d="M96 66 C 104 74, 112 80, 122 84 C 114 76, 110 70, 108 66 Z" fill="#14324e" opacity=".5"/></g>
+      <g class="tail"><path d="M18 60 C 10 50, 4 40, 0 30 C 8 40, 14 48, 22 56 Z M18 62 C 10 70, 6 78, 2 86 C 10 78, 16 72, 24 64 Z" fill="#14324e" opacity=".5"/></g>
+      <path class="dorsal" d="M86 54 C 98 44, 104 26, 106 6 C 114 22, 124 40, 140 54 Z" fill="#a9bccf"/>
+      <path d="M106 6 C 114 22, 124 40, 140 54 L 126 54 C 120 40, 113 24, 106 6 Z" fill="#7690a9"/>
+      <g class="wake"><path d="M82 55 q -10 -4 -20 0" /><path d="M76 57 q -14 -6 -28 0" /></g>
+    </svg></div>
+  <div class="water front" aria-hidden="true">
+    <svg class="w1" viewBox="0 0 2400 150" preserveAspectRatio="none"><path d="M0 92 Q 200 66 400 92 T 800 92 T 1200 92 T 1600 92 T 2000 92 T 2400 92 V150 H0 Z" fill="#071b2e"/>
+      <path class="crest" d="M0 92 Q 200 66 400 92 T 800 92 T 1200 92 T 1600 92 T 2000 92 T 2400 92" fill="none"/></svg>
   </div>
   <div class="inner"><div>
-    <p class="eyebrow">Shark Tracker</p>
-    <h1 class="large">Follow the sharks.<br><span class="fade">See what they hold.</span></h1>
-    <p class="lede">We find Polymarket's consistently profitable traders, check their track records, and show you which side of each market they're on, in plain English.</p>
+    <h1 class="large">Shark Tracker</h1>
+    <p class="lede" id="hero-lede">Open Polymarket positions of traders with proven profit records.</p>
     <div class="bigstats" id="bigstats"></div>
     <div class="livepill"><span class="pulse" id="pulse"></span><span id="updated">Loading…</span></div>
     </div>
@@ -312,49 +362,42 @@ details.card summary{cursor:pointer}
   <!-- OVERVIEW -->
   <section id="tab-overview">
     <div class="sec reveal">
-      <p class="kicker">Strongest signals</p>
-      <h2>Where the sharks agree.</h2>
-      <p class="desc">Markets where most proven traders are on the same side. Swipe through. Tap one to see every shark and their bet.</p>
-      <div class="rail" id="ov-signals"></div>
+      <h2 id="h-sig">Where sharks agree</h2>
+      <p class="desc">5+ sharks, 80%+ on one side.</p>
+      <div class="rail stg" id="ov-signals" ></div>
     </div>
     <div class="sec reveal">
-      <p class="kicker">Contested</p>
-      <h2>Where the sharks disagree.</h2>
-      <p class="desc">Big markets where sharks are split almost evenly. A split means even the best traders see it differently.</p>
-      <div class="duel" id="ov-duels"></div>
+      <h2 id="h-duel">Where sharks are split</h2>
+      <p class="desc">6+ sharks, at most 60% on one side.</p>
+      <div class="duel stg" id="ov-duels" ></div>
     </div>
     <div class="sec reveal">
-      <p class="kicker">Follow the money</p>
-      <h2>Where the sharks are swimming.</h2>
-      <p class="desc">What sharks' open bets are worth right now, by topic.</p>
-      <div class="cats" id="ov-cats"></div>
+      <h2>Shark money by topic</h2>
+      <p class="desc">Current value of open shark bets.</p>
+      <div class="cats stg" id="ov-cats" ></div>
     </div>
     <div class="sec reveal">
-      <p class="kicker">Biggest bets</p>
-      <h2>The largest single positions.</h2>
-      <p class="desc">The biggest individual shark bets on markets that are still open.</p>
-      <div class="bets" id="ov-bets"></div>
+      <h2>Largest open shark bets</h2>
+      <div class="bets stg" id="ov-bets" ></div>
     </div>
     <div class="sec reveal">
-      <p class="kicker">The sharks</p>
-      <h2>Top-rated traders.</h2>
-      <p class="desc">Scored 0–100 on profit, win rate, return on money traded, track-record length and consistency.</p>
-      <div class="toplist" id="ov-top"></div>
-      <button class="cta" data-go="sharks">See all sharks →</button>
+      <h2>Highest-scored sharks</h2>
+      <p class="desc">Score 0–100: profit, win rate, return on money traded, history length, consistency.</p>
+      <div class="toplist stg" id="ov-top" ></div>
+      <button class="cta" data-go="sharks">All sharks →</button>
     </div>
     <div class="sec reveal">
-      <p class="kicker">How to read this</p>
-      <h2>Simple on the surface.</h2>
-      <div class="explain" style="margin-top:20px">
-        <div><b>What's a shark?</b>A trader with a strong, long, profitable track record on Polymarket. Score 60+ out of 100 and at least 20 finished markets.</div>
-        <div><b>What does 34¢ mean?</b>A share pays $1 if that side wins. 34¢ means the market gives it about a 34% chance.</div>
-        <div><b>What's agreement?</b>The share of sharks on the bigger side. 90% means 9 out of 10 sharks hold the same side.</div>
-        <div><b>Is this advice?</b>No. It shows what other traders hold, using public data. Sharks can be wrong.</div>
+      <h2>Definitions</h2>
+      <div class="explain" style="margin-top:16px">
+        <div><b>Shark</b>Score 60+ out of 100 and at least 20 finished markets.</div>
+        <div><b>Price</b>A share pays $1 if that side wins. 34¢ ≈ a 34% chance.</div>
+        <div><b>Agreement</b>Share of sharks on the bigger side. 90% = 9 of 10.</div>
+        <div><b>Not advice</b>Public data on what other traders hold. Sharks can be wrong.</div>
       </div>
-      <button class="cta" data-go="markets">Explore every market →</button>
+      <button class="cta" data-go="markets">All markets →</button>
     </div>
     <div class="sec">
-      <p class="kicker">Data sources</p>
+      <h2 style="font-size:20px;margin-bottom:12px">Data sources</h2>
       <div class="status" id="status"></div>
       <p class="note">Public data only. Not financial advice. Past profit does not predict future results.</p>
     </div>
@@ -505,12 +548,13 @@ function renderHeader() {
   const strong = rows.filter((r) => r.total.A + r.total.B >= 3 && (r.agreement_pct || 0) >= 80).length;
   const tracked = rows.reduce((t, r) => t + r.money.A + r.money.B, 0);
   $("#bigstats").innerHTML = [
-    [pm.sharks ?? Object.keys(DATA.traders).length, "", "proven sharks"],
-    [DATA.rows_total ?? rows.length, "", "markets they're in"],
-    [strong, "", "strong consensus picks"],
-    [tracked, "$", "riding on open bets"],
+    [pm.sharks ?? Object.keys(DATA.traders).length, "", "sharks"],
+    [DATA.rows_total ?? rows.length, "", "open markets"],
+    [strong, "", "with 80%+ agreement"],
+    [tracked, "$", "in shark bets"],
   ].map(([v, pre, l]) => `<div class="bigstat"><div class="v" data-count="${v}" data-pre="${pre}">${pre ? bigMoney(v) : Number(v).toLocaleString()}</div><div class="l">${l}</div></div>`).join("");
   countUp();
+  $("#hero-lede").textContent = `Open Polymarket positions of ${(pm.sharks ?? 0).toLocaleString()} traders with proven profit records, out of ${(pm.traders ?? 0).toLocaleString()} on the leaderboards.`;
   const runs = (META.runs || []).slice(0, 6).map((r) => `<span class="${r.ok ? "" : "f"}" title="${esc(r.message)}">${fmtTime(r.at).replace(" ET", "").replace(/^\w+ \d+, /, "")}${r.ok ? "" : " (failed)"}</span>`).join("");
   $("#status").innerHTML = `
     <div><span class="dot ${pm.ok ? "ok" : "bad"}"></span><b>Polymarket</b>${pm.ok ? "" : " · problem"}<br>${esc(pm.message)}
@@ -701,7 +745,9 @@ function renderOverview() {
   if (!DATA) return;
   const rows = DATA.rows;
   // strongest signals
-  const sig = rows.filter((r) => r.total.A + r.total.B >= 5 && (r.agreement_pct || 0) >= 80)
+  const sigAll = rows.filter((r) => r.total.A + r.total.B >= 5 && (r.agreement_pct || 0) >= 80);
+  $("#h-sig").textContent = `${sigAll.length.toLocaleString()} markets where sharks agree`;
+  const sig = sigAll.slice()
     .sort((x, y) => majority(y).n - majority(x).n || majority(y).money - majority(x).money).slice(0, 14);
   $("#ov-signals").innerHTML = sig.map((r) => {
     const m = majority(r), col = m.side === "A" ? "var(--a)" : "var(--b)";
@@ -711,19 +757,21 @@ function renderOverview() {
       <div class="row2">${ring(r.agreement_pct, col)}
         <div class="say"><b>${m.n} of ${m.of} sharks</b>hold <span style="color:${col};font-weight:650">${esc(m.label)}</span></div></div>
       <div class="plain">Market price <b>${cents(m.price)}</b>: about a <b>${pctTxt(m.price)}</b> chance. Sharks paid ${cents(m.entry)} on average.</div>
-      <div class="foot"><span>Shark money on ${esc(m.label)}</span><b>${bigMoney(m.money)}</b></div></div>`;
+      <div class="foot"><span>On ${esc(m.label)}</span><b>${bigMoney(m.money)}</b></div></div>`;
   }).join("") || `<p class="sub">No strong consensus right now.</p>`;
   const h = sig[0];
   if (h) {
     const m = majority(h), col = m.side === "A" ? "var(--a)" : "var(--b)";
     $("#herocard").dataset.open = h.id;
-    $("#herocard").innerHTML = `<div class="k">Strongest consensus right now</div><div class="q">${esc(h.title)}</div>
+    $("#herocard").innerHTML = `<div class="k">Most-agreed market</div><div class="q">${esc(h.title)}</div>
       <div class="row2">${ring(h.agreement_pct, col)}<div class="say"><b>${m.n} of ${m.of} sharks</b>hold <span style="color:${col};font-weight:650">${esc(m.label)}</span> · ${bigMoney(m.money)}</div></div>
       <div class="plain">Market price <b>${cents(m.price)}</b>, about a <b>${pctTxt(m.price)}</b> chance.</div>`;
     setTimeout(() => $("#herocard").querySelectorAll(".arc").forEach((c) => { c.style.strokeDashoffset = c.dataset.off; }), 300);
   }
   // contested
-  const duels = rows.filter((r) => r.total.A + r.total.B >= 6 && r.flags.split)
+  const duelAll = rows.filter((r) => r.total.A + r.total.B >= 6 && r.flags.split);
+  $("#h-duel").textContent = `${duelAll.length.toLocaleString()} markets where sharks are split`;
+  const duels = duelAll.slice()
     .sort((x, y) => (y.total.A + y.total.B) - (x.total.A + x.total.B)).slice(0, 6);
   $("#ov-duels").innerHTML = duels.map((r) => {
     const t = r.total.A + r.total.B;
@@ -755,6 +803,9 @@ function renderOverview() {
       <div class="nm2">${esc(shortName(t.name))}</div><div class="meta2">${best ? "best at " + esc(best[0]) : ""}${pnl ? " · " + bigMoney(pnl.pnl) + " all-time" : ""}</div></div>
       <span class="sc2">${t.scores.overall.score}</span></div>`;
   }).join("");
+  document.querySelectorAll(".stg").forEach((g) => [...g.children].forEach((c, i) => c.style.setProperty("--i", i)));
+  // after the first time a section has been seen, data refreshes update in place instead of replaying entrances
+  document.querySelectorAll(".reveal.played").forEach((sec) => sec.querySelectorAll(".arc").forEach((c) => { c.style.strokeDashoffset = c.dataset.off; }));
   observeReveals();
 }
 let REVEAL_IO = null;
@@ -763,9 +814,10 @@ function observeReveals() {
     if (!e.isIntersecting) return;
     e.target.classList.add("in");
     e.target.querySelectorAll(".arc").forEach((c) => { c.style.strokeDashoffset = c.dataset.off; });
+    if (e.target.classList.contains("reveal")) setTimeout(() => e.target.classList.add("played"), 1600);
     REVEAL_IO.unobserve(e.target);
   }), {threshold: 0.15, rootMargin: "0px 0px -8% 0px"});
-  document.querySelectorAll(".reveal:not(.in), .sig, .duel .card2").forEach((el) => REVEAL_IO.observe(el));
+  document.querySelectorAll(".reveal:not(.in)").forEach((el) => REVEAL_IO.observe(el));
   document.querySelectorAll(".in .arc, .sig.in .arc").forEach((c) => { c.style.strokeDashoffset = c.dataset.off; });
 }
 function countUp() {
@@ -874,11 +926,15 @@ function openShark(w) {
   if (el) { el.querySelector("[data-bd]").classList.remove("hidden"); el.scrollIntoView({behavior: "smooth", block: "center"}); }
   else alert("That trader isn't in the current shark list.");
 }
+(function pauseOcean() {
+  const hero = $("#hero");
+  new IntersectionObserver(([e]) => hero.classList.toggle("paused", !e.isIntersecting)).observe(hero);
+})();
 (function largeTitle() {
   const nav = $("#navbar"), title = document.querySelector(".large");
   new IntersectionObserver(([e]) => nav.classList.toggle("scrolled", !e.isIntersecting),
     {rootMargin: "-48px 0px 0px 0px", threshold: 0}).observe(title);
-  addEventListener("scroll", () => { const h = $("#hero"); if (h) h.style.setProperty("--sy", Math.min(1, scrollY / 600)); }, {passive: true});
+
 })();
 
 load();
