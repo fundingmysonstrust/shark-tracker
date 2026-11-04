@@ -185,7 +185,9 @@ def stats_for(t: PMTrader, category: str, open_count: Optional[int] = None) -> O
         rate = h["wins_sample"] / h["settled_sample"]
         settled = h["settled_sample"]
         if h.get("traded"):
-            settled = max(settled, int(h["traded"]) - (open_count or 0))
+            # Distinct markets ever traded, minus those still open. This also caps the sample:
+            # a trader with 4 markets can't have 100 settled markets.
+            settled = max(0, int(h["traded"]) - (open_count or 0))
         s.settled = settled
         s.wins = round(rate * settled)
         s.sources["win_rate"] = (f"Last {h['settled_sample']} settled positions (all categories): "

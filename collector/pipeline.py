@@ -104,7 +104,7 @@ def _shark_positions(rows: list, titles: dict, markets: dict, cut: float, limit:
             "category": m.category if m else "other", "outcome": row.get("outcome"),
             "cost": _r(row.get("initialValue")), "value": _r(row.get("currentValue")),
             "entry": row.get("avgPrice"), "now": row.get("curPrice"),
-            "end": (row.get("endDate") or "")[:10] or None, "at": row.get("timestamp"),
+            "end": (row.get("endDate") or "")[:10] or None, "at": row.get("timestamp"), "slug": row.get("eventSlug"),
         })
     out.sort(key=lambda r: r["value"] or 0, reverse=True)
     return out[:limit]

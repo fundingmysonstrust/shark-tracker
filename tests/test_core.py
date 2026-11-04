@@ -246,3 +246,13 @@ def test_feed_keeps_shark_trades_and_big_whales_only():
     st = feed_mod.update_feed(Fake([page]), {"0xs"}, None)
     kept = {(r[1], r[5]) for r in st["trades"]}
     assert kept == {("0xs", 900.0), ("0xo", 20000.0)}   # small non-shark trade dropped
+
+
+def test_new_account_with_few_markets_is_not_a_shark():
+    from collector.polymarket import PMTrader, stats_for
+    t = PMTrader(wallet="0x1", name="lucky")
+    t.boards[("overall", "all")] = {"pnl": 131_000, "vol": 20_000, "rank": 900}
+    t.boards[("overall", "30d")] = {"pnl": 131_000, "vol": 20_000, "rank": 900}
+    t.history = {"wins_sample": 90, "settled_sample": 100, "traded": 4}
+    r = score_trader(stats_for(t, "overall", 0), S)
+    assert r["eligible"] is False and r["is_shark"] is False

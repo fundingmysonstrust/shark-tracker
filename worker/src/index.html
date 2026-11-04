@@ -386,7 +386,7 @@ nav button:active{transform:scale(0.97)}
 }
 
 /* ===== dive slide: scroll-driven shark + totals ===== */
-.dive{position:relative;height:340vh;background:#030a13}
+.dive{position:relative;height:380vh;background:#030a13}
 .dive .stage{position:sticky;top:0;height:100svh;overflow:hidden}
 .dive .deep{position:absolute;inset:0;background:
   radial-gradient(80% 60% at 50% -10%,rgba(56,150,200,.28),transparent 70%),
@@ -399,20 +399,28 @@ nav button:active{transform:scale(0.97)}
 .snow i{position:absolute;width:calc(3px * var(--z));height:calc(3px * var(--z));border-radius:50%;background:rgba(200,230,245,.5);
   opacity:calc(.25 + var(--z) * .3);filter:blur(calc((1.2 - var(--z)) * 1.2px));animation:snow var(--t) linear infinite}
 @keyframes snow{from{transform:translate3d(0,-30px,0)}to{transform:translate3d(20px,60px,0)}}
-.gw-wrap{position:absolute;left:50%;top:50%;width:min(1100px,150vw);margin-left:calc(min(1100px,150vw) / -2);margin-top:-210px;
-  will-change:transform,opacity;transform-origin:50% 50%}
-.gw{width:100%;height:auto;display:block;overflow:visible;filter:drop-shadow(0 40px 50px rgba(0,0,0,.55))}
-.gw-jaw-o{transform-origin:684px 188px;transform:rotate(var(--jaw,0deg))}
-.gw-jaw-i{transform-origin:684px 188px;animation:chomp 2.6s ease-in-out infinite}
-@keyframes chomp{0%,100%{transform:rotate(0)}42%,58%{transform:rotate(-6deg)}}
-.gw-tail{transform-origin:166px 158px;animation:tailbeat 1.5s ease-in-out infinite alternate}
-.gw-pec{transform-origin:584px 190px;animation:pec 3s ease-in-out infinite alternate}
-@keyframes tailbeat{from{transform:rotate(-9deg) scaleX(.96)}to{transform:rotate(9deg) scaleX(1.02)}}
-@keyframes pec{from{transform:rotate(-3deg)}to{transform:rotate(4deg)}}
+.gw-wrap{--gw:min(1180px,160vw);position:absolute;left:50%;top:50%;width:var(--gw);margin-left:calc(var(--gw) / -2);margin-top:calc(var(--gw) * -0.2);
+  will-change:transform,opacity;transform-origin:50% 55%}
+.gw-shake{width:100%}
+.gw-shake.hit{animation:hit 380ms steps(1,end)}
+@keyframes hit{0%{transform:translate(0,0)}12%{transform:translate(-14px,8px)}25%{transform:translate(16px,-9px)}38%{transform:translate(-10px,-5px)}52%{transform:translate(8px,6px)}68%{transform:translate(-4px,3px)}84%{transform:translate(2px,-1px)}100%{transform:translate(0,0)}}
+.gw{width:100%;height:auto;display:block;overflow:visible;filter:drop-shadow(0 30px 40px rgba(0,0,0,.55))}
+.gw .sh-tail{transform-origin:96px 229px;transform:rotate(var(--tail,0deg))}
+.gw .sh-tail-i{transform-origin:96px 229px;animation:tailidle 1.1s ease-in-out infinite alternate}
+.gw .sh-jaw{transform-origin:806px 232px;transform:rotate(var(--jaw,0deg))}
+.gw .sh-jaw-i{transform-origin:806px 232px;animation:jawidle 3.4s ease-in-out infinite}
+.gw .sh-pec{transform-origin:712px 246px;transform:rotate(var(--pec,0deg))}
+.gw .sh-pec-i{transform-origin:712px 246px;animation:pecidle 2.6s ease-in-out infinite alternate}
+.gw .sh-dorsal{transform-origin:560px 112px;animation:dorsal 2.2s ease-in-out infinite alternate}
+@keyframes tailidle{from{transform:rotate(-6deg)}to{transform:rotate(6deg)}}
+@keyframes jawidle{0%,100%{transform:rotate(0)}50%{transform:rotate(-3deg)}}
+@keyframes pecidle{from{transform:rotate(-3deg)}to{transform:rotate(4deg)}}
+@keyframes dorsal{from{transform:rotate(-1.5deg)}to{transform:rotate(1.5deg)}}
+.dive .stage.flash .deep{filter:brightness(1.7)}
 .dive .fog{position:absolute;inset:0;pointer-events:none;background:radial-gradient(70% 60% at 50% 55%,transparent 30%,rgba(2,9,16,.85) 100%)}
 .panels{position:absolute;inset:0;display:grid;place-items:end start;padding:0 max(24px,6vw) 13vh;pointer-events:none}
 .panel{grid-area:1 / 1;max-width:620px;opacity:0;transform:translateY(24px);filter:blur(4px);
-  transition:opacity 500ms var(--ease-out),transform 500ms var(--ease-out),filter 500ms var(--ease-out)}
+  transition:opacity 180ms var(--ease-out),transform 260ms var(--ease-out),filter 180ms var(--ease-out)}
 .panel.on{opacity:1;transform:none;filter:blur(0)}
 .panel .pk{margin:0 0 6px;font-size:14px;font-weight:600;color:var(--accent);letter-spacing:.01em}
 .panel .pv{font-size:clamp(52px,10vw,128px);font-weight:800;letter-spacing:-.045em;line-height:.95;
@@ -435,7 +443,8 @@ nav button:active{transform:scale(0.97)}
   .dive{height:auto}
   .dive .stage{position:relative;height:auto;padding:90px 0 60px}
   .gw-wrap{position:relative;left:auto;top:auto;margin:0 auto;width:min(900px,120vw);transform:none!important;opacity:1!important}
-  .gw-tail,.gw-pec,.gw-jaw-i,.godrays,.snow i{animation:none}
+  .gw *,.godrays,.snow i,.gw-shake{animation:none!important}
+  .gw .sh-tail,.gw .sh-jaw,.gw .sh-pec{transform:none!important}
   .panels{position:relative;display:grid;gap:40px;place-items:start;padding:20px 24px 0}
   .panel{grid-area:auto;opacity:1;transform:none;filter:none}
   .dots,.scrollhint{display:none}
@@ -491,6 +500,13 @@ nav button:active{transform:scale(0.97)}
 @media (max-width: 900px){.ltable .hide-s{display:none}}
 /* profit chart */
 .pchart{margin:16px 0 4px}
+.pchead{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+.pcv{font-size:28px;font-weight:700;letter-spacing:-.03em;line-height:1.05}
+.pcwrap{position:relative;touch-action:pan-y}
+.pcline{position:absolute;top:0;bottom:0;width:1px;background:var(--line2);pointer-events:none}
+.pctip{position:absolute;top:-4px;pointer-events:none;background:var(--panel);border:1px solid var(--line2);border-radius:8px;padding:5px 9px;font-size:12px;display:flex;flex-direction:column;white-space:nowrap}
+.pctip b{font-size:14px} .pctip span{color:var(--mute)}
+a.lk{color:var(--accent);text-decoration:none} a.lk:hover{text-decoration:underline}
 .pchart svg{width:100%;height:130px;display:block;overflow:visible}
 .pchart .ln{fill:none;stroke:var(--accent);stroke-width:2;stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke;stroke-dasharray:1;stroke-dashoffset:1}
 .pchart.go .ln{animation:draw 900ms var(--ease-out) forwards}
@@ -512,7 +528,10 @@ nav button:active{transform:scale(0.97)}
 .stepper{display:inline-flex;align-items:center;border:1px solid var(--line2);border-radius:8px;overflow:hidden}
 .stepper button{font:inherit;font-size:18px;line-height:1;width:36px;height:34px;background:var(--panel);color:var(--ink);border:0;cursor:pointer;transition:transform 160ms var(--ease-out),background-color 120ms ease}
 .stepper button:active{transform:scale(0.94)} .stepper button:disabled{color:var(--dim);cursor:default}
-.stepper output{min-width:38px;text-align:center;font-weight:650;font-variant-numeric:tabular-nums}
+.stepper input{width:56px;height:34px;text-align:center;font:inherit;font-weight:650;font-variant-numeric:tabular-nums;border:0;border-left:1px solid var(--line2);border-right:1px solid var(--line2);background:var(--panel);color:var(--ink);outline:none;-moz-appearance:textfield}
+.stepper input::-webkit-outer-spin-button,.stepper input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.stepper input:focus{background:var(--raise)}
+#pb-date{font:inherit;font-size:13px;padding:5px 8px;border:1px solid var(--line2);border-radius:6px;background:var(--panel);color:var(--ink)}
 .pt{padding:26px 0;border-bottom:1px solid var(--line)}
 .pt .top{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:6px}
 .pt h3{margin:0;font-size:18px;letter-spacing:-.015em}
@@ -672,81 +691,60 @@ nav button:active{transform:scale(0.97)}
     <div class="deep"></div>
     <div class="godrays"></div>
     <div class="snow" aria-hidden="true"><i style="left:6%;top:12%;--z:0.6;--t:22s"></i><i style="left:14%;top:64%;--z:1;--t:30s"></i><i style="left:22%;top:30%;--z:0.5;--t:26s"></i><i style="left:31%;top:82%;--z:0.8;--t:34s"></i><i style="left:38%;top:18%;--z:1.2;--t:28s"></i><i style="left:46%;top:52%;--z:0.6;--t:24s"></i><i style="left:55%;top:74%;--z:0.9;--t:32s"></i><i style="left:62%;top:8%;--z:0.7;--t:27s"></i><i style="left:69%;top:40%;--z:1.1;--t:36s"></i><i style="left:77%;top:66%;--z:0.5;--t:23s"></i><i style="left:84%;top:22%;--z:0.9;--t:31s"></i><i style="left:91%;top:58%;--z:0.6;--t:29s"></i><i style="left:10%;top:92%;--z:0.8;--t:25s"></i><i style="left:50%;top:90%;--z:0.5;--t:33s"></i><i style="left:88%;top:86%;--z:1;--t:30s"></i><i style="left:26%;top:46%;--z:0.4;--t:21s"></i></div>
-    <div class="gw-wrap" id="gw"><svg class="gw" viewBox="0 0 820 330" aria-hidden="true">
+    <div class="gw-wrap" id="gw"><div class="gw-shake"><svg class="gw" viewBox="0 -30 1000 420" aria-hidden="true">
   <defs>
-    <linearGradient id="gwSkin" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#1a2836"/><stop offset=".38" stop-color="#3d5164"/><stop offset=".56" stop-color="#7a8d9d"/>
-      <stop offset=".62" stop-color="#cfd9e1"/><stop offset="1" stop-color="#eef3f6"/>
-    </linearGradient>
-    <linearGradient id="gwFin" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#2e4256"/><stop offset="1" stop-color="#4a6074"/>
-    </linearGradient>
-    <linearGradient id="gwPec" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#3b5064"/><stop offset=".7" stop-color="#53697d"/><stop offset="1" stop-color="#1f2f3e"/>
-    </linearGradient>
-    <radialGradient id="gwSheen" cx=".62" cy=".28" r=".55">
-      <stop offset="0" stop-color="#cfe6f5" stop-opacity=".35"/><stop offset="1" stop-color="#cfe6f5" stop-opacity="0"/>
-    </radialGradient>
-    <linearGradient id="gwShade" x1="0" y1="0" x2="0" y2="1">
-      <stop offset=".55" stop-color="#05121f" stop-opacity="0"/><stop offset="1" stop-color="#05121f" stop-opacity=".35"/>
-    </linearGradient>
-    <radialGradient id="gwGape" cx=".6" cy=".35" r=".8"><stop offset="0" stop-color="#4a0f1a"/><stop offset=".55" stop-color="#1c060c"/><stop offset="1" stop-color="#050102"/></radialGradient>
-    <linearGradient id="gwJaw" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9aa9b6"/><stop offset=".5" stop-color="#dbe4ea"/><stop offset="1" stop-color="#f2f6f8"/></linearGradient>
-    <clipPath id="gwBodyClip"><path id="gwBodyPath" d="M 786 166 C 774 140, 746 116, 702 102 C 650 86, 586 80, 518 82 C 438 84, 358 98, 290 118 C 238 132, 198 145, 168 155 L 156 160 C 196 175, 252 194, 322 207 C 402 221, 484 225, 564 219 C 634 213, 694 200, 740 187 C 766 180, 781 172, 786 166 Z"/></clipPath>
+    <linearGradient id="mBellyD" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d8e9f5"/><stop offset=".6" stop-color="#abcae1"/><stop offset="1" stop-color="#8eb3d0"/></linearGradient>
   </defs>
-  <!-- far-side pectoral, behind the body -->
-  <path d="M 592 202 C 602 228, 614 250, 630 268 C 612 246, 602 224, 602 204 Z" fill="#1d2d3c" opacity=".7"/>
-  <g class="gw-tail">
-    <path d="M 176 154 C 162 128, 140 92, 112 50 C 106 40, 94 38, 92 50 C 92 96, 104 130, 126 158 C 106 178, 92 206, 86 236 C 84 246, 94 250, 100 242 C 122 214, 148 186, 176 168 Z" fill="url(#gwFin)"/>
-    <path d="M 108 50 C 116 96, 132 128, 160 156" stroke="#5d7488" stroke-width="1.2" fill="none" opacity=".45"/>
-  </g>
-  <!-- second dorsal + anal fin -->
-  <path d="M 258 128 C 262 118, 266 108, 268 100 C 273 110, 280 118, 290 122 Z" fill="url(#gwFin)"/>
-  <path d="M 262 196 C 258 206, 254 214, 250 220 C 260 214, 270 206, 278 200 Z" fill="#8a9cab"/>
-  <!-- body -->
-  <use href="#gwBodyPath" fill="url(#gwSkin)"/>
-  <g clip-path="url(#gwBodyClip)">
-    <!-- jagged counter-shading line -->
-    <path d="M 160 166 C 230 172, 300 174, 360 170 C 400 172, 430 165, 470 169 C 510 162, 540 171, 580 164 C 620 170, 660 161, 700 165 C 730 158, 760 162, 790 159 L 790 240 L 160 240 Z" fill="#e7edf2" opacity=".92"/>
-    <rect x="150" y="76" width="660" height="160" fill="url(#gwSheen)"/>
-    <rect x="150" y="76" width="660" height="160" fill="url(#gwShade)"/>
-    <!-- lateral line -->
-    <path d="M 690 140 C 600 138, 480 140, 360 148 C 300 152, 240 156, 180 158" stroke="#9fb2c2" stroke-width="1" fill="none" opacity=".35"/>
-    <!-- caudal keel -->
-    <path d="M 210 150 C 190 154, 176 156, 166 158" stroke="#26384a" stroke-width="3" fill="none" opacity=".6"/>
-  </g>
-  <!-- gills -->
-  <g stroke="#26384a" stroke-width="1.6" fill="none" opacity=".55" stroke-linecap="round">
-    <path d="M 652 120 C 659 140, 661 162, 654 184"/><path d="M 640 118 C 647 140, 649 162, 642 186"/>
-    <path d="M 628 117 C 635 140, 637 163, 630 188"/><path d="M 616 116 C 623 140, 625 163, 618 189"/>
-    <path d="M 604 116 C 611 140, 613 164, 606 190"/>
-  </g>
-  <!-- first dorsal fin -->
-  <path class="gw-dorsal" d="M 450 90 C 466 64, 484 34, 498 4 C 502 -1, 508 1, 507 8 C 505 42, 515 72, 550 88 Z" fill="url(#gwFin)"/>
-  <path d="M 498 4 C 498 40, 508 70, 538 86" stroke="#5c7387" stroke-width="1.1" fill="none" opacity=".45"/>
-  <!-- near-side pectoral fin -->
-  <path class="gw-pec" d="M 558 198 C 546 228, 526 264, 498 302 C 494 308, 500 312, 507 306 C 546 274, 584 240, 608 206 Z" fill="url(#gwPec)"/>
-  <!-- pelvic fin -->
-  <path d="M 340 208 C 334 220, 326 230, 318 238 C 334 232, 350 222, 362 212 Z" fill="#6f8395"/>
-  <!-- aggressive head: open gape, teeth, brow, eye -->
-  <path d="M 784 169 C 762 177, 728 186, 684 186 C 702 214, 740 226, 776 216 Q 766 194, 784 169 Z" fill="url(#gwGape)"/>
-  <path d="M 780 172 C 760 179, 728 188, 690 188" stroke="#7a1f2a" stroke-width="3" fill="none" opacity=".75" stroke-linecap="round"/>
-  <path d="M 781.3 170.0 L 778.2 182.5 L 778.1 171.1 Z M 775.4 172.0 L 772.2 183.9 L 772.0 173.0 Z M 769.1 173.9 L 765.7 185.4 L 765.4 175.0 Z M 762.3 175.9 L 758.8 186.7 L 758.3 176.9 Z M 755.0 177.7 L 751.4 188.0 L 750.8 178.7 Z M 747.3 179.5 L 743.6 189.2 L 742.8 180.4 Z M 739.1 181.1 L 735.3 190.2 L 734.4 181.9 Z M 730.5 182.5 L 726.5 191.1 L 725.6 183.2 Z M 721.5 183.8 L 717.4 191.7 L 716.3 184.3 Z M 712.0 184.8 L 707.8 192.1 L 706.6 185.2 Z M 702.1 185.5 L 697.8 192.2 L 696.5 185.8 Z M 691.8 185.9 L 687.4 191.9 L 686.0 186.0 Z" fill="#f4f6f4" stroke="#aab6bf" stroke-width=".5"/>
-  <g class="gw-jaw-o"><g class="gw-jaw-i">
-    <path d="M 684 188 C 690 234, 742 254, 782 224 L 776 216 C 740 226, 702 214, 684 188 Z" fill="url(#gwJaw)"/>
-    <path d="M 782 224 C 742 254, 690 234, 684 188" stroke="#1f2f3e" stroke-width="1" fill="none" opacity=".45"/>
-    <path d="M 771.7 217.1 L 770.4 211.6 L 766.8 218.1 Z M 760.8 218.9 L 759.6 212.8 L 756.0 219.3 Z M 750.0 219.5 L 748.8 212.8 L 745.2 219.4 Z M 739.5 218.9 L 738.3 211.6 L 734.8 218.2 Z M 729.2 217.1 L 728.2 209.2 L 724.7 215.9 Z M 719.4 214.2 L 718.5 205.7 L 715.2 212.6 Z M 710.2 210.3 L 709.4 201.2 L 706.3 208.2 Z M 701.7 205.3 L 701.1 195.7 L 698.2 202.7 Z M 694.1 199.4 L 693.7 189.2 L 691.0 196.4 Z M 687.5 192.5 L 687.3 181.8 L 684.8 189.2 Z" fill="#f4f6f4" stroke="#aab6bf" stroke-width=".5"/>
+  <!-- far-side fins -->
+  <path d="M 690 262 C 650 292, 612 316, 566 336 C 610 320, 650 304, 700 270 Z" fill="#14305f"/>
+  <!-- tail -->
+  <g class="sh-tail"><g class="sh-tail-i">
+    <path d="M 96 226 C 84 188, 56 132, 6 64 C 52 96, 108 148, 146 200 C 128 214, 112 222, 96 226 Z" fill="#1c3f7c"/>
+    <path d="M 96 232 C 84 268, 58 312, 16 358 C 62 332, 112 292, 150 252 C 130 244, 112 238, 96 232 Z" fill="#1c3f7c"/>
+    <path d="M 20 76 C 56 112, 96 150, 128 190" stroke="#2f5391" stroke-width="3" fill="none" opacity=".55" stroke-linecap="round"/>
   </g></g>
-  <path d="M 768 150 C 772 152, 774 154, 774 156" stroke="#101a24" stroke-width="1.8" fill="none" opacity=".7" stroke-linecap="round"/>
-  <path d="M 714 126 C 730 128, 744 134, 760 146" stroke="#0e1822" stroke-width="5.5" fill="none" stroke-linecap="round" opacity=".75"/>
-  <path d="M 716 120 C 732 122, 748 130, 764 143" stroke="#53697c" stroke-width="1.2" fill="none" opacity=".35" stroke-linecap="round"/>
-  <ellipse cx="738" cy="145" rx="6.4" ry="3.6" transform="rotate(18 738 145)" fill="#02060a"/>
-  <ellipse cx="738" cy="145" rx="6.4" ry="3.6" transform="rotate(18 738 145)" fill="none" stroke="#c9d6df" stroke-width=".5" opacity=".35"/>
-  <circle cx="740" cy="144" r="1.1" fill="#e8f1f7" opacity=".9"/>
-  <g stroke="#c4d2dc" stroke-width="1.1" fill="none" opacity=".28" stroke-linecap="round">
-    <path d="M 560 130 L 590 146"/><path d="M 568 124 L 598 140"/><path d="M 470 118 L 492 130"/>
+  <!-- anal + pelvic fins -->
+  <path d="M 214 250 C 200 276, 184 292, 164 300 C 190 292, 214 280, 232 254 Z" fill="#1c3f7c"/>
+  <path d="M 338 268 C 322 300, 300 322, 270 338 C 310 326, 346 304, 372 272 Z" fill="#1c3f7c"/>
+  <!-- dorsal fin -->
+  <g class="sh-dorsal"><path d="M 452 112 C 508 74, 560 34, 588 -22 C 592 34, 616 82, 664 108 Z" fill="#1c3f7c"/>
+    <path d="M 588 -14 C 590 36, 606 74, 640 102" stroke="#31568f" stroke-width="3" fill="none" opacity=".55" stroke-linecap="round"/></g>
+  <!-- body -->
+  <path d="M 954 178 C 892 128, 790 92, 666 96 C 540 100, 410 128, 296 168 C 214 196, 146 214, 96 226 L 96 234 C 156 250, 236 262, 336 270 C 452 280, 566 284, 664 278 C 740 272, 786 258, 808 240 L 806 228 C 860 204, 912 186, 954 178 Z" fill="#1c3f7c"/>
+  <!-- belly -->
+  <path d="M 140 238 C 300 242, 500 240, 690 224 C 748 232, 792 226, 806 230 L 808 240 C 786 258, 740 272, 664 278 C 566 284, 452 280, 336 270 C 250 262, 190 252, 140 238 Z" fill="url(#mBellyD)"/>
+  <path d="M 150 240 C 310 244, 500 242, 690 226" stroke="#eef6fc" stroke-width="3" fill="none" opacity=".85" stroke-linecap="round"/>
+  <!-- ragged white throat -->
+  <path d="M 664 226 C 700 214, 730 206, 760 198 C 768 210, 780 208, 786 196 C 796 210, 808 208, 814 196 C 826 208, 838 204, 846 194 C 842 214, 824 232, 806 240 C 786 258, 740 272, 690 276 C 700 262, 690 254, 680 250 C 674 262, 664 258, 658 246 C 650 238, 656 230, 664 226 Z" fill="#fbfdff"/>
+  <!-- gill slits -->
+  <g stroke="#1c3f7c" stroke-width="2.6" fill="none" stroke-linecap="round" opacity=".9">
+    <path d="M 742 140 C 750 160, 752 184, 744 206"/><path d="M 722 138 C 730 158, 732 182, 724 204"/><path d="M 702 136 C 710 156, 712 180, 704 202"/>
   </g>
-</svg></div>
+  <!-- flank shading -->
+  <g stroke="#2d4f8a" stroke-width="3.2" fill="none" stroke-linecap="round" opacity=".55">
+    <path d="M 560 120 C 520 140, 470 156, 410 172"/><path d="M 610 116 C 560 140, 510 156, 450 168"/>
+  </g>
+  <path d="M 950 178 C 890 130, 790 96, 668 100 C 544 104, 414 132, 300 172" stroke="#e8f2fa" stroke-width="2.6" fill="none" opacity=".85" stroke-linecap="round"/>
+  <!-- pectoral fin -->
+  <g class="sh-pec"><g class="sh-pec-i"><path d="M 712 246 C 650 292, 584 332, 494 370 C 560 340, 604 312, 650 270 Z" fill="#1c3f7c"/>
+    <path d="M 690 258 C 636 298, 580 332, 514 360" stroke="#8fb4d1" stroke-width="2.6" fill="none" opacity=".85" stroke-linecap="round"/></g></g>
+  <!-- mouth cavity -->
+  <path d="M 948 176 C 904 184, 850 204, 806 230 C 812 240, 826 252, 850 254 C 884 260, 912 262, 936 262 C 952 230, 956 200, 948 176 Z" fill="#050d22"/>
+  <path d="M 942.7 177.0 L 935.2 165.1 L 933.3 179.0 Z M 932.2 179.3 L 923.6 165.1 L 922.6 181.7 Z M 921.5 181.9 L 911.8 165.9 L 911.7 184.7 Z M 910.6 185.0 L 899.7 167.4 L 900.6 188.0 Z M 899.5 188.4 L 887.7 169.9 L 889.4 191.8 Z M 888.3 192.2 L 875.7 173.3 L 878.1 195.8 Z M 877.0 196.2 L 863.9 177.7 L 866.9 200.2 Z M 865.7 200.7 L 852.5 183.1 L 855.6 204.9 Z M 854.5 205.4 L 841.3 189.4 L 844.5 209.9 Z M 843.4 210.4 L 830.7 196.4 L 833.6 215.1 Z M 832.5 215.6 L 820.5 204.1 L 822.8 220.6 Z M 821.8 221.2 L 810.7 212.1 L 812.4 226.3 Z" fill="#ffffff"/>
+  <g class="sh-jaw"><g class="sh-jaw-i">
+    <path d="M 806 232 C 850 256, 900 270, 946 262 C 952 278, 940 292, 912 296 C 870 300, 826 280, 800 250 Z" fill="#f4f9fd" stroke="#1c3f7c" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M 816.6 237.9 L 825.4 229.4 L 826.1 241.6 Z M 827.2 242.0 L 836.5 230.9 L 836.8 245.4 Z M 837.9 245.8 L 847.5 232.4 L 847.6 248.9 Z M 848.7 249.2 L 858.3 234.0 L 858.5 252.0 Z M 859.6 252.3 L 868.9 236.0 L 869.6 254.7 Z M 870.7 255.0 L 879.4 238.3 L 880.9 257.1 Z M 882.0 257.3 L 889.9 241.1 L 892.3 259.0 Z M 893.4 259.1 L 900.6 244.2 L 903.8 260.4 Z M 905.0 260.5 L 911.4 247.4 L 915.6 261.4 Z M 916.8 261.5 L 922.6 250.6 L 927.5 261.9 Z" fill="#ffffff"/>
+  </g></g>
+  <!-- snout underside + lip -->
+  <path d="M 948 176 C 904 184, 850 204, 806 230" stroke="#f2f8fc" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <path d="M 954 178 C 930 160, 904 150, 880 148 C 900 160, 922 170, 948 176 Z" fill="#f2f8fc"/>
+  <!-- brow, eye, nostril -->
+  <path d="M 826 128 C 846 126, 866 134, 880 148" stroke="#040a1a" stroke-width="7" fill="none" stroke-linecap="round"/>
+  <ellipse cx="856" cy="146" rx="9" ry="5.6" fill="#f8fbff" transform="rotate(26 856 146)"/>
+  <ellipse cx="857" cy="147" rx="5" ry="4.6" fill="#040a1a"/>
+  <circle cx="858.6" cy="145.4" r="1.4" fill="#fff"/>
+  <path d="M 922 150 q 6 2 8 8" stroke="#040a1a" stroke-width="2.4" fill="none" stroke-linecap="round" opacity=".7"/>
+<path d="M 954 178 C 892 128, 790 92, 666 96 C 540 100, 410 128, 296 168" stroke="#9ec3e0" stroke-width="3" fill="none" opacity=".55" stroke-linecap="round"/></svg></div></div>
     <div class="fog"></div>
     <div class="panels">
       <div class="panel" data-step="0">
@@ -882,10 +880,16 @@ nav button:active{transform:scale(0.97)}
   <section id="tab-combos" class="hidden">
     <div class="sec" style="padding-top:8px">
       <h2>Parlay builder</h2>
-      <p class="desc">Pick how many legs you want. Each topic gets a ready-made parlay from the picks the most sharks agree on, with the combined price and payout at current prices.</p>
+      <p class="desc">Choose how many legs and when everything should settle. Each topic gets a ready-made parlay from the picks the most sharks agree on, with the combined price and payout at current prices.</p>
       <div class="pbar">
         <div class="ctl"><span class="cl">Legs</span>
-          <div class="stepper"><button id="pb-minus" aria-label="Fewer legs">&minus;</button><output id="pb-n" aria-live="polite">3</output><button id="pb-plus" aria-label="More legs">+</button></div></div>
+          <div class="stepper"><button id="pb-minus" aria-label="Fewer legs">&minus;</button><input id="pb-n" type="number" min="2" step="1" inputmode="numeric" value="3" aria-label="Number of legs"><button id="pb-plus" aria-label="More legs">+</button></div></div>
+        <div class="ctl"><span class="cl">Settles by</span>
+          <div style="display:flex;gap:8px;align-items:center"><select id="pb-by">
+            <option value="1">Today</option><option value="3">3 days</option><option value="7">1 week</option><option value="14">2 weeks</option>
+            <option value="30">1 month</option><option value="90">3 months</option><option value="180">6 months</option><option value="365">1 year</option>
+            <option value="any">No limit</option><option value="custom">Pick a date…</option></select>
+            <input id="pb-date" type="date" class="hidden"></div></div>
         <div class="ctl"><span class="cl">Style</span>
           <span class="seg" id="pb-style"><button data-s="consensus" class="on">Highest agreement</button><button data-s="payout">Bigger payout</button></span></div>
         <div class="ctl"><span class="cl">Topic</span><select id="pb-cat"><option value="">All topics</option></select></div>
@@ -1175,9 +1179,40 @@ function breakdownHTML(sc) {
     ${sc.notes.map(esc).join(" ")} ${Object.values(sc.sources || {}).map(esc).join(". ")}</p>`;
 }
 
+/* ---- live data for one shark, fetched from Polymarket when the shark is opened ---- */
+const SHLIVE = {}, PM = "https://data-api.polymarket.com/v2";
+async function pmGet(path, params) {
+  const u = new URL(PM + path); Object.entries(params).forEach(([k, v]) => u.searchParams.set(k, v));
+  const ctl = new AbortController(), to = setTimeout(() => ctl.abort(), 12000);
+  try { const r = await fetch(u, {cache: "no-store", signal: ctl.signal}); if (!r.ok) throw new Error("HTTP " + r.status); return await r.json(); }
+  finally { clearTimeout(to); }
+}
+async function loadSharkLive(w) {
+  const cur = SHLIVE[w];
+  if (cur && (cur.loading || Date.now() - cur.at < 60000)) return;
+  SHLIVE[w] = {...(cur || {}), loading: true};
+  try {
+    const [pnl, open, closed] = await Promise.all([
+      pmGet("/user-pnl", {user: w, interval: "max", fidelity: "1d"}).catch(() => null),
+      pmGet("/positions", {user: w, status: "OPEN", sort_by: "TIMESTAMP", sort_direction: "DESC", limit: 100}).catch(() => null),
+      pmGet("/positions", {user: w, status: "CLOSED", sort_by: "TIMESTAMP", sort_direction: "DESC", limit: 40}).catch(() => null)]);
+    const pts = pnl && pnl.data && pnl.data.points ? pnl.data.points.map((p) => [p.timestamp, Math.round(p.position_pnl || 0)]) : null;
+    const last = pnl && pnl.data && pnl.data.points ? pnl.data.points[pnl.data.points.length - 1] : null;
+    SHLIVE[w] = {at: Date.now(), ok: !!(pts || open), pts, vol: last ? Math.round(last.volume_usdc || 0) : null, n: last ? last.trade_count : null,
+      open: open && open.data ? open.data.filter((p) => !p.redeemable && (p.current_value || 0) >= 1).map((p) => ({id: p.condition_id, title: p.title, outcome: p.outcome, cost: p.total_cost_usdc,
+        value: p.current_value, entry: p.avg_price, now: p.current_price, end: (p.end_date || "").slice(0, 10), at: p.last_event_at, slug: p.event_slug, category: ""})) : null,
+      closed: closed && closed.data ? closed.data.map((p) => ({id: p.condition_id, title: p.title, outcome: p.outcome, entry: p.avg_price, now: p.current_price,
+        pnl: p.realized_pnl, cost: p.total_cost_usdc, at: p.last_event_at, slug: p.event_slug})) : null};
+  } catch (e) { SHLIVE[w] = {at: Date.now(), ok: false}; }
+  renderPositions(w);
+}
+const pmLink = (slug) => slug ? `https://polymarket.com/event/${encodeURIComponent(slug)}` : null;
+const PRANGE = {};
+
 /* ---- a shark's open positions (built when the shark is opened) ---- */
 const POS_SORT = {};
 function sharkPositions(w, t) {
+  if (SHLIVE[w] && SHLIVE[w].open) return SHLIVE[w].open;
   if (t.positions) return t.positions;
   // older data: rebuild from the market rows the shark appears in
   const out = [];
@@ -1199,11 +1234,11 @@ function renderPositions(w) {
   const total = list.reduce((x, p) => x + (p.value || 0), 0);
   const all = (t.boards || {})["overall|all"], m30 = (t.boards || {})["overall|30d"];
   const h = t.history || {};
-  const pn = t.pnl || null;
+  const pn = t.pnl || null, lv = SHLIVE[w] || {};
   const tr = ((DATA.feed || {}).trades || []).filter((x) => x.w === w).slice(0, 12);
   const extra = [
-    pn && pn.vol ? ["Total volume", bigMoney(pn.vol)] : null,
-    pn && pn.n ? ["Trades", pn.n.toLocaleString()] : null,
+    (lv.vol || (pn && pn.vol)) ? ["Total volume", bigMoney(lv.vol || pn.vol)] : null,
+    (lv.n || (pn && pn.n)) ? ["Trades", (lv.n || pn.n).toLocaleString()] : null,
     h.biggest_win ? ["Biggest win", bigMoney(h.biggest_win)] : null,
     h.joined ? ["On Polymarket since", new Date(h.joined * 1000).toLocaleDateString("en-US", {month: "short", year: "numeric"})] : null,
   ].filter(Boolean);
@@ -1219,14 +1254,15 @@ function renderPositions(w) {
   const rows = list.map((p) => {
     const pl = p.entry && p.now != null ? (p.now / p.entry - 1) * 100 : null;
     const cls = pl == null ? "" : pl >= 0 ? "pos-up" : "pos-dn";
+    const href = pmLink(p.slug);
     return `<tr data-open="polymarket|${esc(p.id)}||" class="prow"><td><div class="mq2">${esc(p.title)}</div>
-      <div class="sub" style="text-transform:capitalize">${esc(p.category)}${p.end ? " · ends " + fmtDate(p.end) : ""}</div></td>
+      <div class="sub"><span style="text-transform:capitalize">${esc(p.category)}</span>${p.category && p.end ? " · " : ""}${p.end ? "ends " + fmtDate(p.end) : ""}${href ? ` · <a class="lk" href="${href}" target="_blank" rel="noopener">Live odds and chart on Polymarket ↗</a>` : ""}</div></td>
       <td><b>${esc(p.outcome)}</b></td><td class="r">${bigMoney(p.value)}</td>
       <td class="r hide-s">${cents(p.entry)} → ${cents(p.now)}</td>
       <td class="r ${cls}">${pl == null ? "—" : (pl >= 0 ? "+" : "") + pl.toFixed(0) + "%"}</td>
       <td class="r hide-s sub">${p.at ? ago(p.at) : "—"}</td></tr>`;
   }).join("");
-  box.innerHTML = `${profitChart(pn)}<div class="posstats">${stats.map(([l, v]) => `<div><div class="l">${l}</div><div class="v">${v}</div></div>`).join("")}</div>
+  box.innerHTML = `${profitChart(w, pn)}<div class="posstats">${stats.map(([l, v]) => `<div><div class="l">${l}</div><div class="v">${v}</div></div>`).join("")}</div>
     <div class="posbar"><b>Open positions</b><span class="seg">
       <button data-possort="${esc(w)}|recent" class="${mode === "recent" ? "on" : ""}">Most recent</button>
       <button data-possort="${esc(w)}|largest" class="${mode === "largest" ? "on" : ""}">Largest</button></span>
@@ -1234,7 +1270,9 @@ function renderPositions(w) {
       <a href="${esc(t.profile_url)}" target="_blank" rel="noopener" class="btn sm extlink">View recent and closed positions on Polymarket</a></div>
     ${list.length ? `<table class="ptable"><thead><tr><th>Market</th><th>Holds</th><th class="r">Value</th><th class="r hide-s">Entry → now</th><th class="r">Change</th><th class="r hide-s">Updated</th></tr></thead><tbody>${rows}</tbody></table>`
       : `<p class="sub">No open positions loaded for this shark yet. They fill in on the next refresh.</p>`}
-    ${tr.length ? `<div class="posbar"><b>Recent trades</b><span class="sub">from the live feed</span></div><table class="ptable"><tbody>${tr.map((x) => `<tr class="prow" data-open="polymarket|${esc(x.c)}||"><td class="sub" style="width:44px">${tAgo(x.t)}</td><td><span class="tag ${x.side}">${x.side === "BUY" ? "Buy" : "Sell"}</span> <b>${esc(x.o)}</b> <span class="sub">at ${cents(x.px)}</span></td><td class="mq2 hide-s">${esc(x.q)}</td><td class="r"><b>${bigMoney(x.usd)}</b></td></tr>`).join("")}</tbody></table>` : ""}
+    ${lv.closed && lv.closed.length ? `<div class="posbar"><b>Closed positions</b><span class="sub">most recent first</span></div><table class="ptable"><thead><tr><th>Market</th><th>Held</th><th class="r hide-s">Entry → final</th><th class="r">Result</th><th class="r hide-s">Closed</th></tr></thead><tbody>${lv.closed.slice(0, 25).map((c) => { const hr = pmLink(c.slug); return `<tr><td><div class="mq2">${esc(c.title)}</div>${hr ? `<div class="sub"><a class="lk" href="${hr}" target="_blank" rel="noopener">View on Polymarket ↗</a></div>` : ""}</td><td><b>${esc(c.outcome)}</b></td><td class="r hide-s">${cents(c.entry)} → ${cents(c.now)}</td><td class="r ${c.pnl >= 0 ? "pos-up" : "pos-dn"}">${(c.pnl >= 0 ? "+" : "−") + bigMoney(Math.abs(c.pnl || 0))}</td><td class="r hide-s sub">${c.at ? ago(c.at) : "—"}</td></tr>`; }).join("")}</tbody></table>` : ""}
+    ${lv.loading ? `<p class="sub" style="margin-top:8px">Loading live positions from Polymarket…</p>` : lv.ok === false ? `<p class="sub" style="margin-top:8px">Couldn't reach Polymarket from this network, so this shows the last saved data.</p>` : lv.ok ? `<p class="sub" style="margin-top:8px">Live from Polymarket, just now.</p>` : ""}
+    ${tr.length ? `<div class="posbar"><b>Recent trades</b><span class="sub">from the live feed</span></div><table class="ptable"><tbody>${tr.map((x) => `<tr class="prow" data-open="polymarket|${esc(x.c)}||"><td class="sub" style="width:44px">${tAgo(x.t)}</td><td><span class="tag ${x.side}">${x.side === "BUY" ? "Buy" : "Sell"}</span> <b>${esc(x.o)}</b> <span class="sub">at ${cents(x.px)}</span></td><td class="mq2 hide-s">${esc(x.q)}${x.e ? ` <a class="lk" href="${pmLink(x.e)}" target="_blank" rel="noopener">↗</a>` : ""}</td><td class="r"><b>${bigMoney(x.usd)}</b></td></tr>`).join("")}</tbody></table>` : ""}
     ${t.positions_fetched_at ? `<p class="sub" style="margin-top:8px">Positions checked ${ago(t.positions_fetched_at)}. Change = current price vs. the shark's average entry.</p>` : ""}`;
   requestAnimationFrame(() => box.querySelector(".pchart")?.classList.add("go"));
 }
@@ -1421,28 +1459,49 @@ function renderDive() {
   diveFrame();
 }
 let DIVE_STEP = -1, DIVE_RAF = 0;
+let DIVE_PREV = 0, DIVE_SKEW = 0, DIVE_HIT = [false, false];
+function hitNow(stage, g) {
+  const sh = g.querySelector(".gw-shake");
+  sh.classList.remove("hit"); void sh.offsetWidth; sh.classList.add("hit");
+  stage.classList.add("flash"); setTimeout(() => stage.classList.remove("flash"), 90);
+  setTimeout(() => sh.classList.remove("hit"), 420);
+}
 function diveFrame() {
   DIVE_RAF = 0;
   const sec = $("#dive"); if (!sec || sec.classList.contains("hidden")) return;
   const r = sec.getBoundingClientRect(), span = sec.offsetHeight - innerHeight;
   const p = Math.min(1, Math.max(0, -r.top / Math.max(1, span)));
   sec.classList.toggle("moved", p > 0.02);
-  if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    // the shark glides in from the deep, crosses, and turns slightly toward the viewer
-    const e = (t) => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-    const k = e(p);
-    const x = -62 + 112 * k;                 // vw
-    const y = Math.sin(p * Math.PI * 2) * 3;  // vh, gentle rise and fall
-    const sc = 0.42 + 0.95 * k;
-    const rot = 5 - 17 * k;                 // stalks level, then rises into the strike
-    const open = Math.sin(Math.PI * Math.min(1, Math.max(0, (p - 0.12) / 0.76)));
-    $("#gw").style.setProperty("--jaw", (-10 + 12 * open).toFixed(1) + "deg");
-    const op = Math.min(1, 0.25 + p * 3);
+  const calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (!calm) {
+    const cl = (x) => Math.min(1, Math.max(0, x)), seg = (a, b, x) => cl((x - a) / (b - a));
+    const eIn = (t) => t * t * t, eOut = (t) => 1 - Math.pow(1 - t, 3), sn = Math.sin;
+    const stalk = seg(0, 0.4, p), strike = seg(0.4, 0.5, p), after = seg(0.5, 1, p);
+    // stalk: slow, sinuous approach. strike: accelerates hard. recoil: thrashes and drifts away.
+    const x = -60 + 36 * stalk + 16 * eIn(strike) + 9 * eOut(after);
+    const y = 5 * sn(p * 16) * (1 - strike) - 5 * eIn(strike) + 3 * eOut(after) + 2 * sn(p * 40) * after * (1 - seg(0.6, 0.9, p));
+    const sc = 0.4 + 0.1 * stalk + 0.38 * eIn(strike) - 0.1 * after;
+    const rot = 3 + 3 * sn(p * 20) * (1 - strike) - 17 * eIn(strike) + 21 * eOut(seg(0.5, 0.72, p)) + 3 * sn(p * 70) * (seg(0.5, 0.6, p)) * (1 - seg(0.6, 0.8, p));
+    // smear: skew follows scroll speed, so a fast scroll looks like a fast shark
+    DIVE_SKEW += ((-(p - DIVE_PREV) * 420) - DIVE_SKEW) * 0.35; DIVE_PREV = p;
+    const sk = Math.max(-11, Math.min(11, DIVE_SKEW));
     const g = $("#gw");
-    g.style.transform = `translate3d(${x}vw, ${y}vh, 0) scale(${sc}) rotate(${rot}deg)`;
-    g.style.opacity = op;
+    g.style.transform = `translate3d(${x}vw, ${y}vh, 0) scale(${sc}) rotate(${rot}deg) skewX(${sk}deg)`;
+    g.style.opacity = Math.min(1, 0.2 + p * 5);
+    // jaw: nearly shut while stalking, gapes wide, snaps shut, then chomps with the scroll
+    let jaw = -15 + 3 * sn(p * 30) * (1 - strike);
+    jaw += 31 * eIn(seg(0.4, 0.49, p));
+    jaw -= 34 * seg(0.49, 0.515, p);
+    jaw += 11 * Math.max(0, sn(p * 64)) * seg(0.52, 0.56, p) * (1 - seg(0.8, 0.9, p));
+    const tail = sn(p * 58) * (9 + 16 * (strike + after * 0.5));
+    g.style.setProperty("--jaw", jaw.toFixed(1) + "deg");
+    g.style.setProperty("--tail", tail.toFixed(1) + "deg");
+    g.style.setProperty("--pec", (-5 + 11 * sn(p * 22) - 8 * strike).toFixed(1) + "deg");
+    // impacts: the bite, then the second snap
+    [0.512, 0.78].forEach((th, i) => { const past = p >= th; if (past !== DIVE_HIT[i]) { DIVE_HIT[i] = past; hitNow(sec.querySelector(".stage"), g); } });
+    if (Math.abs(DIVE_SKEW) > 0.15 && !DIVE_RAF) DIVE_RAF = requestAnimationFrame(diveFrame);
   }
-  const step = p < 0.34 ? 0 : p < 0.67 ? 1 : 2;
+  const step = p < 0.4 ? 0 : p < 0.72 ? 1 : 2;
   if (step !== DIVE_STEP) {
     DIVE_STEP = step;
     sec.querySelectorAll(".panel").forEach((el, i) => el.classList.toggle("on", i === step));
@@ -1591,20 +1650,30 @@ new MutationObserver(() => { if (!$("#tab-live").classList.contains("hidden")) p
 setInterval(() => { if (!$("#tab-live").classList.contains("hidden") && LIVE.ok) renderLive(); }, 5000);
 
 /* ---- profit chart for a shark ---- */
-function profitChart(pn) {
-  if (!pn || !pn.pts || pn.pts.length < 3) return "";
-  const pts = pn.pts, xs = pts.map((p) => p[0]), ys = pts.map((p) => p[1]);
-  const x0 = Math.min(...xs), x1 = Math.max(...xs), lo = Math.min(0, ...ys), hi = Math.max(0, ...ys), sp = (hi - lo) || 1;
+function profitChart(w, pn) {
+  const live = SHLIVE[w], all = (live && live.pts) || (pn && pn.pts) || null;
+  if (!all || all.length < 3) return live && live.loading ? `<div class="pchart"><p class="sub">Loading profit history…</p></div>` : "";
+  const rng = PRANGE[w] || "all", now = all[all.length - 1][0];
+  const days = {"1m": 30, "3m": 90, "1y": 365}[rng];
+  let pts = days ? all.filter((p) => p[0] >= now - days * 86400) : all;
+  if (pts.length < 2) pts = all.slice(-2);
+  const xs = pts.map((p) => p[0]), ys = pts.map((p) => p[1]);
+  const x0 = xs[0], x1 = xs[xs.length - 1], lo = Math.min(0, ...ys), hi = Math.max(0, ...ys), sp = (hi - lo) || 1;
   const X = (x) => 4 + 592 * (x - x0) / ((x1 - x0) || 1), Y = (y) => 6 + 108 * (1 - (y - lo) / sp);
   const d = pts.map((p, i) => (i ? "L" : "M") + X(p[0]).toFixed(1) + " " + Y(p[1]).toFixed(1)).join(" ");
-  const zero = Y(0).toFixed(1);
-  const fmtD = (t) => new Date(t * 1000).toLocaleDateString("en-US", {month: "short", year: "numeric", timeZone: ET});
-  return `<div class="pchart"><svg viewBox="0 0 600 120" preserveAspectRatio="none" role="img" aria-label="All-time profit curve">
-    <defs><linearGradient id="pcg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--accent)" stop-opacity=".28"/><stop offset="1" stop-color="var(--accent)" stop-opacity="0"/></linearGradient></defs>
-    <line x1="4" x2="596" y1="${zero}" y2="${zero}" stroke="var(--line2)" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
-    <path class="ar" d="${d} L ${X(x1).toFixed(1)} ${zero} L ${X(x0).toFixed(1)} ${zero} Z"/>
-    <path class="ln" pathLength="1" d="${d}"/></svg>
-    <div class="ax"><span>${fmtD(x0)}</span><span>Profit over time · now <b style="color:var(--ink)">${bigMoney(ys[ys.length - 1])}</b></span><span>${fmtD(x1)}</span></div></div>`;
+  const zero = Y(0).toFixed(1), chg = ys[ys.length - 1] - ys[0];
+  const fmtD = (t) => new Date(t * 1000).toLocaleDateString("en-US", {month: "short", day: "numeric", year: "numeric", timeZone: ET});
+  const sgn = (v) => (v >= 0 ? "+" : "−") + bigMoney(Math.abs(v));
+  return `<div class="pchart" data-pc="${esc(w)}" data-x0="${x0}" data-x1="${x1}">
+    <div class="pchead"><div><div class="pcv">${bigMoney(ys[ys.length - 1])}</div><div class="sub">total profit${days ? "" : " (all time)"} · <span class="${chg >= 0 ? "pos-up" : "pos-dn"}">${sgn(chg)}</span> ${days ? "in this range" : "since the first trade"}</div></div>
+      <span class="seg">${[["1m", "1M"], ["3m", "3M"], ["1y", "1Y"], ["all", "All"]].map(([k, l]) => `<button data-prange="${esc(w)}|${k}" class="${rng === k ? "on" : ""}">${l}</button>`).join("")}</span></div>
+    <div class="pcwrap"><svg viewBox="0 0 600 120" preserveAspectRatio="none" role="img" aria-label="Profit over time">
+      <defs><linearGradient id="pcg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--accent)" stop-opacity=".28"/><stop offset="1" stop-color="var(--accent)" stop-opacity="0"/></linearGradient></defs>
+      <line x1="4" x2="596" y1="${zero}" y2="${zero}" stroke="var(--line2)" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
+      <path class="ar" d="${d} L ${X(x1).toFixed(1)} ${zero} L ${X(x0).toFixed(1)} ${zero} Z"/>
+      <path class="ln" pathLength="1" d="${d}"/></svg>
+      <div class="pcline hidden"></div><div class="pctip hidden"></div></div>
+    <div class="ax"><span>${fmtD(x0)}</span><span>${fmtD(x1)}</span></div></div>`;
 }
 
 /* ---------------- parlay builder ---------------- */
@@ -1613,11 +1682,16 @@ const P_GENERIC = new Set("reach dip hit win wins before after race election ele
 const ptok = (t) => new Set(String(t || "").toLowerCase().replace(/[^a-z0-9\s]/g, " ").split(/\s+/)
   .filter((w) => w.length > 1 && !/^\d+$/.test(w) && !P_STOP.has(w) && !P_GENERIC.has(w)));
 const pRelated = (a, b) => a.event === b.event || [...a.tok].some((w) => b.tok.has(w));
-const PB = {n: 3, style: "consensus", cat: ""};
-try { const sv = JSON.parse(localStorage.getItem("st-pb") || "{}"); if (sv.n >= 2 && sv.n <= 10) PB.n = sv.n; if (sv.style) PB.style = sv.style; } catch {}
+const PB = {n: 3, style: "consensus", cat: "", by: "30", date: ""};
+try { const sv = JSON.parse(localStorage.getItem("st-pb") || "{}"); if (sv.n >= 2) PB.n = sv.n; if (sv.style) PB.style = sv.style; if (sv.by) PB.by = sv.by; if (sv.date) PB.date = sv.date; } catch {}
+function pbHorizon() {
+  if (PB.by === "any") return "9999-12-31";
+  if (PB.by === "custom") return PB.date || new Date(Date.now() + 30 * 864e5).toISOString().slice(0, 10);
+  return new Date(Date.now() + (+PB.by) * 864e5).toISOString().slice(0, 10);
+}
 const PBANDS = {consensus: [0.50, 0.93], payout: [0.25, 0.65]};
 function parlayPool() {
-  const today = new Date().toISOString().slice(0, 10), horizon = new Date(Date.now() + 75 * 864e5).toISOString().slice(0, 10);
+  const today = new Date().toISOString().slice(0, 10), horizon = pbHorizon();
   const out = [];
   DATA.rows.forEach((r) => {
     const a = r.total.A, b = r.total.B, n = a + b;
@@ -1640,8 +1714,10 @@ function pickParlay(pool, n, [lo, hi]) {
 function renderParlays() {
   if (!DATA) return;
   const pool = parlayPool(), n = PB.n;
-  $("#pb-n").textContent = n;
-  $("#pb-minus").disabled = n <= 2; $("#pb-plus").disabled = n >= 10;
+  if (document.activeElement !== $("#pb-n")) $("#pb-n").value = n;
+  $("#pb-minus").disabled = n <= 2;
+  $("#pb-by").value = PB.by; $("#pb-date").classList.toggle("hidden", PB.by !== "custom"); if (PB.by === "custom") $("#pb-date").value = PB.date;
+  $("#pb-date").min = new Date().toISOString().slice(0, 10);
   $("#pb-style").querySelectorAll("button").forEach((b) => b.classList.toggle("on", b.dataset.s === PB.style));
   const cats = [...new Set(pool.map((l) => l.category))].sort(), sel = $("#pb-cat");
   sel.innerHTML = `<option value="">All topics</option>` + cats.map((c) => `<option ${c === PB.cat ? "selected" : ""}>${esc(c)}</option>`).join("");
@@ -1653,17 +1729,21 @@ function renderParlays() {
     const price = pick.reduce((x, l) => x * l.price, 1), avg = Math.round(pick.reduce((x, l) => x + l.agree, 0) / pick.length);
     const short = pick.length < n;
     return `<div class="pt"><div class="top"><div><h3>${esc(name.charAt(0).toUpperCase() + name.slice(1))} · ${pick.length} leg${pick.length === 1 ? "" : "s"}</h3>
-      <div class="sub2">Average shark agreement ${avg}% · combined price ${cents(price)} · market-implied chance ${(price * 100).toFixed(price < 0.1 ? 1 : 0)}%</div></div>
+      <div class="sub2">All legs settle by ${fmtDate(pick.reduce((m, l) => l.end > m ? l.end : m, ""))} · average shark agreement ${avg}% · combined price ${cents(price)} · market-implied chance ${(price * 100).toFixed(price < 0.1 ? 1 : 0)}%</div></div>
       <div class="pay"><b>${(1 / price).toFixed(price < 0.1 ? 1 : 2)}x</b><span>payout if every leg hits</span></div></div>
       ${short ? `<p class="warn">You asked for ${n} legs; only ${pick.length} unrelated picks qualify in this topic.</p>` : ""}
       ${pick.map((l, i) => `<div class="lg" data-open="${esc(l.id)}"><span class="n">${i + 1}</span>
         <div class="t"><b>${esc(l.label)}</b> · ${esc(l.title)}</div>
         <div class="d">${l.sharks} of ${l.of} sharks (${l.agree}%) · ${bigMoney(l.money)} · settles ${fmtDate(l.end)}</div><div class="p">${cents(l.price)}</div></div>`).join("")}</div>`;
-  }).join("") || `<div class="sub">No picks qualify right now.</div>`;
-  try { localStorage.setItem("st-pb", JSON.stringify({n: PB.n, style: PB.style})); } catch {}
+  }).join("") || `<div class="sub" style="padding:20px 0">No picks qualify for this time frame. Try a later settle date, the other style, or fewer legs.</div>`;
+  try { localStorage.setItem("st-pb", JSON.stringify({n: PB.n, style: PB.style, by: PB.by, date: PB.date})); } catch {}
 }
 $("#pb-minus").addEventListener("click", () => { if (PB.n > 2) { PB.n--; renderParlays(); } });
-$("#pb-plus").addEventListener("click", () => { if (PB.n < 10) { PB.n++; renderParlays(); } });
+$("#pb-plus").addEventListener("click", () => { PB.n++; renderParlays(); });
+$("#pb-n").addEventListener("input", (e) => { const v = Math.floor(+e.target.value); if (v >= 2) { PB.n = v; renderParlays(); } });
+$("#pb-n").addEventListener("blur", (e) => { e.target.value = PB.n; });
+$("#pb-by").addEventListener("input", (e) => { PB.by = e.target.value; renderParlays(); });
+$("#pb-date").addEventListener("input", (e) => { PB.date = e.target.value; renderParlays(); });
 $("#pb-style").addEventListener("click", (e) => { const b = e.target.closest("button"); if (b) { PB.style = b.dataset.s; renderParlays(); } });
 $("#pb-cat").addEventListener("input", (e) => { PB.cat = e.target.value; renderParlays(); });
 $("#pb-list").addEventListener("click", (e) => { const o = e.target.closest("[data-open]"); if (o) openMarket(o.dataset.open); });
@@ -1784,7 +1864,22 @@ $("#rows").addEventListener("click", (e) => {
   OPEN.has(card.dataset.id) ? OPEN.delete(card.dataset.id) : OPEN.add(card.dataset.id);
   renderRows();
 });
+$("#sharks").addEventListener("pointermove", (e) => {
+  const wrap = e.target.closest(".pcwrap"); if (!wrap) return;
+  const pc = wrap.parentElement, w = pc.dataset.pc, live = SHLIVE[w], t = DATA.traders[w];
+  const all = (live && live.pts) || (t && t.pnl && t.pnl.pts); if (!all) return;
+  const x0 = +pc.dataset.x0, x1 = +pc.dataset.x1, r = wrap.getBoundingClientRect(), f = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width));
+  const target = x0 + f * (x1 - x0); let best = all[0];
+  for (const p of all) if (p[0] >= x0 && p[0] <= x1 && Math.abs(p[0] - target) < Math.abs(best[0] - target)) best = p;
+  const tip = wrap.querySelector(".pctip"), ln = wrap.querySelector(".pcline");
+  tip.classList.remove("hidden"); ln.classList.remove("hidden");
+  const left = 100 * (best[0] - x0) / ((x1 - x0) || 1);
+  ln.style.left = left + "%"; tip.style.left = Math.min(78, Math.max(0, left - 10)) + "%";
+  tip.innerHTML = `<b>${bigMoney(best[1])}</b><span>${new Date(best[0] * 1000).toLocaleDateString("en-US", {month: "short", day: "numeric", year: "numeric", timeZone: ET})}</span>`;
+});
+$("#sharks").addEventListener("pointerleave", () => document.querySelectorAll(".pctip,.pcline").forEach((x) => x.classList.add("hidden")), true);
 $("#sharks").addEventListener("click", (e) => {
+  const pr = e.target.closest("[data-prange]"); if (pr) { const [w, k] = pr.dataset.prange.split("|"); PRANGE[w] = k; renderPositions(w); return; }
   if (e.target.closest("a")) return;
   if (e.target.closest(".shbd") && !e.target.closest("[data-possort]") && !e.target.closest(".prow")) return;
   const t = e.target.closest("[data-toggle]");
@@ -1795,14 +1890,14 @@ $("#sharks").addEventListener("click", (e) => {
   if (t) {
     const bd = document.querySelector(`[data-bd="${CSS.escape(t.dataset.toggle)}"]`);
     bd.classList.toggle("hidden");
-    if (!bd.classList.contains("hidden")) renderPositions(t.dataset.toggle);
+    if (!bd.classList.contains("hidden")) { renderPositions(t.dataset.toggle); loadSharkLive(t.dataset.toggle); }
   }
 });
 function openShark(w) {
   document.querySelector('nav button[data-tab="sharks"]').click();
   $("#s-q").value = ""; if ($("#s-follow")) $("#s-follow").checked = false; renderSharks();
   const el = document.getElementById("sh-" + w);
-  if (el) { el.querySelector("[data-bd]").classList.remove("hidden"); renderPositions(w); el.scrollIntoView({behavior: "smooth", block: "center"}); }
+  if (el) { el.querySelector("[data-bd]").classList.remove("hidden"); renderPositions(w); loadSharkLive(w); el.scrollIntoView({behavior: "smooth", block: "center"}); }
   else alert("That trader isn't in the current shark list.");
 }
 (function pauseOcean() {
