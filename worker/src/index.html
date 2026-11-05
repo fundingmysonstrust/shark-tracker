@@ -587,6 +587,9 @@ a.lk{color:var(--accent);text-decoration:none} a.lk:hover{text-decoration:underl
   body{padding-bottom:calc(64px + env(safe-area-inset-bottom,0px))}
 }
 .hidden{display:none!important}
+.dchips{display:flex;gap:4px;align-self:flex-end;padding:3px;border-radius:10px;background:var(--panel);border:1px solid var(--line)}
+.dchips button{font:inherit;font-size:12.5px;padding:6px 10px;border:0;border-radius:7px;background:none;color:var(--mute);cursor:pointer;transition:background 150ms ease,color 150ms ease,transform 160ms var(--ease-out)}
+.dchips button:active{transform:scale(0.97)} .dchips button.on{background:var(--raise);color:var(--ink)}
 @media (max-width: 900px){
   .mk .hd{grid-template-columns:1fr;gap:10px}
   .stats{grid-template-columns:repeat(3,auto 1fr);gap:3px 10px}
@@ -850,13 +853,16 @@ a.lk{color:var(--accent);text-decoration:none} a.lk:hover{text-decoration:underl
       <label class="grow">Search<input id="f-q" type="search" placeholder="team, candidate, shark…"></label>
       <label>Category<select id="f-cat"><option value="">All</option></select></label>
       <label>Min. sharks<input id="f-min" type="number" min="1" value="2" style="width:80px"></label>
-      <label>From<input id="f-from" type="date"></label>
-      <label>To<input id="f-to" type="date"></label>
+      <label>Settles from<input id="f-from" type="date"></label>
+      <label>Settles by<input id="f-to" type="date"></label>
+      <div class="dchips" id="f-chips" role="group" aria-label="Settlement date">
+        <button type="button" data-d="any" class="on">Any date</button><button type="button" data-d="today">Today</button><button type="button" data-d="tomorrow">Tomorrow</button><button type="button" data-d="week">Next 7 days</button>
+      </div>
       <label>Sort<select id="f-sort">
         <option value="max">Most sharks on one side</option>
         <option value="money">Most shark money</option>
         <option value="agree">Highest agreement</option>
-        <option value="date">Soonest event</option>
+        <option value="date">Settles soonest</option>
       </select></label>
       <label class="chk"><input id="f-split" type="checkbox"> Splits only</label>
       <label class="chk"><input id="f-nosplit" type="checkbox"> Hide splits</label>
@@ -1006,6 +1012,7 @@ const fmtDate = (s) => {
   return d.toLocaleString("en-US", hasTime ? {timeZone: ET, weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit"}
                                             : {timeZone: ET, weekday: "short", month: "short", day: "numeric", year: "numeric"});
 };
+const settleOf = (r) => r.end_date || r.event_date;
 const dateKey = (s) => { if (!s) return ""; const d = new Date(/T|\s\d\d:/.test(s) ? s.replace(" ", "T").replace(/\+00$/, "Z") : s + "T12:00:00Z");
   return isNaN(d) ? "" : d.toLocaleDateString("en-CA", {timeZone: ET}); };
 const money = (x) => x == null ? "—" : "$" + Math.round(x).toLocaleString("en-US");
@@ -1081,9 +1088,10 @@ function filtered() {
     if (r.total.A + r.total.B < min) return false;
     if (split && !r.flags.split) return false;
     if (nosplit && r.flags.split) return false;
-    const dk = dateKey(r.event_date);
-    if (from && dk && dk < from) return false;
-    if (to && dk && dk > to) return false;
+    const dk = dateKey(settleOf(r));
+    if ((from || to) && !dk) return false;
+    if (from && dk < from) return false;
+    if (to && dk > to) return false;
     if (q) {
       const pmb = r.polymarket;
       const hay = (r.title + " " + r.event_title + " " + r.side_labels.join(" ") + " " +
@@ -1098,7 +1106,7 @@ function filtered() {
     money: (r) => [r.money.A + r.money.B, 0],
     agree: (r) => [r.agreement_pct ?? 0, r.max_side],
   }[s];
-  if (s === "date") rows.sort((a, b) => (dateKey(a.event_date) || "9999").localeCompare(dateKey(b.event_date) || "9999"));
+  if (s === "date") rows.sort((a, b) => (dateKey(settleOf(a)) || "9999").localeCompare(dateKey(settleOf(b)) || "9999") || b.max_side - a.max_side);
   else rows.sort((a, b) => { const x = key(a), y = key(b); return y[0] - x[0] || y[1] - x[1]; });
   return rows;
 }
@@ -1146,7 +1154,7 @@ function renderRows() {
       (r.flags.platforms_disagree ? ` · <span class="flag">platforms disagree</span>` : "") +
       (r.hedged_count ? ` · <span class="flag h">${r.hedged_count} hedged</span>` : "");
     return `<div class="mk" data-id="${esc(r.id)}"><div class="hd">
-      <div><div class="meta"><span class="cat">${esc(r.category)}</span> · ${fmtDate(r.event_date)}${flags}</div>
+      <div><div class="meta"><span class="cat">${esc(r.category)}</span> · settles ${fmtDate(settleOf(r))}${flags}</div>
       <div class="mtitle">${esc(r.title)}</div></div>
       <div><div class="sides">${sideCell(r, "A")}${sideCell(r, "B")}</div>
       <div class="split"><i class="A" style="width:${100 * r.total.A / tot}%"></i><i class="B" style="width:${100 * r.total.B / tot}%"></i></div></div>
@@ -1377,7 +1385,7 @@ function renderFeed() {
     const list = feedRows();
     html = `<table class="ftable"><thead><tr><th>Market</th><th>Sharks</th><th class="hide-s">Shark money</th><th class="r">Price</th></tr></thead><tbody>` +
       list.map((r) => { const m = majority(r), t = r.total.A + r.total.B || 1;
-        return `<tr data-open="${esc(r.id)}"><td><div class="mq">${esc(r.title)}</div><div class="sub" style="text-transform:capitalize">${esc(r.category)} · ${fmtDate(r.event_date)}</div></td>
+        return `<tr data-open="${esc(r.id)}"><td><div class="mq">${esc(r.title)}</div><div class="sub" style="text-transform:capitalize">${esc(r.category)} · settles ${fmtDate(settleOf(r))}</div></td>
         <td style="white-space:nowrap"><span class="minibar"><i class="A" style="width:${100 * r.total.A / t}%"></i><i class="B" style="width:${100 * r.total.B / t}%"></i></span>
           ${FEED_TAB === "agree" ? `<b>${m.n}/${m.of}</b> <span class="side-tag ${m.side}">${esc(m.label)}</span>` : `<b style="color:var(--a)">${r.total.A}</b> vs <b style="color:var(--b)">${r.total.B}</b>`}</td>
         <td class="hide-s">${FEED_TAB === "agree" ? bigMoney(m.money) : bigMoney(r.money.A) + " / " + bigMoney(r.money.B)}</td>
@@ -1904,6 +1912,18 @@ document.querySelectorAll("nav button[data-tab], #moreSheet button[data-tab]").f
 });
 $("#moreBtn").addEventListener("click", (e) => { e.stopPropagation(); const sh = $("#moreSheet"); const open = sh.classList.toggle("hidden") === false; $("#moreBtn").setAttribute("aria-expanded", String(open)); });
 document.addEventListener("click", (e) => { if (!e.target.closest("#moreSheet") && !e.target.closest("#moreBtn")) { $("#moreSheet").classList.add("hidden"); $("#moreBtn").setAttribute("aria-expanded", "false"); } });
+$("#f-chips").addEventListener("click", (e) => {
+  const b = e.target.closest("button"); if (!b) return;
+  const t = etToday(), d = b.dataset.d, set = (a, z) => { $("#f-from").value = a; $("#f-to").value = z; };
+  if (d === "any") set("", ""); else if (d === "today") set(t, t); else if (d === "tomorrow") { const x = addDaysStr(t, 1); set(x, x); } else set(t, addDaysStr(t, 7));
+  SHOWN = 100; syncChips(); renderRows();
+});
+function syncChips() {
+  const t = etToday(), f = $("#f-from").value, z = $("#f-to").value, tm = addDaysStr(t, 1);
+  const cur = !f && !z ? "any" : f === t && z === t ? "today" : f === tm && z === tm ? "tomorrow" : f === t && z === addDaysStr(t, 7) ? "week" : "";
+  $("#f-chips").querySelectorAll("button").forEach((b) => b.classList.toggle("on", b.dataset.d === cur));
+}
+["#f-from", "#f-to"].forEach((q) => $(q).addEventListener("input", syncChips));
 ["#f-q", "#f-cat", "#f-min", "#f-from", "#f-to", "#f-sort", "#f-split", "#f-nosplit"].forEach((s) => $(s).addEventListener("input", () => { SHOWN = 100; renderRows(); }));
 ["#s-q", "#s-cat", "#s-follow"].forEach((s) => $(s).addEventListener("input", renderSharks));
 $("#more").onclick = () => { SHOWN += 100; renderRows(); };
