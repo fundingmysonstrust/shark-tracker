@@ -19,11 +19,12 @@ concurrency:
 
 permissions:
   contents: read
+  actions: write
 
 jobs:
   refresh:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 14
     steps:
       # Skip quietly until the INGEST_KEY secret has been added.
       - id: check
@@ -45,3 +46,13 @@ jobs:
           INGEST_KEY: ${{ secrets.INGEST_KEY }}
           TRIGGER: ${{ github.event_name == 'schedule' && 'github-schedule' || inputs.trigger || github.event_name }}
         run: python -m collector.run_remote
+      # Keep going: start the next refresh as soon as this one ends (after a short
+      # pause), so data stays as fresh as the ~9 minute run time allows.
+      # The schedule above stays as a safety net if the chain ever breaks.
+      - name: Queue next refresh
+        if: always() && steps.check.outputs.ready == 'yes'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          sleep 45
+          gh api -X POST "repos/${{ github.repository }}/actions/workflows/refresh.yml/dispatches" -f ref="${{ github.ref_name }}" -f "inputs[trigger]=chain"
