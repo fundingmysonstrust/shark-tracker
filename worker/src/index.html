@@ -587,6 +587,7 @@ a.lk{color:var(--accent);text-decoration:none} a.lk:hover{text-decoration:underl
   body{padding-bottom:calc(64px + env(safe-area-inset-bottom,0px))}
 }
 .hidden{display:none!important}
+.qbox{display:flex;gap:8px;align-items:flex-end}.qbox label{flex:1}
 .dchips{display:flex;gap:4px;align-self:flex-end;padding:3px;border-radius:10px;background:var(--panel);border:1px solid var(--line)}
 .dchips button{font:inherit;font-size:12.5px;padding:6px 10px;border:0;border-radius:7px;background:none;color:var(--mute);cursor:pointer;transition:background 150ms ease,color 150ms ease,transform 160ms var(--ease-out)}
 .dchips button:active{transform:scale(0.97)} .dchips button.on{background:var(--raise);color:var(--ink)}
@@ -850,7 +851,7 @@ a.lk{color:var(--accent);text-decoration:none} a.lk:hover{text-decoration:underl
   <!-- MARKETS -->
   <section id="tab-markets" class="hidden">
     <div class="filters">
-      <label class="grow">Search<input id="f-q" type="search" placeholder="team, candidate, shark…"></label>
+      <div class="grow qbox"><label>Search<input id="f-q" type="search" placeholder="team, candidate, shark…" enterkeyhint="search"></label><button type="button" class="btn primary" id="f-go">Search</button></div>
       <label>Category<select id="f-cat"><option value="">All</option></select></label>
       <label>Min. sharks<input id="f-min" type="number" min="1" value="2" style="width:80px"></label>
       <label>Settles from<input id="f-from" type="date"></label>
@@ -1080,8 +1081,9 @@ function fillCats() {
   $("#s-cat").innerHTML = scats.map((c) => `<option value="${c}" ${c === sc ? "selected" : ""}>${c[0].toUpperCase() + c.slice(1)}</option>`).join("");
 }
 
+let QAPPLIED = "";
 function filtered() {
-  const q = $("#f-q").value.trim().toLowerCase(), cat = $("#f-cat").value, min = +$("#f-min").value || 0;
+  const q = QAPPLIED, cat = $("#f-cat").value, min = +$("#f-min").value || 0;
   const from = $("#f-from").value, to = $("#f-to").value, split = $("#f-split").checked, nosplit = $("#f-nosplit").checked;
   let rows = DATA.rows.filter((r) => {
     if (cat && r.category !== cat) return false;
@@ -1345,7 +1347,7 @@ function ring(pct, color) {
 }
 function openMarket(id) {
   document.querySelector('nav button[data-tab="markets"]').click();
-  OPEN.add(id); $("#f-min").value = 1; $("#f-q").value = ""; renderRows();
+  OPEN.add(id); $("#f-min").value = 1; $("#f-q").value = ""; QAPPLIED = ""; renderRows();
   const el = document.querySelector(`.mk[data-id="${CSS.escape(id)}"]`);
   if (el) el.scrollIntoView({behavior: "smooth", block: "start"});
 }
@@ -1924,7 +1926,11 @@ function syncChips() {
   $("#f-chips").querySelectorAll("button").forEach((b) => b.classList.toggle("on", b.dataset.d === cur));
 }
 ["#f-from", "#f-to"].forEach((q) => $(q).addEventListener("input", syncChips));
-["#f-q", "#f-cat", "#f-min", "#f-from", "#f-to", "#f-sort", "#f-split", "#f-nosplit"].forEach((s) => $(s).addEventListener("input", () => { SHOWN = 100; renderRows(); }));
+const runSearch = () => { QAPPLIED = $("#f-q").value.trim().toLowerCase(); SHOWN = 100; renderRows(); };
+$("#f-go").addEventListener("click", runSearch);
+$("#f-q").addEventListener("keydown", (e) => { if (e.key === "Enter") runSearch(); });
+$("#f-q").addEventListener("search", runSearch);
+["#f-cat", "#f-min", "#f-from", "#f-to", "#f-sort", "#f-split", "#f-nosplit"].forEach((s) => $(s).addEventListener("input", () => { SHOWN = 100; renderRows(); }));
 ["#s-q", "#s-cat", "#s-follow"].forEach((s) => $(s).addEventListener("input", renderSharks));
 $("#more").onclick = () => { SHOWN += 100; renderRows(); };
 $("#rows").addEventListener("click", (e) => {
