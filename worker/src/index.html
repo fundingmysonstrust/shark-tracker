@@ -636,6 +636,26 @@ a.lk{color:var(--accent);text-decoration:none} a.lk:hover{text-decoration:underl
   [id^="tab-"]:not(.hidden),.moresheet:not(.hidden){animation:none}
   .nb-pill{transition:none}
 }
+
+/* ===== inline market peek ===== */
+.peek{grid-column:1/-1;margin:6px 0 14px;padding:14px 16px 6px;border:1px solid var(--line);border-radius:14px;background:color-mix(in srgb,var(--panel) 80%,transparent);animation:tabin 240ms var(--ease-out) both;cursor:default}
+tr.peekrow>td{padding:0 0 4px!important;border:0!important}
+.pk-top{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between;margin-bottom:8px}
+.pk-top .seg button{padding:5px 10px;font-size:12px}
+.pk-links{font-size:12.5px;color:var(--mute)}
+.pk-links button{font:inherit;color:var(--accent);background:none;border:0;padding:0;cursor:pointer}
+.pk-chart{position:relative}
+.cbc .peek .dgrid,.lg~.peek .dgrid{grid-template-columns:1fr;gap:14px}
+.peek .detail{padding-top:8px}
+.pk-chart svg{width:100%;height:auto;max-height:230px;display:block;overflow:visible}
+.pk-chart .ms{display:flex;align-items:center;justify-content:center;height:150px;color:var(--dim);font-size:13px}
+.pk-chart .ln{fill:none;stroke:var(--accent);stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.pk-chart .ar{fill:url(#pkg);opacity:.9}
+.pk-chart .gl{stroke:var(--line);stroke-width:1}
+.pk-chart text{fill:var(--dim);font-size:11px;font-family:inherit}
+.pk-chart .now{fill:var(--ink);font-size:12px;font-weight:600}
+.pk-name{font-size:12.5px;color:var(--mute);margin:0 0 2px}
+.pk-name b{color:var(--ink)}
 </style>
 </head>
 <body>
@@ -1672,19 +1692,20 @@ function renderLive() {
   const hl = Object.values(hot).sort((a, b) => b.buy - a.buy).slice(0, 6);
   $("#lv-hot-d").textContent = `Biggest shark buying in the last ${LV.range >= 24 ? (LV.range / 24) + " day" + (LV.range > 24 ? "s" : "") : LV.range + " hour" + (LV.range > 1 ? "s" : "")}.`;
   $("#lv-hot").innerHTML = hl.map((h) => { const top = Object.entries(h.out).sort((a, b) => b[1] - a[1])[0];
-    return `<div class="hot" data-open="polymarket|${esc(h.c)}||"><div class="q">${esc(h.q)}</div><div class="v">${bigMoney(h.buy)} bought</div>
-      <div class="d">${h.sharks.size} shark${h.sharks.size === 1 ? "" : "s"}${top ? " · mostly " + esc(top[0]) : ""}${h.sell ? " · " + bigMoney(h.sell) + " sold" : ""}</div></div>`; }).join("") || `<p class="sub">No shark trades in this range yet.</p>`;
-  const rows = list.slice(0, LV.shown).map((t) => { const k = tkey(t), isNew = !LIVE.seen.has(k); LIVE.seen.add(k); return `<tr class="lr${isNew && LIVE.ok && !LIVE.first ? " new" : ""}" data-open="polymarket|${esc(t.c)}||">
+    return `<div class="hot" data-open="polymarket|${esc(h.c)}||" data-oc="${esc(top ? top[0] : "")}"><div class="q">${esc(h.q)}</div><div class="v">${bigMoney(h.buy)} bought</div>
+      <div class="d">${h.sharks.size} shark${h.sharks.size === 1 ? "" : "s"}${top ? " · mostly " + esc(top[0]) : ""}${h.sell ? " · " + bigMoney(h.sell) + " sold" : ""}</div></div>${PEEK.has(h.c) ? peekBox(h.c) : ""}`; }).join("") || `<p class="sub">No shark trades in this range yet.</p>`;
+  const rows = list.slice(0, LV.shown).map((t) => { const k = tkey(t), isNew = !LIVE.seen.has(k); LIVE.seen.add(k); return `<tr class="lr${isNew && LIVE.ok && !LIVE.first ? " new" : ""}" data-open="polymarket|${esc(t.c)}||" data-oc="${esc(t.o)}">
     <td class="sub" style="white-space:nowrap">${tAgo(t.t)}</td>
     <td><span class="who">${starBtn(t.w)}<a href="#" data-shark="${esc(t.w)}">${esc(shortName(t.n))}</a></span>${t.s != null ? `<span class="badge">Shark ${t.s}</span>` : `<span class="badge wh">Whale</span>`}</td>
     <td><span class="tag ${t.side}">${t.side === "BUY" ? "Buy" : "Sell"}</span> <b>${esc(t.o)}</b></td>
-    <td class="mq3 hide-s">${esc(t.q)}</td><td class="r"><b>${bigMoney(t.usd)}</b></td><td class="r hide-s">${cents(t.px)}</td></tr>`; }).join("");
+    <td class="mq3 hide-s">${esc(t.q)}</td><td class="r"><b>${bigMoney(t.usd)}</b></td><td class="r hide-s">${cents(t.px)}</td></tr>${PEEK.has(t.c) ? `<tr class="peekrow"><td colspan="6">${peekBox(t.c)}</td></tr>` : ""}`; }).join("");
   $("#lv-table").innerHTML = list.length ? `<table class="ltable"><thead><tr><th>Age</th><th>Trader</th><th>Trade</th><th class="hide-s">Market</th><th class="r">Size</th><th class="r hide-s">Price</th></tr></thead><tbody>${rows}</tbody></table>`
     : `<p class="sub" style="padding:24px 0">${LV.view === "following" ? "Follow a trader with the ☆ button and their trades show up here." : "No trades in this range yet."}</p>`;
   $("#lv-more").classList.toggle("hidden", list.length <= LV.shown);
   const oldest = all.length ? all[all.length - 1].t : null;
   $("#lv-note").textContent = oldest ? `Showing trades back to ${fmtTime(oldest)}. Longer ranges fill in as the tracker keeps running.` : "";
   $("#lv-h").textContent = LV.view === "following" ? "Trades by traders you follow" : "Live shark trades";
+  hydratePeeks();
 }
 $("#lv-view").addEventListener("click", (e) => { const b = e.target.closest("button"); if (b) { LV.view = b.dataset.v; LV.shown = 60; renderLive(); } });
 $("#lv-range").addEventListener("click", (e) => { const b = e.target.closest("button"); if (b) { LV.range = +b.dataset.r; LV.shown = 60; saveLV(); renderLive(); } });
@@ -1694,7 +1715,8 @@ const saveLV = () => { try { localStorage.setItem("st-lv", JSON.stringify({range
 $("#tab-live").addEventListener("click", (e) => {
   const sh = e.target.closest("[data-shark]"); if (sh) { e.preventDefault(); openShark(sh.dataset.shark); return; }
   if (e.target.closest("[data-star]") || e.target.closest("a")) return;
-  const o = e.target.closest("[data-open]"); if (o) openMarket(o.dataset.open);
+  if (peekClick(e)) return;
+  const o = e.target.closest("[data-open]"); if (o) togglePeek(cidOf(o.dataset.open), o.dataset.oc);
 });
 
 liveLoop();
@@ -1792,11 +1814,12 @@ function renderParlays() {
       <div class="sub2">Latest leg settles ${fmtDate(pick.reduce((m, l) => l.end > m ? l.end : m, ""))} · average shark agreement ${avg}% · combined price ${cents(price)} · market-implied chance ${(price * 100).toFixed(price < 0.1 ? 1 : 0)}%</div></div>
       <div class="pay"><b>${(1 / price).toFixed(price < 0.1 ? 1 : 2)}x</b><span>payout if every leg hits</span></div></div>
       ${short ? `<p class="warn">You asked for ${n} legs; only ${pick.length} unrelated picks qualify in this topic.</p>` : ""}
-      ${pick.map((l, i) => `<div class="lg" data-open="${esc(l.id)}"><span class="n">${i + 1}</span>
+      ${pick.map((l, i) => `<div class="lg" data-open="${esc(l.id)}" data-oc="${esc(l.label)}"><span class="n">${i + 1}</span>
         <div class="t"><b>${esc(l.label)}</b> · ${esc(l.title)}</div>
-        <div class="d">${l.sharks} of ${l.of} sharks (${l.agree}%) · ${bigMoney(l.money)} · settles ${fmtDate(l.end)}</div><div class="p">${cents(l.price)}</div></div>`).join("")}</div>`;
+        <div class="d">${l.sharks} of ${l.of} sharks (${l.agree}%) · ${bigMoney(l.money)} · settles ${fmtDate(l.end)}</div><div class="p">${cents(l.price)}</div></div>${PEEK.has(cidOf(l.id)) ? peekBox(cidOf(l.id)) : ""}`).join("")}</div>`;
   }).join("") || `<div class="sub" style="padding:20px 0">No picks qualify for this time frame. Try a later settle date, the other style, or fewer legs.</div>`;
   try { localStorage.setItem("st-pb", JSON.stringify({n: PB.n, style: PB.style, by: PB.by, date: PB.date})); } catch {}
+  hydratePeeks();
 }
 $("#pb-minus").addEventListener("click", () => { if (PB.n > 2) { PB.n--; renderParlays(); } });
 $("#pb-plus").addEventListener("click", () => { PB.n++; renderParlays(); });
@@ -1806,7 +1829,12 @@ $("#pb-by").addEventListener("input", (e) => { PB.by = e.target.value; renderPar
 $("#pb-date").addEventListener("input", (e) => { if (!e.target.value) return; PB.date = e.target.value; PB.by = "custom"; renderParlays(); });
 $("#pb-style").addEventListener("click", (e) => { const b = e.target.closest("button"); if (b) { PB.style = b.dataset.s; renderParlays(); } });
 $("#pb-cat").addEventListener("input", (e) => { PB.cat = e.target.value; renderParlays(); });
-$("#pb-list").addEventListener("click", (e) => { const o = e.target.closest("[data-open]"); if (o) openMarket(o.dataset.open); });
+$("#pb-list").addEventListener("click", (e) => {
+  const sh = e.target.closest("[data-shark]"); if (sh) { e.preventDefault(); openShark(sh.dataset.shark); return; }
+  if (e.target.closest("a")) return;
+  if (peekClick(e)) return;
+  const o = e.target.closest("[data-open]"); if (o) togglePeek(cidOf(o.dataset.open), o.dataset.oc);
+});
 
 /* ---------------- recommendations ---------------- */
 function fmtAgo(sec) { return ago(sec); }
@@ -1838,13 +1866,20 @@ function renderCombos() {
       <div class="legs">${c.legs.map((l) => {
         const res = l.result === "won" ? `<span class="w">won</span>` : l.result === "lost" ? `<span class="l">lost</span>`
           : `${cents(l.entry_price)} <span class="arrow">→</span> <b>${cents(l.now)}</b>`;
-        return `<div class="leg"><div class="q">${esc(l.title)}</div>
-          <div class="pick"><b>${esc(l.label)}</b> · ${l.sharks} of ${l.of} sharks (${l.agree}%) · ${bigMoney(l.money)}</div><div class="px">${res}</div></div>`; }).join("")}</div>
+        return `<div class="leg" data-peek="${esc(l.market_id)}" data-oc="${esc(l.label)}" style="cursor:pointer"><div class="q">${esc(l.title)}</div>
+          <div class="pick"><b>${esc(l.label)}</b> · ${l.sharks} of ${l.of} sharks (${l.agree}%) · ${bigMoney(l.money)}</div><div class="px">${res}</div></div>${PEEK.has(l.market_id) ? peekBox(l.market_id) : ""}`; }).join("")}</div>
       <div class="foot3"><span>Listed ${fmtDate(new Date(c.created_at * 1000).toISOString())} at <b>${cents(c.entry_price)}</b></span>
         <span>${c.status === "open" ? "Now <b>" + cents(c.now_price) + "</b>" : ""}</span></div></div>`;
   }).join("") || `<div class="card sub">No combos match. New ones are listed once a day when enough sharks agree.</div>`;
+  hydratePeeks();
 }
 ["#cb-cat", "#cb-style", "#cb-status"].forEach((x) => $(x).addEventListener("input", renderCombos));
+$("#cb-grid").addEventListener("click", (e) => {
+  const sh = e.target.closest("[data-shark]"); if (sh) { e.preventDefault(); openShark(sh.dataset.shark); return; }
+  if (e.target.closest("a")) return;
+  if (peekClick(e)) return;
+  const o = e.target.closest("[data-peek]"); if (o) togglePeek(o.dataset.peek, o.dataset.oc);
+});
 
 /* ---------------- settings ---------------- */
 const SETTINGS_UI = [
@@ -2052,6 +2087,62 @@ setInterval(() => { if (!document.hidden) load(); }, 5 * 60 * 1000);
   const b = document.querySelector(`nav button[data-tab="${t}"], #moreSheet button[data-tab="${t}"]`);
   if (b) { b.click(); window.scrollTo({top: 0}); }
 })();
+
+/* ---------------- inline market peek (chart + who says yes / no) ---------------- */
+const PEEK = new Set(), PKH = {}, PKR = {}, PKC = {}, PKT = {};
+const cidOf = (id) => (String(id).split("|")[1]) || String(id);
+const rowByCid = (cid) => (DATA && DATA.rows.find((r) => r.market_id === cid)) || null;
+const PK_IV = {"1d": ["1d", 5], "1w": ["1w", 30], "1m": ["1m", 180], "all": ["max", 720]};
+function peekBox(cid) {
+  const r = rowByCid(cid), rng = PKR[cid] || "1w", c = PKC[cid + "|" + rng];
+  const links = (r ? `<a href="${esc(r.polymarket.url)}" target="_blank" rel="noopener">Open on Polymarket</a> · ` : "") + `<button type="button" data-pk-market="${esc(cid)}">Open in Markets tab</button>`;
+  return `<div class="peek" data-cid="${esc(cid)}"><div class="pk-top"><span class="seg pk-rng">${Object.keys(PK_IV).map((k) => `<button type="button" data-pk-rng="${k}" class="${k === rng ? "on" : ""}">${k === "all" ? "All" : k.toUpperCase()}</button>`).join("")}</span><span class="pk-links">${links}</span></div>
+    <div class="pk-chart" data-cid="${esc(cid)}">${c ? pkSvg(c) : `<div class="ms">Loading chart…</div>`}</div>
+    ${r ? detailHTML(r) : `<p class="sub" style="padding-bottom:10px">None of the tracked sharks hold this market right now.</p>`}</div>`;
+}
+function pkSvg(c) {
+  if (c.err || !c.h || c.h.length < 2) return `<div class="ms">${c.err ? "Chart isn't available for this market." : "Not enough price history yet."}</div>`;
+  const W = 640, H = 170, L = 6, R = 44, T = 14, B = 22, h = c.h, t0 = h[0].t, t1 = h[h.length - 1].t;
+  let lo = Math.min(...h.map((x) => x.p)), hi = Math.max(...h.map((x) => x.p)); const pad = Math.max(0.02, (hi - lo) * 0.12); lo = Math.max(0, lo - pad); hi = Math.min(1, hi + pad);
+  const X = (t) => L + (W - L - R) * (t - t0) / Math.max(1, t1 - t0), Y = (p) => T + (H - T - B) * (1 - (p - lo) / Math.max(0.0001, hi - lo));
+  const d = h.map((x, i) => (i ? "L" : "M") + X(x.t).toFixed(1) + " " + Y(x.p).toFixed(1)).join(" ");
+  const last = h[h.length - 1], fd = (t) => new Date(t * 1000).toLocaleDateString("en-US", {month: "short", day: "numeric", timeZone: ET});
+  return `<p class="pk-name">Price of <b>${esc(c.name)}</b> · now <b>${cents(last.p)}</b></p><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Price history"><defs><linearGradient id="pkg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5ec8e5" stop-opacity=".28"/><stop offset="1" stop-color="#5ec8e5" stop-opacity="0"/></linearGradient></defs>
+    <line class="gl" x1="${L}" x2="${W - R}" y1="${Y(hi).toFixed(1)}" y2="${Y(hi).toFixed(1)}"/><line class="gl" x1="${L}" x2="${W - R}" y1="${Y(lo).toFixed(1)}" y2="${Y(lo).toFixed(1)}"/>
+    <path class="ar" d="${d} L ${X(t1).toFixed(1)} ${H - B} L ${X(t0).toFixed(1)} ${H - B} Z"/><path class="ln" d="${d}"/>
+    <text x="${W - R + 6}" y="${(Y(hi) + 4).toFixed(1)}">${Math.round(hi * 100)}¢</text><text x="${W - R + 6}" y="${(Y(lo) + 4).toFixed(1)}">${Math.round(lo * 100)}¢</text>
+    <text class="now" x="${W - R + 6}" y="${(Y(last.p) + 4).toFixed(1)}">${Math.round(last.p * 100)}¢</text>
+    <text x="${L}" y="${H - 4}">${fd(t0)}</text><text x="${W - R}" y="${H - 4}" text-anchor="end">${fd(t1)}</text></svg>`;
+}
+async function loadPk(cid, rng) {
+  const key = cid + "|" + rng; if (PKC[key]) return; PKC[key] = {h: null, pending: true};
+  try {
+    if (!PKT[cid]) {
+      const u = new URL("https://gamma-api.polymarket.com/markets"); u.searchParams.set("condition_ids", cid); u.searchParams.set("limit", "1");
+      const m = (await (await fetch(u)).json())[0]; if (!m) throw 0;
+      const toks = JSON.parse(m.clobTokenIds || "[]"), outs = JSON.parse(m.outcomes || "[]"), hint = PKH[cid];
+      let oi = hint ? outs.findIndex((o) => String(o).toLowerCase() === String(hint).toLowerCase()) : 0; if (oi < 0) oi = 0;
+      PKT[cid] = {tok: toks[oi], name: outs[oi] || "first outcome"};
+    }
+    const [iv, fid] = PK_IV[rng], u2 = new URL("https://clob.polymarket.com/prices-history");
+    u2.searchParams.set("market", PKT[cid].tok); u2.searchParams.set("interval", iv); u2.searchParams.set("fidelity", fid);
+    const j = await (await fetch(u2)).json();
+    PKC[key] = {h: (j.history || []).map((x) => ({t: x.t, p: x.p})), name: PKT[cid].name};
+  } catch (e) { PKC[key] = {err: true}; }
+  document.querySelectorAll(`.pk-chart[data-cid="${cid}"]`).forEach((el) => { if ((PKR[cid] || "1w") === rng) el.innerHTML = pkSvg(PKC[key]); });
+}
+function hydratePeeks() { PEEK.forEach((cid) => loadPk(cid, PKR[cid] || "1w")); }
+function rerenderPeekViews() { if (!DATA) return; [renderLive, renderParlays, renderCombos].forEach((f) => { try { f(); } catch (e) {} }); }
+function togglePeek(cid, hint) {
+  if (PEEK.has(cid)) PEEK.delete(cid); else { PEEK.add(cid); if (hint) PKH[cid] = hint; }
+  rerenderPeekViews();
+}
+function peekClick(e) {
+  const rg = e.target.closest("[data-pk-rng]");
+  if (rg) { const cid = rg.closest(".peek").dataset.cid; PKR[cid] = rg.dataset.pkRng; rerenderPeekViews(); return true; }
+  const mk = e.target.closest("[data-pk-market]"); if (mk) { openMarket("polymarket|" + mk.dataset.pkMarket + "||"); return true; }
+  return !!e.target.closest(".peek");
+}
 </script>
 </body>
 </html>
