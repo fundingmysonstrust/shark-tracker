@@ -1899,6 +1899,8 @@ document.querySelectorAll("nav button[data-tab], #moreSheet button[data-tab]").f
   $("#dive").classList.toggle("hidden", b.dataset.tab !== "overview");
   document.querySelector(".wrap").style.paddingTop = b.dataset.tab === "overview" ? "" : "calc(var(--navh) + 8px)";
   window.scrollTo({top: 0});
+  try { localStorage.setItem("st-tab", b.dataset.tab); } catch (e) {}
+  try { history.replaceState(null, "", b.dataset.tab === "overview" ? location.pathname + location.search : "#" + b.dataset.tab); } catch (e) {}
 });
 $("#moreBtn").addEventListener("click", (e) => { e.stopPropagation(); const sh = $("#moreSheet"); const open = sh.classList.toggle("hidden") === false; $("#moreBtn").setAttribute("aria-expanded", String(open)); });
 document.addEventListener("click", (e) => { if (!e.target.closest("#moreSheet") && !e.target.closest("#moreBtn")) { $("#moreSheet").classList.add("hidden"); $("#moreBtn").setAttribute("aria-expanded", "false"); } });
@@ -2014,6 +2016,15 @@ setInterval(() => { if (!document.hidden) load(); }, 5 * 60 * 1000);
     };
     sh.addEventListener("pointerup", end); sh.addEventListener("pointercancel", end);
   }
+})();
+
+// reopen the tab you were on after a refresh
+(() => {
+  let t = (location.hash || "").slice(1);
+  if (!t) { try { t = localStorage.getItem("st-tab") || ""; } catch (e) {} }
+  if (!t || t === "overview") return;
+  const b = document.querySelector(`nav button[data-tab="${t}"], #moreSheet button[data-tab="${t}"]`);
+  if (b) { b.click(); window.scrollTo({top: 0}); }
 })();
 </script>
 </body>
